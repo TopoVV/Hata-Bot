@@ -19,6 +19,7 @@
       <spring.version>5.2.2.RELEASE</spring.version>
       <lombok.version>1.18.12</lombok.version>
       <junit.version>5.5.2</junit.version>
+      <telegram-bots.version>5.0.0</telegram-bots.version>
   </properties>
 
   <dependencies>
@@ -38,6 +39,11 @@
           <version>${spring.version}</version>
       </dependency>
 
+      <dependency>
+          <groupId>org.telegram</groupId>
+          <artifactId>telegrambots</artifactId>
+          <version>${telegram-bots.version}</version>
+      </dependency>
       <dependency>
           <groupId>org.projectlombok</groupId>
           <artifactId>lombok</artifactId>

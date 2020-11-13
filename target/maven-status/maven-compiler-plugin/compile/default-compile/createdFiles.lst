@@ -1,0 +1,4 @@
+com\topov\estatesearcher\config\TelegramConfig.class
+com\topov\estatesearcher\config\RootConfig.class
+com\topov\estatesearcher\EstateSearcher.class
+com\topov\estatesearcher\telegram\EstateBot.class
