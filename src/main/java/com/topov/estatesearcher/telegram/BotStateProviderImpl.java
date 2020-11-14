@@ -11,6 +11,10 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
+/**
+ * Service holds all BotState implementation classes which are requested by BotUpdateHandler
+ *
+ */
 @Service
 public class BotStateProviderImpl implements BotStateProvider {
 
