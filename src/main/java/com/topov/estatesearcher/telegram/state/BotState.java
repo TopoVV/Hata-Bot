@@ -11,4 +11,9 @@ public interface BotState {
     UpdateResult handleUpdate(Update update);
     Hint getHint(Update update);
     Keyboard getKeyboard();
+
+    enum StateName {
+        INITIAL,
+        SUBSCRIPTION
+    }
 }

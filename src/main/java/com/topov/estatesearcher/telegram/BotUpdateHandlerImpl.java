@@ -1,21 +1,19 @@
 package com.topov.estatesearcher.telegram;
 
 import com.topov.estatesearcher.telegram.state.BotState;
-import com.topov.estatesearcher.telegram.state.InitialBotState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Optional;
-
 @Service
 public class BotUpdateHandlerImpl implements BotUpdateHandler {
-    private final BotStateHolder stateHolder;
+    private final UserBotStateEvaluator stateHolder;
+    private final BotStateProvider stateProvider;
 
     @Autowired
-    public BotUpdateHandlerImpl(BotStateHolder stateHolder) {
+    public BotUpdateHandlerImpl(UserBotStateEvaluator stateHolder, BotStateProvider stateProvider) {
         this.stateHolder = stateHolder;
+        this.stateProvider = stateProvider;
     }
 
 
@@ -27,7 +25,8 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
         if (text.equals("/start")) {
             return handleFirstUserInteraction(update);
         } else {
-            final BotState state = this.stateHolder.getStateForUser(chatId);
+            final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
+            final BotState state = stateProvider.getBotState(stateForUser);
             return state.handleUpdate(update);
         }
     }
@@ -35,7 +34,8 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
     @Override
     public Hint getHint(Update update) {
         final Long chatId = update.getMessage().getChatId();
-        final BotState state = this.stateHolder.getStateForUser(chatId);
+        final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
+        final BotState state = stateProvider.getBotState(stateForUser);
 
         return state.getHint(update);
     }
@@ -43,15 +43,13 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
     @Override
     public Keyboard getKeyboard(Update update) {
         final Long chatId = update.getMessage().getChatId();
-        final BotState state = this.stateHolder.getStateForUser(chatId);
+        final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
+        final BotState state = stateProvider.getBotState(stateForUser);
         return state.getKeyboard();
     }
 
     private UpdateResult handleFirstUserInteraction(Update update) {
-        this.stateHolder.setStateForUser(update.getMessage().getChatId(), createInitialBotState());
+        this.stateHolder.setStateForUser(update.getMessage().getChatId(), BotState.StateName.INITIAL);
         return new UpdateResult("Welcome");
     }
-
-    @Lookup
-    public InitialBotState createInitialBotState() { return null; }
 }

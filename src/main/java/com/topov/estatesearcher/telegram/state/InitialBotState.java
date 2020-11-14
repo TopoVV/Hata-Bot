@@ -1,37 +1,37 @@
 package com.topov.estatesearcher.telegram.state;
 
-import com.topov.estatesearcher.telegram.BotStateHolder;
+import com.topov.estatesearcher.telegram.UserBotStateEvaluator;
 import com.topov.estatesearcher.telegram.Hint;
 import com.topov.estatesearcher.telegram.Keyboard;
 import com.topov.estatesearcher.telegram.UpdateResult;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.Collections;
-import java.util.Optional;
 
-@Service
 @Log4j2
-@Scope(value = "prototype")
-public class InitialBotState implements BotState {
+@Service
+public class InitialBotState extends AbstractBotState {
 
-    private final BotStateHolder stateHolder;
+    private final UserBotStateEvaluator stateHolder;
 
     @Autowired
-    public InitialBotState(BotStateHolder stateHolder) {
+    public InitialBotState(UserBotStateEvaluator stateHolder) {
+        super(StateName.INITIAL);
         this.stateHolder = stateHolder;
     }
 
     @Override
     public UpdateResult handleUpdate(Update update) {
+        final Long chatId = update.getMessage().getChatId();
         final String text = update.getMessage().getText();
 
         if (text.equals("/subscribe")) {
+            stateHolder.setStateForUser(chatId, StateName.SUBSCRIPTION);
             return new UpdateResult("Let's subscribe you");
         } else {
             return new UpdateResult("The command not supported");
