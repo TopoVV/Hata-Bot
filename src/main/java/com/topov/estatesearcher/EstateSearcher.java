@@ -2,13 +2,13 @@ package com.topov.estatesearcher;
 
 import com.topov.estatesearcher.config.RootConfig;
 import com.topov.estatesearcher.telegram.EstateBot;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-@Log
+@Log4j2
 public class EstateSearcher {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -20,8 +20,7 @@ public class EstateSearcher {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(estateBot);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
-            log.info("Error when instantiating EstateBot");
+            log.error("Error when instantiating EstateBot", e);
             throw new RuntimeException("Cannot instantiate bot");
         }
     }
