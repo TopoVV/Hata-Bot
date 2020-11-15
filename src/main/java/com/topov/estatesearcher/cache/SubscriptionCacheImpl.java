@@ -5,7 +5,9 @@ import com.topov.estatesearcher.telegram.state.subscription.update.SubscriptionU
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Since multiple users can create subscriptions {@link Subscription} simultaneously, the application stores managed
@@ -32,7 +34,7 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
     @Override
     public void modifySubscription(long chatId, SubscriptionUpdate subscriptionUpdate) {
         log.debug("Updating subscription for user {}. Modified: {}", chatId, subscriptionUpdate);
-        final Subscription currentSubscription = this.subscriptions.getOrDefault(chatId, new Subscription());
+        final Subscription currentSubscription = this.subscriptions.getOrDefault(chatId, new Subscription(chatId));
         final Subscription merged = subscriptionUpdate.update(currentSubscription);
         this.subscriptions.put(chatId, merged);
     }

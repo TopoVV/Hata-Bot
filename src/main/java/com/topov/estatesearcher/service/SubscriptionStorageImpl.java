@@ -3,14 +3,20 @@ package com.topov.estatesearcher.service;
 import com.topov.estatesearcher.model.Subscription;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 public class SubscriptionStorageImpl implements SubscriptionStorage {
     private final Map<Long, List<Subscription>> subscriptions = new HashMap<>();
+
+    @PostConstruct
+    void init() {
+        this.subscriptions.put(517142416L, Collections.singletonList(new Subscription(517142416L)));
+    }
 
     @Override
     public void saveSubscription(long chatId, Subscription subscription) {
@@ -19,5 +25,15 @@ public class SubscriptionStorageImpl implements SubscriptionStorage {
         }
 
         this.subscriptions.get(chatId).add(subscription);
+    }
+
+    @Override
+    public List<Subscription> getAllSubscriptions() {
+        final List<Subscription> subscriptions = this.subscriptions.values()
+            .stream()
+            .flatMap(Collection::stream)
+            .collect(toList());
+
+        return Collections.unmodifiableList(subscriptions);
     }
 }

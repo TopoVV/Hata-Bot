@@ -4,7 +4,6 @@ import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.City;
 import com.topov.estatesearcher.service.CityService;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
-import com.topov.estatesearcher.telegram.state.subscription.Subscription;
 import com.topov.estatesearcher.telegram.state.subscription.update.CityUpdate;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

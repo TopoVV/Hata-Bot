@@ -1,8 +1,9 @@
 package com.topov.estatesearcher.telegram;
 
+import com.topov.estatesearcher.model.Announcement;
+import com.topov.estatesearcher.telegram.reply.TelegramReplyAssembler;
 import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
-import com.topov.estatesearcher.telegram.reply.TelegramReplyAssembler;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.List;
 
 @Log4j2
 @Service
@@ -57,6 +60,14 @@ public class EstateBot extends TelegramLongPollingBot {
             log.error("Telegram API exception", e);
         } catch (RuntimeException e) {
             log.error("Error during processing the update ", e);
+        }
+    }
+
+    public void sendNotification(Long chatId, Announcement announcement) {
+        try {
+            execute(new SendMessage(String.valueOf(chatId), announcement.toString()));
+        } catch (TelegramApiException e) {
+            log.error("Cannot send notification", e);
         }
     }
 }

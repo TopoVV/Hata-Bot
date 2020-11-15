@@ -1,7 +1,7 @@
 package com.topov.estatesearcher.telegram.state.subscription.step;
 
-import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.cache.SubscriptionCache;
+import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.subscription.update.MinPriceUpdate;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

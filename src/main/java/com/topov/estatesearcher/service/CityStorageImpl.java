@@ -1,11 +1,11 @@
 package com.topov.estatesearcher.service;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.topov.estatesearcher.model.City;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class CityStorageImpl implements CityStorage {
 
     @Override
     public Set<City> getCities() {
-        return ImmutableSet.copyOf(cities);
+        return Collections.unmodifiableSet(cities);
     }
 
     @Override

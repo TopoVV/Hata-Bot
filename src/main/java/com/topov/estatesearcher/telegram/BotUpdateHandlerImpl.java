@@ -1,10 +1,10 @@
 package com.topov.estatesearcher.telegram;
 
+import com.topov.estatesearcher.service.BotStateEvaluator;
+import com.topov.estatesearcher.telegram.provider.BotStateProvider;
 import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
-import com.topov.estatesearcher.telegram.provider.BotStateProvider;
-import com.topov.estatesearcher.service.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.state.BotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
