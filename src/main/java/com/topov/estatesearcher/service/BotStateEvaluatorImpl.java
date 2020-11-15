@@ -7,12 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Telegram Bot can serve multiple users simultaneously and the update processing logic depends on current bot state
+ * for each user. This class stores the {@link BotState.StateName} enum value and the correspondent user.
+ */
+
 @Service
 public class BotStateEvaluatorImpl implements BotStateEvaluator {
-
-    /**
-     * The map stores currently correspondent state for each user.
-     */
     private final Map<Long, BotState.StateName> userBotStates = new HashMap<>();
 
     @Override

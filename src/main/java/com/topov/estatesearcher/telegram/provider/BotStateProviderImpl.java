@@ -13,7 +13,10 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * Service holds all BotState implementation classes which are requested by BotUpdateHandler
+ * This class stores Singleton implementation for each {@link BotState}
+ * which are requested by {@link com.topov.estatesearcher.telegram.BotUpdateHandler}. It's needed to decouple
+ * {@link com.topov.estatesearcher.telegram.EstateBot} from domain implementation, which can differ from user to user
+ * and requires dependency injection.
  */
 @Service
 public class BotStateProviderImpl implements BotStateProvider {

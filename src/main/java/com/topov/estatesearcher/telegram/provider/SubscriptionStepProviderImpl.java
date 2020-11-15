@@ -13,6 +13,10 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * The same as {@link BotStateProvider} this class stores Singleton implementation for each {@link SubscriptionStep}
+ * which are requested by {@link com.topov.estatesearcher.telegram.state.subscription.SubscriptionBotState}.
+ */
 @Service
 public class SubscriptionStepProviderImpl implements SubscriptionStepProvider {
     private final Map<SubscriptionStep.StepName, AbstractSubscriptionStep> subscriptionSteps;
