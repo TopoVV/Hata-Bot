@@ -12,12 +12,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import javax.ws.rs.HEAD;
 import java.util.Collections;
 
 @Log4j2
 @Service
 public class InitialBotState extends AbstractBotState {
-
     @Autowired
     public InitialBotState(BotStateEvaluator stateEvaluator) {
         super(StateName.INITIAL, stateEvaluator);

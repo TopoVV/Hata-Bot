@@ -3,6 +3,7 @@ package com.topov.estatesearcher.telegram.reply;
 import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
+
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -12,8 +13,6 @@ public class TelegramReplyAssemblerImpl implements TelegramReplyAssembler {
     public SendMessage assembleReply(UpdateResult updateResult, Keyboard keyboard, Hint hint, long chatId) {
         final java.lang.String text = java.lang.String.format("%s\n%s", updateResult.getMessage(), hint.getHintMessage());
         final SendMessage telegramMessage = new SendMessage(java.lang.String.valueOf(chatId), text);
-        telegramMessage.setReplyMarkup(keyboard.getKeyboardMarkup());
-
         return telegramMessage;
     }
 }

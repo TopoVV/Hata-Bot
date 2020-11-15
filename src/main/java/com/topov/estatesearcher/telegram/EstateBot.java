@@ -20,6 +20,7 @@ public class EstateBot extends TelegramLongPollingBot {
     @Value("${bot.username}")
     private java.lang.String username;
 
+
     private final BotUpdateHandler updateHandler;
     private final TelegramReplyAssembler replyAssembler;
 
