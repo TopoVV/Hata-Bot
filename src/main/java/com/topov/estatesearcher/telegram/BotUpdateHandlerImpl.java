@@ -1,6 +1,11 @@
 package com.topov.estatesearcher.telegram;
 
+import com.topov.estatesearcher.telegram.reply.Hint;
+import com.topov.estatesearcher.telegram.reply.Keyboard;
+import com.topov.estatesearcher.telegram.reply.UpdateResult;
 import com.topov.estatesearcher.telegram.state.BotState;
+import com.topov.estatesearcher.telegram.state.BotStateProvider;
+import com.topov.estatesearcher.telegram.state.UserBotStateEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;

@@ -1,5 +1,9 @@
 package com.topov.estatesearcher.telegram;
 
+import com.topov.estatesearcher.telegram.reply.Hint;
+import com.topov.estatesearcher.telegram.reply.Keyboard;
+import com.topov.estatesearcher.telegram.reply.TelegramReplyAssembler;
+import com.topov.estatesearcher.telegram.reply.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
