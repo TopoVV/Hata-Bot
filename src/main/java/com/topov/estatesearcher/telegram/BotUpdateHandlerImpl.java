@@ -6,10 +6,14 @@ import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.provider.BotStateProvider;
 import com.topov.estatesearcher.service.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.state.BotState;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Optional;
+
+@Log4j2
 @Service
 public class BotUpdateHandlerImpl implements BotUpdateHandler {
     private final BotStateEvaluator stateHolder;
@@ -24,23 +28,24 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
 
     @Override
     public UpdateResult handleUpdate(Update update) {
-        final java.lang.String text = update.getMessage().getText();
+        final String text = update.getMessage().getText();
         final Long chatId = update.getMessage().getChatId();
 
-        if (text.equals("/start")) {
+        final Optional<BotState.StateName> stateName = this.stateHolder.getUserCurrentStateName(chatId);
+        if (!stateName.isPresent() || text.equals("/start")) {
+            log.debug("Handling first interaction for user: {}", chatId);
             this.stateHolder.setStateForUser(chatId, BotState.StateName.INITIAL);
         }
 
-        final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
-        final BotState state = stateProvider.getBotState(stateForUser);
+        final BotState state = this.stateProvider.getBotState(stateName.orElse(BotState.StateName.INITIAL));
         return state.handleUpdate(update);
     }
 
     @Override
     public Hint getHint(Update update) {
         final Long chatId = update.getMessage().getChatId();
-        final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
-        final BotState state = stateProvider.getBotState(stateForUser);
+        final Optional<BotState.StateName> stateName = this.stateHolder.getUserCurrentStateName(chatId);
+        final BotState state = this.stateProvider.getBotState(stateName.orElse(BotState.StateName.INITIAL));
 
         return state.getHint(update);
     }
@@ -48,8 +53,8 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
     @Override
     public Keyboard getKeyboard(Update update) {
         final Long chatId = update.getMessage().getChatId();
-        final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
-        final BotState state = stateProvider.getBotState(stateForUser);
+        final Optional<BotState.StateName> stateName = this.stateHolder.getUserCurrentStateName(chatId);
+        final BotState state = this.stateProvider.getBotState(stateName.orElse(BotState.StateName.INITIAL));
 
         return state.createKeyboard(update);
     }

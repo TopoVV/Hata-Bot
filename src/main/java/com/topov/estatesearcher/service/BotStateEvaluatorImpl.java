@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class BotStateEvaluatorImpl implements BotStateEvaluator {
@@ -20,7 +21,7 @@ public class BotStateEvaluatorImpl implements BotStateEvaluator {
     }
 
     @Override
-    public BotState.StateName getStateForUser(long chatId) {
-        return userBotStates.get(chatId);
+    public Optional<BotState.StateName> getUserCurrentStateName(long chatId) {
+        return Optional.ofNullable(userBotStates.get(chatId));
     }
 }

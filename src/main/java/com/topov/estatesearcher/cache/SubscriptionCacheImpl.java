@@ -14,6 +14,7 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
 
     @Override
     public void removeCachedSubscription(long chatId) {
+        log.debug("Removing cached subscription for user: {}", chatId);
         this.subscriptions.remove(chatId);
     }
 
@@ -27,6 +28,7 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
 
     @Override
     public Optional<Subscription> getCachedSubscription(Long chatId) {
+        log.debug("Retrieving cached subscription for user: {}", chatId);
         return Optional.ofNullable(subscriptions.get(chatId));
     }
 }

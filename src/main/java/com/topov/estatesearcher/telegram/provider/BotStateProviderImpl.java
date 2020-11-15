@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
@@ -31,10 +32,10 @@ public class BotStateProviderImpl implements BotStateProvider {
 
     @Override
     public BotState getBotState(BotState.StateName state) {
-        if (botStates.containsKey(state)) {
-            return botStates.get(state);
+        if (this.botStates.containsKey(state)) {
+            return this.botStates.get(state);
         } else {
-            throw new RuntimeException("Invalid state");
+            throw new RuntimeException("State doesnt exist");
         }
     }
 }

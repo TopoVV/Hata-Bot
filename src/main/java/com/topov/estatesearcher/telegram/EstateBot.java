@@ -4,6 +4,7 @@ import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.TelegramReplyAssembler;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@Log4j2
 @Service
 public class EstateBot extends TelegramLongPollingBot {
 
@@ -40,6 +42,7 @@ public class EstateBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        log.debug("Receiving update: {}", update);
         final Long chatId = update.getMessage().getChatId();
 
         try {
@@ -51,7 +54,9 @@ public class EstateBot extends TelegramLongPollingBot {
 
             execute(reply);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            log.error("Telegram API exception", e);
+        } catch (RuntimeException e) {
+            log.error("Error during processing the update ", e);
         }
     }
 }

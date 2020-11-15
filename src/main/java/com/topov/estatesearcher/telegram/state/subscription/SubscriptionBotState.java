@@ -56,7 +56,7 @@ public class SubscriptionBotState extends AbstractBotState {
             switch (text) {
                 case "/max_price": return handleMaxPriceCommand(chatId);
                 case "/min_price": return handleMinPriceCommand(chatId);
-                case "/city": return new UpdateResult("Not implemented yet");
+                case "/city": return handleCityCommand(chatId);
                 default: return new UpdateResult("Command not supported");
             }
         }
@@ -92,39 +92,43 @@ public class SubscriptionBotState extends AbstractBotState {
     public Keyboard createKeyboard(Update update) {
         final Long chatId = update.getMessage().getChatId();
         final Optional<SubscriptionStep.StepName> currentStepName = this.stepProvider.getCurrentStepName(chatId);
+        final Keyboard keyboard = new Keyboard();
 
-        final KeyboardRow keyboardRow1 = new KeyboardRow();
-        keyboardRow1.add(new KeyboardButton("/cancel"));
-        keyboardRow1.add(new KeyboardButton("/save"));
+        keyboard.addOneButton(new KeyboardButton("/cancel"));
+        keyboard.addOneButton(new KeyboardButton("/save"));
 
         if (!currentStepName.isPresent()) {
-            keyboardRow1.add(new KeyboardButton("/min_price"));
-            keyboardRow1.add(new KeyboardButton("/max_price"));
-            keyboardRow1.add(new KeyboardButton("/city"));
+            keyboard.addOneButton(new KeyboardButton("/min_price"));
+            keyboard.addOneButton(new KeyboardButton("/max_price"));
+            keyboard.addOneButton(new KeyboardButton("/city"));
         } else {
-            final KeyboardRow keyboardRow2 = new KeyboardRow();
             final SubscriptionStep subscriptionStep = this.stepProvider.getSubscriptionStep(currentStepName.get());
-            keyboardRow2.addAll(subscriptionStep.getKeyboardButtons(update));
-            return new Keyboard(Arrays.asList(keyboardRow1, keyboardRow2));
+            keyboard.AddButtons(subscriptionStep.getKeyboardButtons(update));
         }
 
-        return new Keyboard(Collections.singletonList(keyboardRow1));
+        return keyboard;
     }
 
     private UpdateResult handleMinPriceCommand(long chatId) {
         this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MIN_PRICE);
-        return new UpdateResult("Specifying the subscription price");
+        return new UpdateResult("Specifying the subscription min price");
     }
 
     private UpdateResult handleMaxPriceCommand(long chatId) {
         this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MAX_PRICE);
-        return new UpdateResult("Specifying the subscription price");
+        return new UpdateResult("Specifying the subscription max price");
+    }
+
+    private UpdateResult handleCityCommand(long chatId) {
+        this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.CITY);
+        return new UpdateResult("Specifying the subscription city");
     }
 
     private UpdateResult handleSaveCommand(long chatId) {
         this.stepProvider.resetSubscriptionStepForUser(chatId);
         this.stateEvaluator.setStateForUser(chatId, StateName.INITIAL);
         final Optional<Subscription> cachedSubscription = subscriptionCache.getCachedSubscription(chatId);
+
         if (cachedSubscription.isPresent()) {
             this.subscriptionStorage.saveSubscription(chatId, cachedSubscription.get());
             this.subscriptionCache.removeCachedSubscription(chatId);

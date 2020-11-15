@@ -13,6 +13,7 @@ public interface SubscriptionStep {
 
     enum StepName {
         MIN_PRICE,
-        MAX_PRICE
+        MAX_PRICE,
+        CITY
     }
 }

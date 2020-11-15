@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import javax.ws.rs.HEAD;
 import java.util.Collections;
 
 @Log4j2
@@ -45,8 +44,8 @@ public class InitialBotState extends AbstractBotState {
 
     @Override
     public Keyboard createKeyboard(Update update) {
-        final KeyboardRow keyboardButtons = new KeyboardRow();
-        keyboardButtons.add(new KeyboardButton("/subscribe"));
-        return new Keyboard(Collections.singletonList(keyboardButtons));
+        final Keyboard keyboard = new Keyboard();
+        keyboard.addOneButton(new KeyboardButton("/subscribe"));
+        return keyboard;
     }
 }

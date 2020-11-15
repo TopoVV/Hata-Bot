@@ -2,20 +2,35 @@ package com.topov.estatesearcher.telegram.reply.component;
 
 import lombok.Getter;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Getter
 public class Keyboard {
-    private final ReplyKeyboardMarkup keyboardMarkup;
+    private final List<KeyboardRow> keyboardRows = new ArrayList<>();
 
-    public Keyboard(List<KeyboardRow> buttons) {
-        this.keyboardMarkup = new ReplyKeyboardMarkup(buttons, true, false, false);
+    public void AddButtons(List<KeyboardButton> buttons) {
+        buttons.forEach(this::addOneButton);
     }
 
-    public Keyboard() {
-        this.keyboardMarkup = new ReplyKeyboardMarkup(Collections.emptyList());
+    public void addOneButton(KeyboardButton button) {
+        this.addButton(button);
+    }
+
+    public ReplyKeyboardMarkup createKeyboardMarkup() {
+        return new ReplyKeyboardMarkup(keyboardRows, true, true, false);
+    }
+
+    private void addButton(KeyboardButton button) {
+        final int lastRowInd = this.keyboardRows.size() - 1;
+        if (lastRowInd < 0 || this.keyboardRows.get(lastRowInd).size() >= 2) {
+            this.keyboardRows.add(new KeyboardRow());
+        }
+
+        this.keyboardRows.get(this.keyboardRows.size() - 1).add(button);
     }
 }

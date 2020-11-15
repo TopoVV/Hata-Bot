@@ -1,19 +1,19 @@
 package com.topov.estatesearcher.telegram.state.subscription.step;
 
-import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.cache.SubscriptionCache;
-import com.topov.estatesearcher.telegram.state.subscription.update.MinPriceUpdate;
+import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
+import com.topov.estatesearcher.telegram.state.subscription.update.MaxPriceUpdate;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Log4j2
 @Service
-public class SubscriptionMinPriceStep extends AbstractSubscriptionStep {
+public class MaxPriceSubscriptionStep extends AbstractSubscriptionStep {
     private final SubscriptionCache subscriptionCache;
 
-    public SubscriptionMinPriceStep(SubscriptionCache subscriptionCache) {
-        super(StepName.MIN_PRICE);
+    public MaxPriceSubscriptionStep(SubscriptionCache subscriptionCache) {
+        super(StepName.MAX_PRICE);
         this.subscriptionCache = subscriptionCache;
     }
 
@@ -24,8 +24,8 @@ public class SubscriptionMinPriceStep extends AbstractSubscriptionStep {
         final java.lang.String text = update.getMessage().getText();
 
         try {
-            int price = Integer.parseInt(text);
-            this.subscriptionCache.modifySubscription(chatId, new MinPriceUpdate(price));
+            int newMaxPrice = Integer.parseInt(text);
+            this.subscriptionCache.modifySubscription(chatId, new MaxPriceUpdate(newMaxPrice));
             return new UpdateResult("Subscription updated");
         } catch (NumberFormatException e) {
             log.error("Invalid number format: {}", text, e);
@@ -35,6 +35,6 @@ public class SubscriptionMinPriceStep extends AbstractSubscriptionStep {
 
     @Override
     public String getHintMessage() {
-        return "\nPlease, specify min price\n";
+        return "\nPlease, specify max price\n";
     }
 }

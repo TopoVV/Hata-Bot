@@ -2,7 +2,9 @@ package com.topov.estatesearcher.service;
 
 import com.topov.estatesearcher.telegram.state.BotState;
 
+import java.util.Optional;
+
 public interface BotStateEvaluator {
     void setStateForUser(long chatId, BotState.StateName state);
-    BotState.StateName getStateForUser(long chatId);
+    Optional<BotState.StateName> getUserCurrentStateName(long chatId);
 }
