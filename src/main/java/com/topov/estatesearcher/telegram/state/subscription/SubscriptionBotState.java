@@ -1,0 +1,149 @@
+package com.topov.estatesearcher.telegram.state.subscription;
+
+import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.telegram.reply.component.Hint;
+import com.topov.estatesearcher.telegram.reply.component.Keyboard;
+import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
+import com.topov.estatesearcher.telegram.state.AbstractBotState;
+import com.topov.estatesearcher.service.BotStateEvaluator;
+import com.topov.estatesearcher.telegram.state.subscription.step.SubscriptionStep;
+import com.topov.estatesearcher.telegram.provider.SubscriptionStepProvider;
+import com.topov.estatesearcher.cache.SubscriptionCache;
+import com.topov.estatesearcher.service.SubscriptionStorage;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+
+@Log4j2
+@Service
+public class SubscriptionBotState extends AbstractBotState {
+    private final SubscriptionCache subscriptionCache;
+    private final SubscriptionStepProvider stepProvider;
+    private final SubscriptionStorage subscriptionStorage;
+
+    @Autowired
+    public SubscriptionBotState(SubscriptionCache subscriptionCache,
+                                SubscriptionStepProvider stepProvider,
+                                SubscriptionStorage subscriptionStorage,
+                                BotStateEvaluator stateEvaluator) {
+        super(StateName.SUBSCRIPTION, stateEvaluator);
+        this.subscriptionCache = subscriptionCache;
+        this.stepProvider = stepProvider;
+        this.subscriptionStorage = subscriptionStorage;
+    }
+
+    @Override
+    public UpdateResult handleUpdate(Update update) {
+        final String text = update.getMessage().getText();
+        final Long chatId = update.getMessage().getChatId();
+
+        switch (text) {
+            case "/cancel": return handleCancelCommand(chatId);
+            case "/save": return handleSaveCommand(chatId);
+        }
+
+        final Optional<SubscriptionStep.StepName> currentStep = this.stepProvider.getCurrentStepName(chatId);
+
+        if (!currentStep.isPresent()) {
+            switch (text) {
+                case "/max_price": return handleMaxPriceCommand(chatId);
+                case "/min_price": return handleMinPriceCommand(chatId);
+                case "/city": return new UpdateResult("Not implemented yet");
+                default: return new UpdateResult("Command not supported");
+            }
+        }
+
+        return delegateToStep(chatId, update, currentStep.get());
+    }
+
+    @Override
+    public Hint getHint(Update update) {
+        final Hint hint = new Hint();
+        final Long chatId = update.getMessage().getChatId();
+
+        final Optional<SubscriptionStep.StepName> currentStepName = this.stepProvider.getCurrentStepName(chatId);
+
+        if (!currentStepName.isPresent()) {
+            hint.appendHintMessage("\n/max_price - subscribe for max price");
+            hint.appendHintMessage("\n/min_price - subscribe for min price");
+            hint.appendHintMessage("\n/city - subscribe for city");
+            return hint;
+        }
+
+        final String stepMessage = currentStepName.map(stepProvider::getSubscriptionStep)
+            .map(SubscriptionStep::getHintMessage)
+            .orElse("");
+
+        hint.appendHintMessage(stepMessage);
+
+        hint.appendHintMessage("\n/save - save subscription\n/cancel - cancel subscription");
+        return hint;
+    }
+
+    @Override
+    public Keyboard createKeyboard(Update update) {
+        final Long chatId = update.getMessage().getChatId();
+        final Optional<SubscriptionStep.StepName> currentStepName = this.stepProvider.getCurrentStepName(chatId);
+
+        final KeyboardRow keyboardRow1 = new KeyboardRow();
+        keyboardRow1.add(new KeyboardButton("/cancel"));
+        keyboardRow1.add(new KeyboardButton("/save"));
+
+        if (!currentStepName.isPresent()) {
+            keyboardRow1.add(new KeyboardButton("/min_price"));
+            keyboardRow1.add(new KeyboardButton("/max_price"));
+            keyboardRow1.add(new KeyboardButton("/city"));
+        } else {
+            final KeyboardRow keyboardRow2 = new KeyboardRow();
+            final SubscriptionStep subscriptionStep = this.stepProvider.getSubscriptionStep(currentStepName.get());
+            keyboardRow2.addAll(subscriptionStep.getKeyboardButtons(update));
+            return new Keyboard(Arrays.asList(keyboardRow1, keyboardRow2));
+        }
+
+        return new Keyboard(Collections.singletonList(keyboardRow1));
+    }
+
+    private UpdateResult handleMinPriceCommand(long chatId) {
+        this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MIN_PRICE);
+        return new UpdateResult("Specifying the subscription price");
+    }
+
+    private UpdateResult handleMaxPriceCommand(long chatId) {
+        this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MAX_PRICE);
+        return new UpdateResult("Specifying the subscription price");
+    }
+
+    private UpdateResult handleSaveCommand(long chatId) {
+        this.stepProvider.resetSubscriptionStepForUser(chatId);
+        this.stateEvaluator.setStateForUser(chatId, StateName.INITIAL);
+        final Optional<Subscription> cachedSubscription = subscriptionCache.getCachedSubscription(chatId);
+        if (cachedSubscription.isPresent()) {
+            this.subscriptionStorage.saveSubscription(chatId, cachedSubscription.get());
+            this.subscriptionCache.removeCachedSubscription(chatId);
+            return new UpdateResult("Subscription saved");
+        } else {
+            return new UpdateResult("You didn't create a subscription yet");
+        }
+    }
+
+    private UpdateResult handleCancelCommand(long chatId) {
+        this.subscriptionCache.removeCachedSubscription(chatId);
+        this.stepProvider.resetSubscriptionStepForUser(chatId);
+        this.stateEvaluator.setStateForUser(chatId, StateName.INITIAL);
+        return new UpdateResult("Subscription cancelled");
+    }
+
+    private UpdateResult delegateToStep(long chatId, Update update, SubscriptionStep.StepName stepName) {
+        final SubscriptionStep step = this.stepProvider.getSubscriptionStep(stepName);
+        final UpdateResult updateResult = step.handleSubscriptionStep(update);
+        this.stepProvider.resetSubscriptionStepForUser(chatId);
+        return updateResult;
+    }
+}
