@@ -61,31 +61,42 @@ public class SubscriptionBotState extends AbstractBotState {
 
     @Override
     public Hint getHint(Update update) {
-        final Hint hint = new Hint("\n/save - save subscription\n/cancel - cancel subscription");
+        final Hint hint = new Hint("");
         final Long chatId = update.getMessage().getChatId();
 
-        final Optional<SubscriptionStep.StepName> currentStep = this.stepProvider.getCurrentStepName(chatId);
+        final Optional<SubscriptionStep.StepName> currentStepName = this.stepProvider.getCurrentStepName(chatId);
 
-        if (!currentStep.isPresent()) {
-            hint.appendMessage("/price - subscribe for price");
+        if (!currentStepName.isPresent()) {
+            hint.appendMessage("\n/price - subscribe for price");
         } else {
-            final String message = currentStep.map(stepProvider::getSubscriptionStep)
+            final String message = currentStepName.map(stepProvider::getSubscriptionStep)
                 .map(SubscriptionStep::getHint)
                 .map(Hint::getMessage)
                 .orElse("");
 
             hint.appendMessage(message);
         }
+
+        hint.appendMessage("\n/save - save subscription\n/cancel - cancel subscription");
         return hint;
     }
 
     @Override
-    public Keyboard getKeyboard() {
-        final KeyboardRow keyboardButtons = new KeyboardRow();
-        keyboardButtons.add(new KeyboardButton("/price"));
-        keyboardButtons.add(new KeyboardButton("/save"));
-        keyboardButtons.add(new KeyboardButton("/cancel"));
-        return new Keyboard(Collections.singletonList(keyboardButtons));
+    public Keyboard createKeyboard(Update update) {
+        final Long chatId = update.getMessage().getChatId();
+        final Optional<SubscriptionStep.StepName> currentStepName = this.stepProvider.getCurrentStepName(chatId);
+
+        final KeyboardRow keyboardRow = new KeyboardRow();
+        if (!currentStepName.isPresent()) {
+            keyboardRow.add(new KeyboardButton("/price"));
+        } else {
+            final SubscriptionStep subscriptionStep = this.stepProvider.getSubscriptionStep(currentStepName.get());
+            keyboardRow.addAll(subscriptionStep.getKeyboardButtons(update));
+        }
+
+        keyboardRow.add(new KeyboardButton("/cancel"));
+        keyboardRow.add(new KeyboardButton("/save"));
+        return new Keyboard(Collections.singletonList(keyboardRow));
     }
 
     private UpdateResult handlePriceCommand(long chatId) {

@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public interface BotState {
     UpdateResult handleUpdate(Update update);
     Hint getHint(Update update);
-    Keyboard getKeyboard();
+    Keyboard createKeyboard(Update update);
 
     enum StateName {
         INITIAL,

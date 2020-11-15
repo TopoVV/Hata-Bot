@@ -30,8 +30,10 @@ public class InitialBotState extends AbstractBotState {
         final Long chatId = update.getMessage().getChatId();
         final String text = update.getMessage().getText();
 
-        if (text.equals("/subscribe")) {
-            stateEvaluator.setStateForUser(chatId, StateName.SUBSCRIPTION);
+        if (text.equals("/start")) {
+            return new UpdateResult("Welcome");
+        } else if (text.equals("/subscribe")) {
+            this.stateEvaluator.setStateForUser(chatId, StateName.SUBSCRIPTION);
             return new UpdateResult("Let's subscribe you");
         } else {
             return new UpdateResult("The command not supported");
@@ -44,7 +46,7 @@ public class InitialBotState extends AbstractBotState {
     }
 
     @Override
-    public Keyboard getKeyboard() {
+    public Keyboard createKeyboard(Update update) {
         final KeyboardRow keyboardButtons = new KeyboardRow();
         keyboardButtons.add(new KeyboardButton("/subscribe"));
         return new Keyboard(Collections.singletonList(keyboardButtons));

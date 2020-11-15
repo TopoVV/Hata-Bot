@@ -1,11 +1,15 @@
 package com.topov.estatesearcher.telegram.state.subscription.steps;
 
 import com.topov.estatesearcher.telegram.reply.Hint;
+import com.topov.estatesearcher.telegram.reply.Keyboard;
 import com.topov.estatesearcher.telegram.reply.UpdateResult;
 import com.topov.estatesearcher.telegram.state.subscription.SubscriptionCache;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+
+import java.util.List;
 
 @Log4j2
 @Service

@@ -46,7 +46,7 @@ public class EstateBot extends TelegramLongPollingBot {
             final Hint hint = this.updateHandler.getHint(update);
             final Keyboard keyboard = this.updateHandler.getKeyboard(update);
 
-            final SendMessage reply = replyAssembler.assembleReply(updateResult, hint, keyboard, chatId);
+            final SendMessage reply = this.replyAssembler.assembleReply(updateResult, keyboard, hint, chatId);
 
             execute(reply);
         } catch (TelegramApiException e) {

@@ -28,12 +28,12 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
         final Long chatId = update.getMessage().getChatId();
 
         if (text.equals("/start")) {
-            return handleFirstUserInteraction(update);
-        } else {
-            final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
-            final BotState state = stateProvider.getBotState(stateForUser);
-            return state.handleUpdate(update);
+            this.stateHolder.setStateForUser(chatId, BotState.StateName.INITIAL);
         }
+
+        final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
+        final BotState state = stateProvider.getBotState(stateForUser);
+        return state.handleUpdate(update);
     }
 
     @Override
@@ -50,11 +50,7 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
         final Long chatId = update.getMessage().getChatId();
         final BotState.StateName stateForUser = this.stateHolder.getStateForUser(chatId);
         final BotState state = stateProvider.getBotState(stateForUser);
-        return state.getKeyboard();
-    }
 
-    private UpdateResult handleFirstUserInteraction(Update update) {
-        this.stateHolder.setStateForUser(update.getMessage().getChatId(), BotState.StateName.INITIAL);
-        return new UpdateResult("Welcome");
+        return state.createKeyboard(update);
     }
 }
