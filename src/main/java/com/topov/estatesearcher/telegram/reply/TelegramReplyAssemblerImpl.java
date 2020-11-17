@@ -14,6 +14,5 @@ public class TelegramReplyAssemblerImpl implements TelegramReplyAssembler {
         final SendMessage message = new SendMessage(String.valueOf(chatId), text);
         message.setReplyMarkup(keyboard.createKeyboardMarkup());
         return message;
-
     }
 }

@@ -17,7 +17,8 @@ import static java.util.stream.Collectors.toList;
 @Log4j2
 @Service
 public class OlxClient implements Client {
-    
+
+    @Override
     public int receivePagesAmount(Parser parser) {
         try {
             final Document document = Jsoup.connect("https://www.olx.ua/nedvizhimost/q-аренда/?page=1").get();

@@ -1,5 +1,6 @@
 package com.topov.estatesearcher.service;
 
+import com.topov.estatesearcher.dao.CityDao;
 import com.topov.estatesearcher.model.City;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,19 +12,19 @@ import java.util.Set;
 @Log4j2
 @Service
 public class CityServiceImpl implements CityService {
-    private final CityStorage cityStorage;
+    private final CityDao cityDao;
 
     @Autowired
-    public CityServiceImpl(CityStorage cityStorage) {
-        this.cityStorage = cityStorage;
+    public CityServiceImpl(CityDao cityDao) {
+        this.cityDao = cityDao;
     }
 
     @Override
     public Set<City> getCities() {
-        return cityStorage.getCities();
+        return cityDao.getCities();
     }
 
     public Optional<City> getCity(int cityId) {
-        return cityStorage.getCity(cityId);
+        return cityDao.getCity(cityId);
     }
 }

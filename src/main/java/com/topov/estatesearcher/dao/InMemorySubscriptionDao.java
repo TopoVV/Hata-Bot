@@ -1,16 +1,15 @@
-package com.topov.estatesearcher.service;
+package com.topov.estatesearcher.dao;
 
 import com.topov.estatesearcher.model.Subscription;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
 @Service
-public class SubscriptionStorageImpl implements SubscriptionStorage {
+public class InMemorySubscriptionDao implements SubscriptionDao {
     private final Map<Long, List<Subscription>> subscriptions = new HashMap<>();
 
     @PostConstruct

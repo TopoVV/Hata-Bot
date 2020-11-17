@@ -3,7 +3,7 @@ package com.topov.estatesearcher.telegram.state.subscription;
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.BotStateEvaluator;
-import com.topov.estatesearcher.service.SubscriptionStorage;
+import com.topov.estatesearcher.dao.SubscriptionDao;
 import com.topov.estatesearcher.telegram.provider.SubscriptionStepProvider;
 import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
@@ -23,17 +23,17 @@ import java.util.Optional;
 public class SubscriptionBotState extends AbstractBotState {
     private final SubscriptionCache subscriptionCache;
     private final SubscriptionStepProvider stepProvider;
-    private final SubscriptionStorage subscriptionStorage;
+    private final SubscriptionDao subscriptionDao;
 
     @Autowired
     public SubscriptionBotState(SubscriptionCache subscriptionCache,
                                 SubscriptionStepProvider stepProvider,
-                                SubscriptionStorage subscriptionStorage,
+                                SubscriptionDao subscriptionDao,
                                 BotStateEvaluator stateEvaluator) {
         super(StateName.SUBSCRIPTION, stateEvaluator);
         this.subscriptionCache = subscriptionCache;
         this.stepProvider = stepProvider;
-        this.subscriptionStorage = subscriptionStorage;
+        this.subscriptionDao = subscriptionDao;
     }
 
     @Override
@@ -126,7 +126,7 @@ public class SubscriptionBotState extends AbstractBotState {
         final Optional<Subscription> cachedSubscription = subscriptionCache.getCachedSubscription(chatId);
 
         if (cachedSubscription.isPresent()) {
-            this.subscriptionStorage.saveSubscription(chatId, cachedSubscription.get());
+            this.subscriptionDao.saveSubscription(chatId, cachedSubscription.get());
             this.subscriptionCache.removeCachedSubscription(chatId);
             return new UpdateResult("Subscription saved");
         } else {

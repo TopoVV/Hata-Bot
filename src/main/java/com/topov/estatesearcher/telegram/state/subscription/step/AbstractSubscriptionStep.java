@@ -11,7 +11,6 @@ import java.util.List;
 public abstract class AbstractSubscriptionStep implements SubscriptionStep {
     private final StepName stepName;
 
-
     public AbstractSubscriptionStep(StepName stepName) {
         this.stepName = stepName;
     }

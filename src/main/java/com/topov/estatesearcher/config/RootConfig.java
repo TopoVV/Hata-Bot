@@ -12,7 +12,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @Log4j2
 @Configuration
 @EnableScheduling
-@ComponentScan(basePackages = { "com.topov.estatesearcher.*" })
 public class RootConfig {
 
     @Bean
@@ -20,6 +19,7 @@ public class RootConfig {
         log.info("Instantiating property sources placeholder scheduler");
         return new PropertySourcesPlaceholderConfigurer();
     }
+
     @Bean
     TaskScheduler taskScheduler() {
         log.info("Instantiating task scheduler");

@@ -22,14 +22,10 @@
       <telegram-bots.version>5.0.0</telegram-bots.version>
       <log4j.version>2.13.3</log4j.version>
       <jsoup.version>1.13.1</jsoup.version>
+      <postgres.version>42.2.14</postgres.version>
   </properties>
 
   <dependencies>
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
-          <version>${spring.version}</version>
-      </dependency>
       <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
@@ -37,7 +33,7 @@
       </dependency>
       <dependency>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
+          <artifactId>spring-jdbc</artifactId>
           <version>${spring.version}</version>
       </dependency>
 
@@ -67,6 +63,12 @@
           <version>${lombok.version}</version>
       </dependency>
       <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <version>${postgres.version}</version>
+      </dependency>
+
+      <dependency>
           <groupId>org.junit.jupiter</groupId>
           <artifactId>junit-jupiter</artifactId>
           <version>${junit.version}</version>
@@ -82,6 +84,11 @@
 
   <build>
     <finalName>EstateSearchBot</finalName>
+      <pluginManagement>
+          <plugins>
+
+          </plugins>
+      </pluginManagement>
     <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -113,6 +120,7 @@
         </plugin>
         <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.3.0</version>
             <executions>
                 <execution>
                     <phase>package</phase>

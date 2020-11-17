@@ -1,6 +1,5 @@
-package com.topov.estatesearcher.service;
+package com.topov.estatesearcher.dao;
 
-import com.google.common.collect.ImmutableSet;
 import com.topov.estatesearcher.model.City;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class CityStorageImpl implements CityStorage {
+public class InMemoryCityDao implements CityDao {
     private final Set<City> cities = new HashSet<>();
 
     @PostConstruct

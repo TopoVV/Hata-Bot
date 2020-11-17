@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OlxParser implements Parser {
+
     @Override
     public int parsePagesQuantity(Document document) {
         String pagesAmount = document.select(".pager")

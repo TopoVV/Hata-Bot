@@ -19,29 +19,30 @@ import java.util.List;
 @Log4j2
 @Service
 public class EstateBot extends TelegramLongPollingBot {
-
-    @Value("${bot.token}")
-    private java.lang.String token;
-    @Value("${bot.username}")
-    private java.lang.String username;
-
-
     private final BotUpdateHandler updateHandler;
     private final TelegramReplyAssembler replyAssembler;
 
+    private final String token;
+    private final String username;
+
     @Autowired
-    public EstateBot(BotUpdateHandler updateHandler, TelegramReplyAssembler replyAssembler) {
+    public EstateBot(BotUpdateHandler updateHandler,
+                     TelegramReplyAssembler replyAssembler,
+                     @Value("${bot.token}") String token,
+                     @Value("${bot.username}") String username) {
         this.updateHandler = updateHandler;
         this.replyAssembler = replyAssembler;
+        this.token = token;
+        this.username = username;
     }
 
     @Override
-    public java.lang.String getBotUsername() {
+    public String getBotUsername() {
         return username;
     }
 
     @Override
-    public java.lang.String getBotToken() { return token; }
+    public String getBotToken() { return token; }
 
     @Override
     public void onUpdateReceived(Update update) {

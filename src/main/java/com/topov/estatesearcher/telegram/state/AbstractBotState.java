@@ -7,9 +7,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Getter
 public abstract class AbstractBotState implements BotState {
-    private final StateName stateName;
-
     protected final BotStateEvaluator stateEvaluator;
+
+    private final StateName stateName;
 
     protected AbstractBotState(StateName stateName, BotStateEvaluator stateEvaluator) {
         this.stateName = stateName;

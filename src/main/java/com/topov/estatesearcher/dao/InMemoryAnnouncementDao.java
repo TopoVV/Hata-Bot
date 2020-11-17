@@ -1,6 +1,5 @@
-package com.topov.estatesearcher.service;
+package com.topov.estatesearcher.dao;
 
-import com.google.common.collect.ImmutableSet;
 import com.topov.estatesearcher.model.Announcement;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,7 @@ import java.util.Set;
 
 @Log4j2
 @Service
-public class AnnouncementStorageImpl implements AnnouncementStorage {
+public class InMemoryAnnouncementDao implements AnnouncementDao {
     private final Set<Announcement> storedAnnouncements = new HashSet<>();
 
     @Override

@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toList;
 public class AnnouncementSourceServiceImpl {
     private final Client client;
     private final AnnouncementService announcementService;
+
     private final Parser olxParser = new OlxParser();
 
     @Autowired
@@ -26,7 +27,7 @@ public class AnnouncementSourceServiceImpl {
         this.announcementService = announcementService;
     }
 
-    @Scheduled(fixedDelay = 120000, initialDelay = 1000)
+   // @Scheduled(fixedDelay = 120000, initialDelay = 1000)
     public void receiveAnnouncements() {
         log.info("Checking announcements at OLX");
         final int pagesQuantity = client.receivePagesAmount(this.olxParser);

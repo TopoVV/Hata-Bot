@@ -19,7 +19,6 @@ import static java.util.stream.Collectors.toMap;
  */
 @Service
 public class BotStateProviderImpl implements BotStateProvider {
-
     private final Map<BotState.StateName, AbstractBotState> botStates;
 
     @Autowired
