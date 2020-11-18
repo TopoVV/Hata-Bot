@@ -14,7 +14,7 @@ public class MinPriceUpdate implements SubscriptionUpdate {
 
     @Override
     public Subscription update(Subscription old) {
-        old.setMaxPrice(this.newMinPrice);
+        old.setMinPrice(this.newMinPrice);
         return new Subscription(old);
     }
 }

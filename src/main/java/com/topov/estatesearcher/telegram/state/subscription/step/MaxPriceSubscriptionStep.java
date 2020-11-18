@@ -4,6 +4,7 @@ import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.subscription.update.MaxPriceUpdate;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -12,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class MaxPriceSubscriptionStep extends AbstractSubscriptionStep {
     private final SubscriptionCache subscriptionCache;
 
+    @Autowired
     public MaxPriceSubscriptionStep(SubscriptionCache subscriptionCache) {
         super(StepName.MAX_PRICE);
         this.subscriptionCache = subscriptionCache;

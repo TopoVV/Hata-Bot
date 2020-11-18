@@ -1,9 +1,9 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
+import com.topov.estatesearcher.dao.SubscriptionDao;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.BotStateEvaluator;
-import com.topov.estatesearcher.dao.SubscriptionDao;
 import com.topov.estatesearcher.telegram.provider.SubscriptionStepProvider;
 import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;

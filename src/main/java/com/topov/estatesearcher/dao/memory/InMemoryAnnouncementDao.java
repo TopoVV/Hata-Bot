@@ -7,16 +7,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Log4j2
 @Service
 @Profile("dev-light")
 public class InMemoryAnnouncementDao implements AnnouncementDao {
-    private final Set<Announcement> storedAnnouncements = new HashSet<>();
+    private final List<Announcement> storedAnnouncements = new ArrayList<>();
 
     @PostConstruct
     void init() {
@@ -30,8 +27,8 @@ public class InMemoryAnnouncementDao implements AnnouncementDao {
     }
 
     @Override
-    public Set<Announcement> getAnnouncements() {
-        return Collections.unmodifiableSet(this.storedAnnouncements);
+    public List<Announcement> getAnnouncements() {
+        return this.storedAnnouncements;
     }
 
     @Override

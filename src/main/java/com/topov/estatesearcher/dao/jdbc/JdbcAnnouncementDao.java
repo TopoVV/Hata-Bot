@@ -3,38 +3,30 @@ package com.topov.estatesearcher.dao.jdbc;
 import com.topov.estatesearcher.dao.AnnouncementDao;
 import com.topov.estatesearcher.model.Announcement;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.naming.Name;
 import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Log4j2
 @Profile(value = "dev")
 @Service
 public class JdbcAnnouncementDao implements AnnouncementDao {
+    private static final String INSERT_ANNOUNCEMENT_SQL =
+        "INSERT INTO announcements (url, price, extraction_date_time, description, city_name) " +
+            "VALUES (:url, :price, :extractionDateTime, :description, :cityName)";
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String INSERT_ANNOUNCEMENT_SQL =
-        "INSERT INTO announcements (url, price, extraction_date_time, description, city_name) VALUES (:url, :price, :extractionDateTime, :description, :cityName)";
-
+    @Autowired
     public JdbcAnnouncementDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
@@ -61,8 +53,8 @@ public class JdbcAnnouncementDao implements AnnouncementDao {
     }
 
     @Override
-    public Set<Announcement> getAnnouncements() {
-        return null;
+    public List<Announcement> getAnnouncements() {
+        throw new RuntimeException("Not implemented yet");
     }
 
     @Override

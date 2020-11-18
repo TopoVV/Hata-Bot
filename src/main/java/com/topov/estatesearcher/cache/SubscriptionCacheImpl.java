@@ -34,7 +34,7 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
     @Override
     public void modifySubscription(long chatId, SubscriptionUpdate subscriptionUpdate) {
         log.debug("Updating subscription for user {}. Modified: {}", chatId, subscriptionUpdate);
-        final Subscription currentSubscription = this.subscriptions.getOrDefault(chatId, new Subscription(chatId));
+        final Subscription currentSubscription = this.subscriptions.getOrDefault(chatId, new Subscription(String.valueOf(chatId)));
         final Subscription merged = subscriptionUpdate.update(currentSubscription);
         this.subscriptions.put(chatId, merged);
     }

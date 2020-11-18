@@ -7,32 +7,29 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Log4j2
 @Service
 @Profile("dev-light")
 public class InMemoryCityDao implements CityDao {
-    private final Set<City> cities = new HashSet<>();
+    private final List<City> cities = new ArrayList<>();
 
     @PostConstruct
     void init() {
         log.info("In memory city DAO is initialized");
-        cities.add(new City(1,"Kiev"));
-        cities.add(new City(2, "Odessa"));
+        this.cities.add(new City(1,"Kiev"));
+        this.cities.add(new City(2, "Odessa"));
     }
 
     @Override
-    public Set<City> getCities() {
-        return Collections.unmodifiableSet(cities);
+    public List<City> getCities() {
+        return this.cities;
     }
 
     @Override
     public Optional<City> getCity(int cityId) {
-        return cities.stream()
+        return this.cities.stream()
             .filter(city -> city.getCityId().equals(cityId))
             .findFirst();
     }

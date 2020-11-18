@@ -23,7 +23,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     @Override
     public void saveAnnouncementsAndNotifySubscribers(List<Announcement> announcements) {
-        final Set<Announcement> storedAnnouncements = this.announcementDao.getAnnouncements();
+        final List<Announcement> storedAnnouncements = this.announcementDao.getAnnouncements();
         if (storedAnnouncements.isEmpty()) {
             this.announcementDao.saveAnnouncements(announcements);
         } else {

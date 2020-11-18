@@ -6,6 +6,7 @@ import com.topov.estatesearcher.service.CityService;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.subscription.update.CityUpdate;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -18,6 +19,7 @@ public class CitySubscriptionStep extends AbstractSubscriptionStep {
     private final CityService cityService;
     private final SubscriptionCache subscriptionCache;
 
+    @Autowired
     public CitySubscriptionStep(CityService cityService, SubscriptionCache subscriptionCache) {
         super(StepName.CITY);
         this.cityService = cityService;
@@ -34,7 +36,7 @@ public class CitySubscriptionStep extends AbstractSubscriptionStep {
             final int cityId = Integer.parseInt(text);
             final Optional<City> city = this.cityService.getCity(cityId);
             if (city.isPresent()) {
-                this.subscriptionCache.modifySubscription(chatId, new CityUpdate(cityId));
+                this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city.get()));
                 return new UpdateResult("Subscription updated");
             } else {
                 return new UpdateResult("City not found");
