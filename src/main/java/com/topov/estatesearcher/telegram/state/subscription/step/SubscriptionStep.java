@@ -9,7 +9,6 @@ import java.util.List;
 public interface SubscriptionStep {
     UpdateResult handleSubscriptionStep(Update update);
     List<KeyboardButton> getKeyboardButtons(Update update);
-    String getHintMessage();
 
     enum StepName {
         MIN_PRICE,

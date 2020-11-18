@@ -2,7 +2,6 @@ package com.topov.estatesearcher.telegram;
 
 import com.topov.estatesearcher.model.Announcement;
 import com.topov.estatesearcher.telegram.reply.TelegramReplyAssembler;
-import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import lombok.extern.log4j.Log4j2;
@@ -13,9 +12,6 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 
 @Log4j2
 @Service
@@ -51,17 +47,10 @@ public class EstateBot extends TelegramLongPollingBot {
         final Long chatId = update.getMessage().getChatId();
 
         try {
-            final UpdateResult updateResult = this.updateHandler.handleUpdate(update, response -> {
-                try {
-                    execute(new SendMessage(String.valueOf(chatId), response));
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            });
-            final Hint hint = this.updateHandler.getHint(update);
+            final UpdateResult updateResult = this.updateHandler.handleUpdate(update);
             final Keyboard keyboard = this.updateHandler.getKeyboard(update);
 
-            final SendMessage reply = this.replyAssembler.assembleReply(updateResult, keyboard, hint, chatId);
+            final SendMessage reply = this.replyAssembler.assembleReply(updateResult, keyboard, chatId);
 
             execute(reply);
         } catch (TelegramApiException e) {

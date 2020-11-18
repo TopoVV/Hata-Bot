@@ -3,7 +3,7 @@ package com.topov.estatesearcher.telegram.state.initial;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.BotStateEvaluator;
 import com.topov.estatesearcher.service.SubscriptionService;
-import com.topov.estatesearcher.telegram.reply.component.Hint;
+import com.topov.estatesearcher.telegram.UpdateResultFactory;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
@@ -19,11 +19,13 @@ import java.util.List;
 @Service
 public class InitialBotState extends AbstractBotState {
     private final SubscriptionService subscriptionService;
+    private final UpdateResultFactory updateResultFactory;
 
     @Autowired
-    public InitialBotState(BotStateEvaluator stateEvaluator, SubscriptionService subscriptionService) {
+    public InitialBotState(BotStateEvaluator stateEvaluator, SubscriptionService subscriptionService, UpdateResultFactory updateResultFactory) {
         super(StateName.INITIAL, stateEvaluator);
         this.subscriptionService = subscriptionService;
+        this.updateResultFactory = updateResultFactory;
     }
 
     @Override
@@ -32,29 +34,18 @@ public class InitialBotState extends AbstractBotState {
         final String text = update.getMessage().getText();
 
         switch (text) {
-            case "/start": return new UpdateResult("Welcome");
             case "/subscribe": return handleSubscribeCommand(chatId);
-            case "/my_subscriptions": return handleMySubscriptionsCommand(chatId);
+            case "/mySubscriptions": return handleMySubscriptionsCommand(chatId);
             case "/unsubscribe": return handleUnsubscribeCommand(chatId);
-            default: return new UpdateResult("The command not supported");
+            default: return this.updateResultFactory.createUpdateResult("replies.global.notSupported");
         }
-    }
-
-    @Override
-    public Hint getHint(Update update) {
-        final Hint hint = new Hint();
-        hint.appendHintMessage("/subscribe - create a subscription\n");
-        hint.appendHintMessage("/my_subscriptions - see subscriptions\n");
-        hint.appendHintMessage("/unsubscribe - delete a subscription\n");
-
-        return hint;
     }
 
     @Override
     public Keyboard createKeyboard(Update update) {
         final Keyboard keyboard = new Keyboard();
         keyboard.addOneButton(new KeyboardButton("/subscribe"));
-        keyboard.addOneButton(new KeyboardButton("/my_subscriptions"));
+        keyboard.addOneButton(new KeyboardButton("/mySubscriptions"));
         keyboard.addOneButton(new KeyboardButton("/unsubscribe"));
 
         return keyboard;
@@ -62,7 +53,7 @@ public class InitialBotState extends AbstractBotState {
 
     private UpdateResult handleSubscribeCommand(long chatId) {
         this.stateEvaluator.setStateForUser(chatId, StateName.SUBSCRIPTION);
-        return new UpdateResult("Let's subscribe you");
+        return this.updateResultFactory.createUpdateResult("replies.subscribe", "commands.subscribe");
     }
 
     private UpdateResult handleMySubscriptionsCommand(long chatId) {
@@ -73,11 +64,11 @@ public class InitialBotState extends AbstractBotState {
             .forEach(info -> subscriptionsInfo.append(String.format("\t%s\n", info)));
 
         final String info = subscriptionsInfo.toString();
-        return new UpdateResult("Your subscriptions: \n" + info);
+        return this.updateResultFactory.createUpdateResult("replies.mySubscriptions", new Object[] { info });
     }
 
     private UpdateResult handleUnsubscribeCommand(long chatId) {
         this.stateEvaluator.setStateForUser(chatId, StateName.UNSUBSCRIBE);
-        return new UpdateResult("UNSUBSCRIBE");
+        return this.updateResultFactory.createUpdateResult("replies.unsubscribe");
     }
 }

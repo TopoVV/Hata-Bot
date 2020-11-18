@@ -3,6 +3,7 @@ package com.topov.estatesearcher.telegram.state.subscription.step;
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.City;
 import com.topov.estatesearcher.service.CityService;
+import com.topov.estatesearcher.telegram.UpdateResultFactory;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.subscription.update.CityUpdate;
 import lombok.extern.log4j.Log4j2;
@@ -18,12 +19,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CitySubscriptionStep extends AbstractSubscriptionStep {
     private final CityService cityService;
     private final SubscriptionCache subscriptionCache;
+    private final UpdateResultFactory updateResultFactory;
 
     @Autowired
-    public CitySubscriptionStep(CityService cityService, SubscriptionCache subscriptionCache) {
+    public CitySubscriptionStep(CityService cityService, SubscriptionCache subscriptionCache, UpdateResultFactory updateResultFactory) {
         super(StepName.CITY);
         this.cityService = cityService;
         this.subscriptionCache = subscriptionCache;
+        this.updateResultFactory = updateResultFactory;
     }
 
     @Override
@@ -37,23 +40,13 @@ public class CitySubscriptionStep extends AbstractSubscriptionStep {
             final Optional<City> city = this.cityService.getCity(cityId);
             if (city.isPresent()) {
                 this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city.get()));
-                return new UpdateResult("Subscription updated");
+                return this.updateResultFactory.createUpdateResult("replies.subscription.update.success");
             } else {
-                return new UpdateResult("City not found");
+                return this.updateResultFactory.createUpdateResult("replies.subscription.update.city.fail.notFound");
             }
         } catch (NumberFormatException e) {
             log.error("Invalid city: {}", text);
-            return new UpdateResult("Invalid city");
+            return this.updateResultFactory.createUpdateResult("replies.subscription.update.city.fail.invalidInput", new Object[] { text });
         }
-    }
-
-    @Override
-    public String getHintMessage() {
-        final StringBuilder hint = new StringBuilder();
-        AtomicInteger i = new AtomicInteger();
-        this.cityService.getCities().forEach(city -> {
-            hint.append(String.format("%d - %s\n", i.incrementAndGet(), city.getCityName()));
-        });
-        return hint.toString();
     }
 }

@@ -3,10 +3,9 @@ package com.topov.estatesearcher.telegram.state.unsubscribe;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.BotStateEvaluator;
 import com.topov.estatesearcher.service.SubscriptionService;
-import com.topov.estatesearcher.telegram.reply.component.Hint;
+import com.topov.estatesearcher.telegram.UpdateResultFactory;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,11 +17,13 @@ import java.util.Optional;
 @Service
 public class UnsubscribeBotState extends AbstractBotState {
     private final SubscriptionService subscriptionService;
+    private final UpdateResultFactory updateResultFactory;
 
     @Autowired
-    protected UnsubscribeBotState(BotStateEvaluator botStateEvaluator, SubscriptionService subscriptionService) {
+    protected UnsubscribeBotState(BotStateEvaluator botStateEvaluator, SubscriptionService subscriptionService, UpdateResultFactory updateResultFactory) {
         super(StateName.UNSUBSCRIBE, botStateEvaluator);
         this.subscriptionService = subscriptionService;
+        this.updateResultFactory = updateResultFactory;
     }
 
     @Override
@@ -38,17 +39,12 @@ public class UnsubscribeBotState extends AbstractBotState {
                 this.subscriptionService.removeSubscription(subscriptionId);
                 this.stateEvaluator.setStateForUser(chatId, StateName.INITIAL);
 
-                return new UpdateResult("Subscription deleted");
+                return this.updateResultFactory.createUpdateResult("replies.unsubscribe.success");
             }
 
-            return new UpdateResult("Subscription not found");
+            return this.updateResultFactory.createUpdateResult("replies.unsubscribe.fail.notFound");
         } catch (NumberFormatException e) {
-           return new UpdateResult("Invalid id");
+           return this.updateResultFactory.createUpdateResult("replies.unsubscribe.fail.invalidInput", new Object[] { text });
        }
-    }
-
-    @Override
-    public Hint getHint(Update update) {
-        return new Hint("Please, specify subscription id\n");
     }
 }

@@ -4,8 +4,8 @@ import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.dao.SubscriptionDao;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.BotStateEvaluator;
+import com.topov.estatesearcher.telegram.UpdateResultFactory;
 import com.topov.estatesearcher.telegram.provider.SubscriptionStepProvider;
-import com.topov.estatesearcher.telegram.reply.component.Hint;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
@@ -24,16 +24,19 @@ public class SubscriptionBotState extends AbstractBotState {
     private final SubscriptionCache subscriptionCache;
     private final SubscriptionStepProvider stepProvider;
     private final SubscriptionDao subscriptionDao;
+    private final UpdateResultFactory updateResultFactory;
 
     @Autowired
     public SubscriptionBotState(SubscriptionCache subscriptionCache,
                                 SubscriptionStepProvider stepProvider,
                                 SubscriptionDao subscriptionDao,
-                                BotStateEvaluator stateEvaluator) {
+                                BotStateEvaluator stateEvaluator,
+                                UpdateResultFactory updateResultFactory) {
         super(StateName.SUBSCRIPTION, stateEvaluator);
         this.subscriptionCache = subscriptionCache;
         this.stepProvider = stepProvider;
         this.subscriptionDao = subscriptionDao;
+        this.updateResultFactory = updateResultFactory;
     }
 
     @Override
@@ -53,35 +56,11 @@ public class SubscriptionBotState extends AbstractBotState {
                 case "/max_price": return handleMaxPriceCommand(chatId);
                 case "/min_price": return handleMinPriceCommand(chatId);
                 case "/city": return handleCityCommand(chatId);
-                default: return new UpdateResult("Command not supported");
+                default: return this.updateResultFactory.createUpdateResult("replies.global.notSupported");
             }
         }
 
         return delegateToStep(chatId, update, currentStep.get());
-    }
-
-    @Override
-    public Hint getHint(Update update) {
-        final Hint hint = new Hint();
-        final Long chatId = update.getMessage().getChatId();
-
-        final Optional<SubscriptionStep.StepName> currentStepName = this.stepProvider.getCurrentStepName(chatId);
-
-        if (!currentStepName.isPresent()) {
-            hint.appendHintMessage("\n/max_price - subscribe for max price");
-            hint.appendHintMessage("\n/min_price - subscribe for min price");
-            hint.appendHintMessage("\n/city - subscribe for city");
-            return hint;
-        }
-
-        final String stepMessage = currentStepName.map(stepProvider::getSubscriptionStep)
-            .map(SubscriptionStep::getHintMessage)
-            .orElse("");
-
-        hint.appendHintMessage(stepMessage);
-
-        hint.appendHintMessage("\n/save - save subscription\n/cancel - cancel subscription");
-        return hint;
     }
 
     @Override
@@ -94,8 +73,8 @@ public class SubscriptionBotState extends AbstractBotState {
         keyboard.addOneButton(new KeyboardButton("/save"));
 
         if (!currentStepName.isPresent()) {
-            keyboard.addOneButton(new KeyboardButton("/min_price"));
-            keyboard.addOneButton(new KeyboardButton("/max_price"));
+            keyboard.addOneButton(new KeyboardButton("/minPrice"));
+            keyboard.addOneButton(new KeyboardButton("/maxPrice"));
             keyboard.addOneButton(new KeyboardButton("/city"));
         } else {
             final SubscriptionStep subscriptionStep = this.stepProvider.getSubscriptionStep(currentStepName.get());
@@ -107,17 +86,17 @@ public class SubscriptionBotState extends AbstractBotState {
 
     private UpdateResult handleMinPriceCommand(long chatId) {
         this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MIN_PRICE);
-        return new UpdateResult("Specifying the subscription min price");
+        return this.updateResultFactory.createUpdateResult("replies.subscription.minPrice");
     }
 
     private UpdateResult handleMaxPriceCommand(long chatId) {
         this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MAX_PRICE);
-        return new UpdateResult("Specifying the subscription max price");
+        return this.updateResultFactory.createUpdateResult("replies.subscription.maxPrice");
     }
 
     private UpdateResult handleCityCommand(long chatId) {
         this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.CITY);
-        return new UpdateResult("Specifying the subscription city");
+        return this.updateResultFactory.createUpdateResult("replies.subscription.city");
     }
 
     private UpdateResult handleSaveCommand(long chatId) {
