@@ -24,7 +24,8 @@ public class InMemorySubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public void saveSubscription(long chatId, Subscription subscription) {
+    public void saveSubscription(Subscription subscription) {
+        final Long chatId = Long.valueOf(subscription.getChatId());
         if (!this.subscriptions.containsKey(chatId)) {
             this.subscriptions.put(chatId, new ArrayList<>());
         }
@@ -40,5 +41,22 @@ public class InMemorySubscriptionDao implements SubscriptionDao {
             .collect(toList());
 
         return Collections.unmodifiableList(subscriptions);
+    }
+
+    @Override
+    public Optional<Subscription> findSubscription(long subscriptionId, long chatId) {
+        return this.subscriptions.get(chatId)
+            .stream()
+            .filter(s -> s.getSubscriptionId().equals(subscriptionId))
+            .findFirst();
+    }
+
+    @Override
+    public void deleteSubscription(Long subscriptionId) {
+        this.subscriptions.values().stream()
+            .filter(list -> list.stream()
+                .anyMatch(subscription -> subscription.getSubscriptionId().equals(subscriptionId))
+            ).findFirst()
+            .ifPresent(list -> list.removeIf(subscription -> subscription.getSubscriptionId().equals(subscriptionId)));
     }
 }

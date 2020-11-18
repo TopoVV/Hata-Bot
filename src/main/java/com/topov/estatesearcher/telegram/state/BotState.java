@@ -12,6 +12,7 @@ public interface BotState {
 
     enum StateName {
         INITIAL,
-        SUBSCRIPTION
+        SUBSCRIPTION,
+        UNSUBSCRIBE;
     }
 }

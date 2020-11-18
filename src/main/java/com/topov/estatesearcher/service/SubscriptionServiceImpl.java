@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -19,12 +20,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void saveSubscription(long chatId, Subscription subscription) {
-        subscriptionDao.saveSubscription(chatId, subscription);
+    public void saveSubscription(Subscription subscription) {
+        this.subscriptionDao.saveSubscription(subscription);
     }
 
     @Override
     public List<Subscription> getAllSubscriptionsForUser(long chatId) {
-        return subscriptionDao.getAllSubscriptions();
+        return this.subscriptionDao.getAllSubscriptions();
+    }
+
+    @Override
+    public Optional<Subscription> findSubscription(long subscriptionId, long chatId) {
+        return this.subscriptionDao.findSubscription(subscriptionId, chatId);
+    }
+
+    @Override
+    public void removeSubscription(Long subscriptionId) {
+        this.subscriptionDao.deleteSubscription(subscriptionId);
     }
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Subscription {
-    private Long subscriptionsId;
+    private Long subscriptionId;
     private String  chatId;
     private Integer minPrice;
     private Integer maxPrice;
@@ -20,7 +20,7 @@ public class Subscription {
     }
 
     public Subscription(Subscription subscription) {
-        this.subscriptionsId = subscription.subscriptionsId;
+        this.subscriptionId = subscription.subscriptionId;
         this.chatId = subscription.chatId;
         this.minPrice = subscription.minPrice;
         this.maxPrice = subscription.maxPrice;
@@ -31,6 +31,6 @@ public class Subscription {
     @Override
     public String toString() {
         final String template = "[id = %d | min price = %d | max price = %d | city = %s]";
-        return String.format(template, subscriptionsId, minPrice, maxPrice, cityName);
+        return String.format(template, subscriptionId, minPrice, maxPrice, cityName);
     }
 }

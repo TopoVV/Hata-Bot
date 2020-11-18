@@ -3,8 +3,13 @@ package com.topov.estatesearcher.dao;
 import com.topov.estatesearcher.model.Subscription;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SubscriptionDao {
-    void saveSubscription(long chatId, Subscription subscription);
+    void saveSubscription(Subscription subscription);
     List<Subscription> getAllSubscriptions();
+
+    Optional<Subscription> findSubscription(long subscriptionId, long chatId);
+
+    void deleteSubscription(Long subscriptionId);
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Log4j2
 @Service
@@ -57,5 +58,11 @@ public class BotUpdateHandlerImpl implements BotUpdateHandler {
         final BotState state = this.stateProvider.getBotState(stateName.orElse(BotState.StateName.INITIAL));
 
         return state.createKeyboard(update);
+    }
+
+    @Override
+    public UpdateResult handleUpdate(Update update, Consumer<String> stringConsumer) {
+        stringConsumer.accept("hello");
+        return new UpdateResult("o fuck");
     }
 }

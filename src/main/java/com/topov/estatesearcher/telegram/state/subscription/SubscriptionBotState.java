@@ -123,10 +123,10 @@ public class SubscriptionBotState extends AbstractBotState {
     private UpdateResult handleSaveCommand(long chatId) {
         this.stepProvider.resetSubscriptionStepForUser(chatId);
         this.stateEvaluator.setStateForUser(chatId, StateName.INITIAL);
-        final Optional<Subscription> cachedSubscription = subscriptionCache.getCachedSubscription(chatId);
+        final Optional<Subscription> cachedSubscription = this.subscriptionCache.getCachedSubscription(chatId);
 
         if (cachedSubscription.isPresent()) {
-            this.subscriptionDao.saveSubscription(chatId, cachedSubscription.get());
+            this.subscriptionDao.saveSubscription(cachedSubscription.get());
             this.subscriptionCache.removeCachedSubscription(chatId);
             return new UpdateResult("Subscription saved");
         } else {

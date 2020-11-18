@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -36,7 +38,9 @@ public class JdbcCityDao implements CityDao {
 
     @Override
     public List<City> getCities() {
-        return jdbcTemplate.query(SELECT_ALL_CITIES, cityRowMapper);
+        return jdbcTemplate.query(SELECT_ALL_CITIES, cityRowMapper).stream()
+            .sorted(Comparator.comparingInt(City::getCityId))
+            .collect(Collectors.toList());
     }
 
     @Override
