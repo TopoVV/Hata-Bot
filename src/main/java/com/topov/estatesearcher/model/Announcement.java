@@ -1,17 +1,20 @@
 package com.topov.estatesearcher.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Setter
 @Getter
 public class Announcement {
-    private final String url;
-    private final Integer price;
-    private final LocalDateTime extractionDateTime;
-    private final String description;
-    private final String cityName;
+    private Long announcementId;
+    private String url;
+    private Integer price;
+    private LocalDateTime extractionDateTime;
+    private String description;
+    private String cityName;
 
     public Announcement(String url, Integer price, LocalDateTime extractionDateTime, String description, String cityName) {
         this.url = url;

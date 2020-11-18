@@ -1,11 +1,15 @@
 package com.topov.estatesearcher.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
+@NoArgsConstructor
 public class City {
-    private final Integer cityId;
-    private final String cityName;
+    private Integer cityId;
+    private String cityName;
 
     public City(int cityId, String cityName) {
         this.cityId = cityId;

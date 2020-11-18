@@ -18,8 +18,8 @@ public class Subscription {
 
     public Subscription(Subscription subscription) {
         this.chatId = subscription.chatId;
-        this.minPrice = subscription.getMinPrice();
-        this.maxPrice = subscription.getMaxPrice();
+        this.minPrice = subscription.minPrice;
+        this.maxPrice = subscription.maxPrice;
         this.cityId = subscription.cityId;
     }
 }
