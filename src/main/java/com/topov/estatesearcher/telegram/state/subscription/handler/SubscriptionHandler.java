@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.state.subscription.step;
+package com.topov.estatesearcher.telegram.state.subscription.handler;
 
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -6,13 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.List;
 
-public interface SubscriptionStep {
+public interface SubscriptionHandler {
     UpdateResult handleSubscriptionStep(Update update);
     List<KeyboardButton> getKeyboardButtons(Update update);
-
-    enum StepName {
-        MIN_PRICE,
-        MAX_PRICE,
-        CITY
-    }
 }

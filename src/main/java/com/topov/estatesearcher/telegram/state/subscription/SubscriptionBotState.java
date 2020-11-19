@@ -1,15 +1,14 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
-import com.topov.estatesearcher.cache.SubscriptionCache;
-import com.topov.estatesearcher.dao.SubscriptionDao;
-import com.topov.estatesearcher.model.Subscription;
-import com.topov.estatesearcher.service.BotStateEvaluator;
+import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.UpdateResultFactory;
-import com.topov.estatesearcher.telegram.provider.SubscriptionStepProvider;
+import com.topov.estatesearcher.telegram.evaluator.SubscriptionHandlerEvaluator;
+import com.topov.estatesearcher.telegram.provider.SubscriptionHandlerProvider;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
-import com.topov.estatesearcher.telegram.state.subscription.step.SubscriptionStep;
+import com.topov.estatesearcher.telegram.state.subscription.handler.SubscriptionHandler;
+import com.topov.estatesearcher.telegram.state.subscription.handler.SubscriptionHandlerName;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,22 +20,20 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class SubscriptionBotState extends AbstractBotState {
-    private final SubscriptionCache subscriptionCache;
-    private final SubscriptionStepProvider stepProvider;
-    private final SubscriptionDao subscriptionDao;
+    private final SubscriptionHandlerProvider stepProvider;
     private final UpdateResultFactory updateResultFactory;
+    private final SubscriptionHandlerEvaluator handlerEvaluator;
 
     @Autowired
-    public SubscriptionBotState(SubscriptionCache subscriptionCache,
-                                SubscriptionStepProvider stepProvider,
-                                SubscriptionDao subscriptionDao,
+    public SubscriptionBotState(SubscriptionHandlerProvider stepProvider,
                                 BotStateEvaluator stateEvaluator,
-                                UpdateResultFactory updateResultFactory) {
-        super(StateName.SUBSCRIPTION, stateEvaluator);
-        this.subscriptionCache = subscriptionCache;
+                                UpdateResultFactory updateResultFactory,
+                                SubscriptionHandlerEvaluator handlerEvaluator) {
+        super(StateName.SUBSCRIPTION);
         this.stepProvider = stepProvider;
-        this.subscriptionDao = subscriptionDao;
         this.updateResultFactory = updateResultFactory;
+        this.stateEvaluator = stateEvaluator;
+        this.handlerEvaluator = handlerEvaluator;
     }
 
     @Override
@@ -44,29 +41,27 @@ public class SubscriptionBotState extends AbstractBotState {
         final String text = update.getMessage().getText();
         final Long chatId = update.getMessage().getChatId();
 
-        switch (text) {
-            case "/cancel": return handleCancelCommand(chatId);
-            case "/save": return handleSaveCommand(chatId);
-        }
+        final Optional<SubscriptionHandlerName> currentHandler =
+            this.handlerEvaluator.getCurrentSubscriptionHandlerForUser(chatId);
 
-        final Optional<SubscriptionStep.StepName> currentStep = this.stepProvider.getCurrentStepName(chatId);
-
-        if (!currentStep.isPresent()) {
+        if (!currentHandler.isPresent()) {
             switch (text) {
-                case "/max_price": return handleMaxPriceCommand(chatId);
-                case "/min_price": return handleMinPriceCommand(chatId);
+                case "/maxPrice": return handleMaxPriceCommand(chatId);
+                case "/minPrice": return handleMinPriceCommand(chatId);
                 case "/city": return handleCityCommand(chatId);
                 default: return this.updateResultFactory.createUpdateResult("replies.global.notSupported");
             }
         }
 
-        return delegateToStep(chatId, update, currentStep.get());
+        return delegateToStep(chatId, update, currentHandler.get());
     }
 
     @Override
     public Keyboard createKeyboard(Update update) {
         final Long chatId = update.getMessage().getChatId();
-        final Optional<SubscriptionStep.StepName> currentStepName = this.stepProvider.getCurrentStepName(chatId);
+        final Optional<SubscriptionHandlerName> currentStepName =
+            this.handlerEvaluator.getCurrentSubscriptionHandlerForUser(chatId);
+
         final Keyboard keyboard = new Keyboard();
 
         keyboard.addOneButton(new KeyboardButton("/cancel"));
@@ -77,53 +72,32 @@ public class SubscriptionBotState extends AbstractBotState {
             keyboard.addOneButton(new KeyboardButton("/maxPrice"));
             keyboard.addOneButton(new KeyboardButton("/city"));
         } else {
-            final SubscriptionStep subscriptionStep = this.stepProvider.getSubscriptionStep(currentStepName.get());
-            keyboard.AddButtons(subscriptionStep.getKeyboardButtons(update));
+            final SubscriptionHandler subscriptionHandler = this.stepProvider.getSubscriptionStep(currentStepName.get());
+            keyboard.AddButtons(subscriptionHandler.getKeyboardButtons(update));
         }
 
         return keyboard;
     }
 
     private UpdateResult handleMinPriceCommand(long chatId) {
-        this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MIN_PRICE);
+        this.handlerEvaluator.setSubscriptionStepForUser(chatId, SubscriptionHandlerName.MIN_PRICE);
         return this.updateResultFactory.createUpdateResult("replies.subscription.minPrice");
     }
 
     private UpdateResult handleMaxPriceCommand(long chatId) {
-        this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.MAX_PRICE);
+        this.handlerEvaluator.setSubscriptionStepForUser(chatId, SubscriptionHandlerName.MAX_PRICE);
         return this.updateResultFactory.createUpdateResult("replies.subscription.maxPrice");
     }
 
     private UpdateResult handleCityCommand(long chatId) {
-        this.stepProvider.setSubscriptionStepForUser(chatId, SubscriptionStep.StepName.CITY);
+        this.handlerEvaluator.setSubscriptionStepForUser(chatId, SubscriptionHandlerName.CITY);
         return this.updateResultFactory.createUpdateResult("replies.subscription.city");
     }
 
-    private UpdateResult handleSaveCommand(long chatId) {
-        this.stepProvider.resetSubscriptionStepForUser(chatId);
-        this.stateEvaluator.setStateForUser(chatId, StateName.INITIAL);
-        final Optional<Subscription> cachedSubscription = this.subscriptionCache.getCachedSubscription(chatId);
-
-        if (cachedSubscription.isPresent()) {
-            this.subscriptionDao.saveSubscription(cachedSubscription.get());
-            this.subscriptionCache.removeCachedSubscription(chatId);
-            return new UpdateResult("Subscription saved");
-        } else {
-            return new UpdateResult("You didn't create a subscription yet");
-        }
-    }
-
-    private UpdateResult handleCancelCommand(long chatId) {
-        this.subscriptionCache.removeCachedSubscription(chatId);
-        this.stepProvider.resetSubscriptionStepForUser(chatId);
-        this.stateEvaluator.setStateForUser(chatId, StateName.INITIAL);
-        return new UpdateResult("Subscription cancelled");
-    }
-
-    private UpdateResult delegateToStep(long chatId, Update update, SubscriptionStep.StepName stepName) {
-        final SubscriptionStep step = this.stepProvider.getSubscriptionStep(stepName);
+    private UpdateResult delegateToStep(long chatId, Update update, SubscriptionHandlerName handlerName) {
+        final SubscriptionHandler step = this.stepProvider.getSubscriptionStep(handlerName);
         final UpdateResult updateResult = step.handleSubscriptionStep(update);
-        this.stepProvider.resetSubscriptionStepForUser(chatId);
+        //this.stepProvider.resetSubscriptionStepForUser(chatId);
         return updateResult;
     }
 }

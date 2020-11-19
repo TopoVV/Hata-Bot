@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.service;
+package com.topov.estatesearcher.telegram.evaluator;
 
 import com.topov.estatesearcher.telegram.state.BotState;
 

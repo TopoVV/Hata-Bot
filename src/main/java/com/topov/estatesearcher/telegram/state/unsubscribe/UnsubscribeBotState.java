@@ -1,7 +1,7 @@
 package com.topov.estatesearcher.telegram.state.unsubscribe;
 
 import com.topov.estatesearcher.model.Subscription;
-import com.topov.estatesearcher.service.BotStateEvaluator;
+import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.service.SubscriptionService;
 import com.topov.estatesearcher.telegram.UpdateResultFactory;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
@@ -20,10 +20,11 @@ public class UnsubscribeBotState extends AbstractBotState {
     private final UpdateResultFactory updateResultFactory;
 
     @Autowired
-    protected UnsubscribeBotState(BotStateEvaluator botStateEvaluator, SubscriptionService subscriptionService, UpdateResultFactory updateResultFactory) {
-        super(StateName.UNSUBSCRIBE, botStateEvaluator);
+    protected UnsubscribeBotState(SubscriptionService subscriptionService, UpdateResultFactory updateResultFactory) {
+        super(StateName.UNSUBSCRIBE);
         this.subscriptionService = subscriptionService;
         this.updateResultFactory = updateResultFactory;
+
     }
 
     @Override
