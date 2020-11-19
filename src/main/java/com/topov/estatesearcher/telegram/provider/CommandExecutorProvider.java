@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.state;
+package com.topov.estatesearcher.telegram.provider;
 
 import com.topov.estatesearcher.telegram.executor.CommandExecutor;
 

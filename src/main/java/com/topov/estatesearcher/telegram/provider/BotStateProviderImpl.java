@@ -2,6 +2,7 @@ package com.topov.estatesearcher.telegram.provider;
 
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotState;
+import com.topov.estatesearcher.telegram.state.BotStateName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,20 +20,20 @@ import static java.util.stream.Collectors.toMap;
  */
 @Service
 public class BotStateProviderImpl implements BotStateProvider {
-    private final Map<BotState.StateName, AbstractBotState> botStates;
+    private final Map<BotStateName, AbstractBotState> botStates;
 
     @Autowired
     public BotStateProviderImpl(List<AbstractBotState> botStates) {
         this.botStates = botStates.stream()
             .collect(toMap(
-                AbstractBotState::getStateName,
+                AbstractBotState::getBotStateName,
                 Function.identity()
                 )
             );
     }
 
     @Override
-    public BotState getBotState(BotState.StateName state) {
+    public BotState getBotState(BotStateName state) {
         if (this.botStates.containsKey(state)) {
             return this.botStates.get(state);
         } else {

@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.state;
+package com.topov.estatesearcher.telegram.provider;
 
 import com.topov.estatesearcher.telegram.executor.CommandExecutor;
 import lombok.extern.log4j.Log4j2;
@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service

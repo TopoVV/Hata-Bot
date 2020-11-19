@@ -7,10 +7,4 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public interface BotState {
     UpdateResult handleUpdate(Update update);
     Keyboard createKeyboard(Update update);
-
-    enum StateName {
-        INITIAL,
-        SUBSCRIPTION,
-        UNSUBSCRIBE;
-    }
 }
