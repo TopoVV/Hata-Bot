@@ -31,13 +31,6 @@ public class UnsubscribeBotState extends AbstractBotState {
         return new UpdateResult("UNSUBSCRIBE BOT STATE");
     }
 
-    @CommandMapping(forCommand = "/main")
-    public UpdateResult handleMainCommand(Update update) {
-        log.info("Executing /main command");
-        final long chatId = update.getMessage().getChatId();
-        this.stateEvaluator.setStateForUser(chatId, BotStateName.INITIAL);
-        return new UpdateResult("/main command executed");
-    }
 
     //    private final SubscriptionService subscriptionService;
 //    private final UpdateResultFactory updateResultFactory;

@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TelegramBotStateAnnotationBeanPostProcessor implements BeanPostProcessor {
+public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProcessor {
     private final Map<String, Class<?>> states = new HashMap<>();
 
     @Override

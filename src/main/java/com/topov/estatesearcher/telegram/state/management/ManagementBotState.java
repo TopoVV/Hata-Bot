@@ -23,19 +23,11 @@ public class ManagementBotState extends AbstractBotState {
         super(BotStateName.MANAGEMENT, stateEvaluator);
     }
 
-    @CommandMapping(forCommand = "/main")
-    public UpdateResult handleMainCommand(Update update) {
-        log.info("Executing /main command");
-        final long chatId = update.getMessage().getChatId();
-        this.stateEvaluator.setStateForUser(chatId, BotStateName.INITIAL);
-        return new UpdateResult("/main command executed");
-    }
-
     @CommandMapping(forCommand = "/unsubscribe")
     private UpdateResult handleUnsubscribeCommand(Update update) {
         log.info("Executing /unsubscribe command");
         final long chatId = update.getMessage().getChatId();
-        this.stateEvaluator.setStateForUser(chatId, BotStateName.UNSUBSCRIBE);
+        changeState(chatId, BotStateName.UNSUBSCRIBE);
         return new UpdateResult("/unsubscribe command executed");
     }
 

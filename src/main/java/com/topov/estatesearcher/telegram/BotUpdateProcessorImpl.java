@@ -24,10 +24,12 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
     private final UpdateResultFactory updateResultFactory;
     private final Map<BotStateName, AbstractBotState> states;
 
+    private final UserContextService contextService;
+
     @Autowired
     public BotUpdateProcessorImpl(BotStateEvaluator stateEvaluator,
                                   UpdateResultFactory updateResultFactory,
-                                  List<AbstractBotState> states) {
+                                  List<AbstractBotState> states, UserContextService contextService) {
         this.stateEvaluator = stateEvaluator;
         this.updateResultFactory = updateResultFactory;
         this.states = states.stream()
@@ -36,16 +38,18 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
                 Function.identity()
                 )
             );
+        this.contextService = contextService;
     }
 
     @Override
-    public UpdateResult processUpdate(Update update) {
-        final Long chatId = update.getMessage().getChatId();
-        final String text = update.getMessage().getText();
+    public UpdateResult processUpdate(UpdateWrapper update) {
+        final Long chatId = update.getChatId();
 
-        final BotStateName stateName = this.stateEvaluator.getUserCurrentStateName(chatId);
-        final BotState state = states.get(stateName);
-        if (text.startsWith("/")) {
+        final UserContext context = this.contextService.getContextForUser(chatId);
+//        final BotStateName stateName = this.stateEvaluator.getUserCurrentStateName(chatId);
+//        final BotState state = this.states.get(stateName);
+        final BotState state = this.states.get(context.getStateName());
+        if (update.isCommand()) {
             return state.executeCommand(text, update);
         } else {
             return state.handleUpdate(update);

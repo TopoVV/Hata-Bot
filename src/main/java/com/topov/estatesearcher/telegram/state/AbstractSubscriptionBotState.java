@@ -8,18 +8,12 @@ import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Log4j2
-public class AbstractSubscriptionBotState extends AbstractBotState {
+public abstract class AbstractSubscriptionBotState extends AbstractBotState {
     protected final SubscriptionCache subscriptionCache;
 
     protected AbstractSubscriptionBotState(BotStateName botStateName, BotStateEvaluator stateEvaluator, SubscriptionCache subscriptionCache) {
         super(botStateName, stateEvaluator);
         this.subscriptionCache = subscriptionCache;
-    }
-
-    @CommandMapping(forCommand = "/main")
-    public UpdateResult handleMainCommand(Update update) {
-        log.info("Executing /main command");
-        return new UpdateResult("/main command executed");
     }
 
     @CommandMapping(forCommand = "/save")

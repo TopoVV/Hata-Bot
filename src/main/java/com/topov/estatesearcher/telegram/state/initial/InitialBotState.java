@@ -34,11 +34,11 @@ public class InitialBotState extends AbstractBotState {
         return keyboard;
     }
 
-    @CommandMapping(forCommand = "/subscribe" )
+    @CommandMapping(forCommand = "/subscribe")
     public UpdateResult handleSubscribe(Update update) {
         log.info("Executing /subscribe command");
         final long chatId = update.getMessage().getChatId();
-        this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION);
+        changeState(chatId, BotStateName.SUBSCRIPTION);
         return new UpdateResult("/subscribe command executed");
     }
 
@@ -46,7 +46,7 @@ public class InitialBotState extends AbstractBotState {
     public UpdateResult commandHandler(Update update) {
         log.info("Executing /subscriptions command");
         final long chatId = update.getMessage().getChatId();
-        this.stateEvaluator.setStateForUser(chatId, BotStateName.MANAGEMENT);
+        changeState(chatId, BotStateName.MANAGEMENT);
         return new UpdateResult("/subscriptions command executed");
     }
 }

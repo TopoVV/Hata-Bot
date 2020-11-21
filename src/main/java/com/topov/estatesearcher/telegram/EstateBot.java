@@ -51,11 +51,13 @@ public class EstateBot extends TelegramLongPollingBot {
         log.debug("Receiving update: {}", update);
         final Long chatId = update.getMessage().getChatId();
 
+        final UpdateWrapper updateWrapper = new UpdateWrapper(update);
+
         if (isFirstInteraction(chatId)) {
             doFirstInteraction(update);
         }
 
-        final UpdateResult updateResult = this.updateHandler.processUpdate(update);
+        final UpdateResult updateResult = this.updateHandler.processUpdate(updateWrapper);
         final Keyboard keyboard = this.updateHandler.getKeyboard(update);
 
         final SendMessage reply = this.replyAssembler.assembleReply(updateResult, keyboard, chatId);

@@ -42,19 +42,24 @@ public class SubscriptionBotState extends AbstractSubscriptionBotState {
     @CommandMapping(forCommand = "/minPrice")
     public UpdateResult handleMinPriceCommand(Update update) {
         log.info("Executing /minPrice command");
+        final long chatId = update.getMessage().getChatId();
+        changeState(chatId, BotStateName.SUBSCRIPTION_MIN_PRICE);
         return new UpdateResult("/minPrice command executed");
     }
 
     @CommandMapping(forCommand = "/maxPrice")
     public UpdateResult handleMaxPriceCommand(Update update) {
         log.info("Executing /maxPrice command");
+        final long chatId = update.getMessage().getChatId();
+        changeState(chatId, BotStateName.SUBSCRIPTION_MAX_PRICE);
         return new UpdateResult("/maxPrice command executed");
     }
 
     @CommandMapping(forCommand = "/city")
     public UpdateResult handleCityCommand(Update update) {
         log.info("Executing /city command");
-        this.stateEvaluator.setStateForUser(update.getMessage().getChatId(), BotStateName.SUBSCRIPTION_CITY);
+        final long chatId = update.getMessage().getChatId();
+        changeState(chatId, BotStateName.SUBSCRIPTION_CITY);
         return new UpdateResult("/city command executed");
     }
 
