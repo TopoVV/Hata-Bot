@@ -1,9 +1,8 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.google.common.collect.Lists;
-import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.UpdateResultFactory;
-import com.topov.estatesearcher.telegram.provider.CommandExecutorProvider;
+import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
@@ -17,17 +16,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class SubscriptionBotState extends AbstractBotState {
     private final BotStateEvaluator stateEvaluator;
     private final UpdateResultFactory updateResultFactory;
-    private final CommandExecutorProvider executorProvider;
 
     @Autowired
     public SubscriptionBotState(BotStateEvaluator stateEvaluator,
-                                UpdateResultFactory updateResultFactory,
-                                CommandExecutorProvider commandExecutorProvider) {
+                                UpdateResultFactory updateResultFactory) {
         super(BotStateName.SUBSCRIPTION);
         this.updateResultFactory = updateResultFactory;
-        this.executorProvider = commandExecutorProvider;
         this.stateEvaluator = stateEvaluator;
-        this.supportedCommands = Lists.newArrayList("/city", "/minPrice", "/maxPrice", "/cancel", "/save");
     }
 
     @Override
@@ -35,11 +30,22 @@ public class SubscriptionBotState extends AbstractBotState {
         final String text = update.getMessage().getText();
         final Long chatId = update.getMessage().getChatId();
 
-        if (isSupportedCommand(text)) {
-            this.executorProvider.getExecutor(text).ifPresent(executor -> executor.execute(update));
+        return new UpdateResult("SUBSCRIPTION BOT STATE");
+    }
+
+    @Override
+    public UpdateResult executeCommand(String command, Update update) {
+        final long chatId = update.getMessage().getChatId();
+
+        switch (command) {
+            case "/minPrice": this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION_MIN_PRICE); break;
+            case "/maxPrice": this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION_MAX_PRICE); break;
+            case "/city": this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION_CITY); break;
+            case "/cancel": this.stateEvaluator.setStateForUser(chatId, BotStateName.MANAGEMENT); break;
+            case "/save": this.stateEvaluator.setStateForUser(chatId, BotStateName.MANAGEMENT); break;
         }
 
-        return new UpdateResult("SUBSCRIPTION BOT STATE");
+        return new UpdateResult("Command executed");
     }
 //
 //    @Override

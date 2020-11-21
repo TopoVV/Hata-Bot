@@ -1,10 +1,10 @@
 package com.topov.estatesearcher.telegram.state.initial;
 
 import com.google.common.collect.Lists;
+import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
-import com.topov.estatesearcher.telegram.provider.CommandExecutorProvider;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +12,25 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
+import java.util.Map;
+
 @Log4j2
-@Service
+@TelegramBotState(commands = {
+    @AcceptedCommand(commandName = "/subscribe"),
+    @AcceptedCommand(commandName = "/subscriptions")
+})
 public class InitialBotState extends AbstractBotState {
-    private final CommandExecutorProvider executorProvider;
+    private final BotStateEvaluator stateEvaluator;
 
     @Autowired
-    public InitialBotState(CommandExecutorProvider executorProvider) {
+    public InitialBotState(BotStateEvaluator stateEvaluator) {
         super(BotStateName.INITIAL);
-        this.executorProvider = executorProvider;
-        this.supportedCommands = Lists.newArrayList("/subscribe", "/subscriptions");
+        this.stateEvaluator = stateEvaluator;
     }
 
     @Override
-    public UpdateResult handleUpdate(Update update) {
-        final String text = update.getMessage().getText();
-
-        if (text.startsWith("/") && this.supportedCommands.contains(text)) {
-            this.executorProvider.getExecutor(text).ifPresent(executor -> executor.execute(update));
-        }
-
-        return new UpdateResult("INITIAL BOT STATE");
+    public UpdateResult executeCommand(String command, Update update) {
+        return this.actions.get(command).act(update);
     }
 
     @Override
@@ -44,16 +42,19 @@ public class InitialBotState extends AbstractBotState {
         return keyboard;
     }
 
-//    private UpdateResult handleMySubscriptionsCommand(long chatId) {
-//        final List<Subscription> subscriptions = this.subscriptionService.getAllSubscriptionsForUser(chatId);
-//        StringBuilder subscriptionsInfo = new StringBuilder();
-//        subscriptions.stream()
-//            .map(Subscription::toString)
-//            .forEach(info -> subscriptionsInfo.append(String.format("\t%s\n", info)));
-//
-//        final String info = subscriptionsInfo.toString();
-//        return this.updateResultFactory.createUpdateResult("replies.mySubscriptions", new Object[] { info });
-//    }
-//
+    @CommandHandler(forCommand = "/subscribe" )
+    public UpdateResult handleSubscribe(Update update) {
+        log.info("Executing /subscribe command");
+        final long chatId = update.getMessage().getChatId();
+        this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION);
+        return new UpdateResult("/subscribe command executed");
+    }
 
+    @CommandHandler(forCommand = "/subscriptions" )
+    public UpdateResult commandHandler(Update update) {
+        log.info("Executing /subscriptions command");
+        final long chatId = update.getMessage().getChatId();
+        this.stateEvaluator.setStateForUser(chatId, BotStateName.MANAGEMENT);
+        return new UpdateResult("/subscriptions command executed");
+    }
 }

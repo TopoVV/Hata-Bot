@@ -6,5 +6,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 public interface BotState {
     UpdateResult handleUpdate(Update update);
+    UpdateResult executeCommand(String command, Update update);
     Keyboard createKeyboard(Update update);
 }

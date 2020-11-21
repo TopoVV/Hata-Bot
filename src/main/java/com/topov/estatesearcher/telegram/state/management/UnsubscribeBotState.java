@@ -1,5 +1,6 @@
 package com.topov.estatesearcher.telegram.state.management;
 
+import com.google.common.collect.Lists;
 import com.topov.estatesearcher.service.SubscriptionService;
 import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
@@ -23,16 +24,26 @@ public class UnsubscribeBotState extends AbstractBotState {
         super(BotStateName.UNSUBSCRIBE);
         this.stateEvaluator = stateEvaluator;
         this.subscriptionService = subscriptionService;
-        this.supportedCommands = Collections.emptyList();
 
     }
 
     @Override
     public UpdateResult handleUpdate(Update update) {
-
         return new UpdateResult("UNSUBSCRIBE BOT STATE");
     }
-//    private final SubscriptionService subscriptionService;
+
+    @Override
+    public UpdateResult executeCommand(String command, Update update) {
+        final long chatId = update.getMessage().getChatId();
+
+        switch (command) {
+            case "/main": this.stateEvaluator.setStateForUser(chatId, BotStateName.INITIAL); break;
+        }
+
+        return new UpdateResult("Command executed");
+    }
+
+    //    private final SubscriptionService subscriptionService;
 //    private final UpdateResultFactory updateResultFactory;
 //
 //

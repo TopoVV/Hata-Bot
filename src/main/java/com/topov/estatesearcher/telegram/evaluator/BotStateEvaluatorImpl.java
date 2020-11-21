@@ -1,6 +1,5 @@
 package com.topov.estatesearcher.telegram.evaluator;
 
-import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,12 @@ public class BotStateEvaluatorImpl implements BotStateEvaluator {
     }
 
     @Override
-    public Optional<BotStateName> getUserCurrentStateName(long chatId) {
-        return Optional.ofNullable(userBotStates.get(chatId));
+    public BotStateName getUserCurrentStateName(long chatId) {
+        return this.userBotStates.get(chatId);
+    }
+
+    @Override
+    public boolean isUserFirstInteraction(long chatId) {
+        return !this.userBotStates.containsKey(chatId);
     }
 }

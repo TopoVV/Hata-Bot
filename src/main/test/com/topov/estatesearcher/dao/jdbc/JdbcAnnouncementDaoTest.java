@@ -5,12 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.sql.DataSource;
-
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class JdbcAnnouncementDaoTest extends DaoTests {
     private final JdbcAnnouncementDao jdbcAnnouncementDao;

@@ -2,7 +2,6 @@ package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
-import com.topov.estatesearcher.telegram.provider.CommandExecutorProvider;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
@@ -18,17 +17,12 @@ import java.util.Collections;
 public class MinPriceSubscriptionBotState extends AbstractBotState {
     private final BotStateEvaluator stateEvaluator;
     private final SubscriptionCache subscriptionCache;
-    private final CommandExecutorProvider executorProvider;
 
     @Autowired
-    public MinPriceSubscriptionBotState(BotStateEvaluator stateEvaluator,
-                                        SubscriptionCache subscriptionCache,
-                                        CommandExecutorProvider executorProvider) {
+    public MinPriceSubscriptionBotState(BotStateEvaluator stateEvaluator, SubscriptionCache subscriptionCache) {
         super(BotStateName.SUBSCRIPTION_MIN_PRICE);
         this.stateEvaluator = stateEvaluator;
         this.subscriptionCache = subscriptionCache;
-        this.executorProvider = executorProvider;
-        this.supportedCommands = Collections.singletonList("/subscriptions");
     }
 
     @Override
@@ -37,11 +31,20 @@ public class MinPriceSubscriptionBotState extends AbstractBotState {
         final Long chatId = update.getMessage().getChatId();
         final String text = update.getMessage().getText();
 
-        if (isSupportedCommand(text)) {
-            this.executorProvider.getExecutor(text).ifPresent(executor -> executor.execute(update));
-        }
 
         return new UpdateResult("SUBSCRIPTION MIN PRICE BOT STATE");
+    }
+
+    @Override
+    public UpdateResult executeCommand(String command, Update update) {
+        final long chatId = update.getMessage().getChatId();
+
+        switch (command) {
+            case "/cancel": this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION); break;
+            case "/main": this.stateEvaluator.setStateForUser(chatId, BotStateName.INITIAL); break;
+        }
+
+        return new UpdateResult("Command executed");
     }
 
 //    private UpdateResult handleMinPriceUpdate(Update update) {
