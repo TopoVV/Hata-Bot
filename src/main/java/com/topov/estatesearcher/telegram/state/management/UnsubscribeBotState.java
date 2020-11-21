@@ -1,28 +1,27 @@
 package com.topov.estatesearcher.telegram.state.management;
 
-import com.google.common.collect.Lists;
 import com.topov.estatesearcher.service.SubscriptionService;
 import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
+import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
+import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
+import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Collections;
-
 @Log4j2
-@Service
+@TelegramBotState(commands = {
+    @AcceptedCommand(commandName = "/main")
+})
 public class UnsubscribeBotState extends AbstractBotState {
-    private final BotStateEvaluator stateEvaluator;
     private final SubscriptionService subscriptionService;
 
     @Autowired
     public UnsubscribeBotState(BotStateEvaluator stateEvaluator, SubscriptionService subscriptionService) {
-        super(BotStateName.UNSUBSCRIBE);
-        this.stateEvaluator = stateEvaluator;
+        super(BotStateName.UNSUBSCRIBE, stateEvaluator);
         this.subscriptionService = subscriptionService;
 
     }
@@ -32,15 +31,12 @@ public class UnsubscribeBotState extends AbstractBotState {
         return new UpdateResult("UNSUBSCRIBE BOT STATE");
     }
 
-    @Override
-    public UpdateResult executeCommand(String command, Update update) {
+    @CommandMapping(forCommand = "/main")
+    public UpdateResult handleMainCommand(Update update) {
+        log.info("Executing /main command");
         final long chatId = update.getMessage().getChatId();
-
-        switch (command) {
-            case "/main": this.stateEvaluator.setStateForUser(chatId, BotStateName.INITIAL); break;
-        }
-
-        return new UpdateResult("Command executed");
+        this.stateEvaluator.setStateForUser(chatId, BotStateName.INITIAL);
+        return new UpdateResult("/main command executed");
     }
 
     //    private final SubscriptionService subscriptionService;

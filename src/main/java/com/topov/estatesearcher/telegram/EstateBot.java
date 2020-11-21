@@ -5,7 +5,6 @@ import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.TelegramReplyAssembler;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
-import com.topov.estatesearcher.telegram.state.BotStateName;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

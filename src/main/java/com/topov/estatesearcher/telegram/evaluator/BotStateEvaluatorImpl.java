@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Telegram Bot can serve multiple users simultaneously and the update processing logic depends on current bot state

@@ -7,5 +7,5 @@ public enum BotStateName {
     SUBSCRIPTION_MAX_PRICE,
     SUBSCRIPTION_CITY,
     MANAGEMENT,
-    UNSUBSCRIBE
+    UNSUBSCRIBE;
 }

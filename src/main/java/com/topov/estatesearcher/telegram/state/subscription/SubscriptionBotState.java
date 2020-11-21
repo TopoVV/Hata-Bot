@@ -1,28 +1,34 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
-import com.google.common.collect.Lists;
+import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.telegram.UpdateResultFactory;
 import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
-import com.topov.estatesearcher.telegram.state.AbstractBotState;
+import com.topov.estatesearcher.telegram.state.AbstractSubscriptionBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
+import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
+import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
+import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Log4j2
-@Service
-public class SubscriptionBotState extends AbstractBotState {
-    private final BotStateEvaluator stateEvaluator;
+@TelegramBotState(commands = {
+    @AcceptedCommand(commandName = "/minPrice"),
+    @AcceptedCommand(commandName = "/maxPrice"),
+    @AcceptedCommand(commandName = "/city"),
+    @AcceptedCommand(commandName = "/cancel"),
+    @AcceptedCommand(commandName = "/save"),
+    @AcceptedCommand(commandName = "/main")
+})
+public class SubscriptionBotState extends AbstractSubscriptionBotState {
     private final UpdateResultFactory updateResultFactory;
 
     @Autowired
-    public SubscriptionBotState(BotStateEvaluator stateEvaluator,
-                                UpdateResultFactory updateResultFactory) {
-        super(BotStateName.SUBSCRIPTION);
+    public SubscriptionBotState(BotStateEvaluator stateEvaluator, SubscriptionCache subscriptionCache, UpdateResultFactory updateResultFactory) {
+        super(BotStateName.SUBSCRIPTION, stateEvaluator, subscriptionCache);
         this.updateResultFactory = updateResultFactory;
-        this.stateEvaluator = stateEvaluator;
     }
 
     @Override
@@ -33,20 +39,26 @@ public class SubscriptionBotState extends AbstractBotState {
         return new UpdateResult("SUBSCRIPTION BOT STATE");
     }
 
-    @Override
-    public UpdateResult executeCommand(String command, Update update) {
-        final long chatId = update.getMessage().getChatId();
-
-        switch (command) {
-            case "/minPrice": this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION_MIN_PRICE); break;
-            case "/maxPrice": this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION_MAX_PRICE); break;
-            case "/city": this.stateEvaluator.setStateForUser(chatId, BotStateName.SUBSCRIPTION_CITY); break;
-            case "/cancel": this.stateEvaluator.setStateForUser(chatId, BotStateName.MANAGEMENT); break;
-            case "/save": this.stateEvaluator.setStateForUser(chatId, BotStateName.MANAGEMENT); break;
-        }
-
-        return new UpdateResult("Command executed");
+    @CommandMapping(forCommand = "/minPrice")
+    public UpdateResult handleMinPriceCommand(Update update) {
+        log.info("Executing /minPrice command");
+        return new UpdateResult("/minPrice command executed");
     }
+
+    @CommandMapping(forCommand = "/maxPrice")
+    public UpdateResult handleMaxPriceCommand(Update update) {
+        log.info("Executing /maxPrice command");
+        return new UpdateResult("/maxPrice command executed");
+    }
+
+    @CommandMapping(forCommand = "/city")
+    public UpdateResult handleCityCommand(Update update) {
+        log.info("Executing /city command");
+        this.stateEvaluator.setStateForUser(update.getMessage().getChatId(), BotStateName.SUBSCRIPTION_CITY);
+        return new UpdateResult("/city command executed");
+    }
+
+
 //
 //    @Override
 //    public Keyboard createKeyboard(Update update) {

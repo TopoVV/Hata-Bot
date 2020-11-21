@@ -1,9 +1,12 @@
 package com.topov.estatesearcher;
 
+import com.topov.estatesearcher.postprocessor.TelegramBotStateAnnotationBeanPostProcessor;
 import com.topov.estatesearcher.telegram.EstateBot;
-import com.topov.estatesearcher.telegram.state.initial.TelegramBotStateAnnotationBeanPostProcessor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;

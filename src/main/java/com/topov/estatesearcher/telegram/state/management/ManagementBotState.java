@@ -1,16 +1,14 @@
 package com.topov.estatesearcher.telegram.state.management;
 
-import com.google.common.collect.Lists;
 import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
-import com.topov.estatesearcher.telegram.state.initial.AcceptedCommand;
-import com.topov.estatesearcher.telegram.state.initial.CommandHandler;
-import com.topov.estatesearcher.telegram.state.initial.TelegramBotState;
+import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
+import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
+import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Log4j2
@@ -19,20 +17,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
     @AcceptedCommand(commandName = "/unsubscribe")
 })
 public class ManagementBotState extends AbstractBotState {
-    private final BotStateEvaluator stateEvaluator;
 
     @Autowired
     protected ManagementBotState(BotStateEvaluator stateEvaluator) {
-        super(BotStateName.MANAGEMENT);
-        this.stateEvaluator = stateEvaluator;
+        super(BotStateName.MANAGEMENT, stateEvaluator);
     }
 
-    @Override
-    public UpdateResult executeCommand(String command, Update update) {
-        return this.actions.get(command).act(update);
-    }
-
-    @CommandHandler(forCommand = "/main")
+    @CommandMapping(forCommand = "/main")
     public UpdateResult handleMainCommand(Update update) {
         log.info("Executing /main command");
         final long chatId = update.getMessage().getChatId();
@@ -40,7 +31,7 @@ public class ManagementBotState extends AbstractBotState {
         return new UpdateResult("/main command executed");
     }
 
-    @CommandHandler(forCommand = "/unsubscribe")
+    @CommandMapping(forCommand = "/unsubscribe")
     private UpdateResult handleUnsubscribeCommand(Update update) {
         log.info("Executing /unsubscribe command");
         final long chatId = update.getMessage().getChatId();
