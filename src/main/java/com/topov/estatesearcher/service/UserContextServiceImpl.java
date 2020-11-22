@@ -6,6 +6,9 @@ import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.CommandResult;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -29,18 +32,11 @@ public class UserContextServiceImpl implements UserContextService {
         } else {
             return new UserContext(chatId, BotStateName.INITIAL) {
                 @Override
-                public CommandResult executeCommand(TelegramCommand command, Map<BotStateName, BotState> states) {
+                public CommandResult executeCommand(TelegramCommand command, BotState state) {
                     if (command.isStart()) {
-                        final CommandResult commandResult = states.get(BotStateName.INITIAL).executeCommand(command);
-                        commandResult.changedState().ifPresent(this::changeState);
-                        return commandResult;
+                        return state.executeCommand(command, new ChangeStateCallback(this));
                     }
                     throw new RuntimeException("Temporal exception");
-                }
-
-                @Override
-                public String getCurrentStateEntranceMessage(Map<BotStateName, BotState> states) {
-                    return "";
                 }
             };
         }

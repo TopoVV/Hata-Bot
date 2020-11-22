@@ -1,14 +1,17 @@
 package com.topov.estatesearcher.telegram.state;
 
 import com.topov.estatesearcher.telegram.TelegramCommand;
-import com.topov.estatesearcher.telegram.reply.component.Keyboard;
-import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
+import com.topov.estatesearcher.telegram.UserContext;
+import com.topov.estatesearcher.telegram.Keyboard;
+import com.topov.estatesearcher.telegram.UpdateResult;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Log4j2
@@ -16,32 +19,35 @@ import java.util.Map;
 public abstract class AbstractBotState implements BotState {
     private final BotStateName botStateName;
     private final Map<String, CommandHandler> handlers;
+    protected final MessageSource messageSource;
 
-    protected AbstractBotState(BotStateName botStateName) {
+    protected AbstractBotState(BotStateName botStateName, MessageSource messageSource) {
         this.botStateName = botStateName;
+        this.messageSource = messageSource;
         this.handlers = new HashMap<>();
     }
 
     @Override
-    public UpdateResult handleUpdate(Update update) {
-        return new UpdateResult("These commands are available here: " +  getAvailableCommandsInfo());
+    public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
+        return new UpdateResult(update.getChatId(), "I dont understand! Tap /help to see options");
     }
 
     @Override
-    public CommandResult executeCommand(TelegramCommand command) {
-        return this.handlers.get(command.getCommand()).act(command);
+    public CommandResult executeCommand(TelegramCommand command, UserContext.ChangeStateCallback changeStateCallback) {
+        return this.handlers.get(command.getCommand()).act(command, changeStateCallback);
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult handleMainCommand(TelegramCommand command) {
+    public CommandResult handleMainCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /main command");
-        return new CommandResult(BotStateName.INITIAL, "/main command executed");
+        changeState.accept(BotStateName.INITIAL);
+        return new CommandResult(command.getChatId(), this.messageSource.getMessage("initial.entrance", null, Locale.ENGLISH));
     }
 
     @CommandMapping(forCommand = "/help")
-    public CommandResult handleHelpCommand(TelegramCommand command) {
+    public CommandResult handleHelpCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /help command");
-        return new CommandResult("Commands:\n" + getAvailableCommandsInfo());
+        return new CommandResult(command.getChatId(), "Commands:\n" + getAvailableCommandsInfo());
     }
 
     @Override

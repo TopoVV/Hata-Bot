@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.reply.component;
+package com.topov.estatesearcher.telegram;
 
 import lombok.Getter;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;

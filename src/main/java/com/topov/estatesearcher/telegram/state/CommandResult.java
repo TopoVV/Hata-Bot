@@ -1,25 +1,26 @@
 package com.topov.estatesearcher.telegram.state;
 
+import com.topov.estatesearcher.telegram.BotResponse;
+import com.topov.estatesearcher.telegram.Result;
+import com.topov.estatesearcher.telegram.UserContext;
 import lombok.Getter;
 
 import java.util.Optional;
 
-public class CommandResult {
-    @Getter
-    private final String message;
+public class CommandResult implements Result {
+    protected final Long chatId;
+    protected final String message;
 
-    private BotStateName newState;
-
-    public CommandResult(String message) {
+    public CommandResult(Long chatId, String message) {
+        this.chatId = chatId;
         this.message = message;
     }
 
-    public CommandResult(BotStateName newState, String message) {
-        this.newState = newState;
-        this.message = message;
-    }
-
-    public Optional<BotStateName> changedState() {
-        return Optional.ofNullable(newState);
+    @Override
+    public BotResponse createResponse() {
+        return BotResponse.builder()
+            .forUser(this.chatId)
+            .reply(this.message)
+            .build();
     }
 }

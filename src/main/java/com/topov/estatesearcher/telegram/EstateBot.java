@@ -1,7 +1,6 @@
 package com.topov.estatesearcher.telegram;
 
 import com.topov.estatesearcher.model.Announcement;
-import com.topov.estatesearcher.telegram.reply.TelegramReplyAssembler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,24 +11,19 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.Optional;
-
 @Log4j2
 @Service
 public class EstateBot extends TelegramLongPollingBot {
     private final BotUpdateProcessor updateProcessor;
-    private final TelegramReplyAssembler replyAssembler;
 
     private final String token;
     private final String username;
 
     @Autowired
     public EstateBot(BotUpdateProcessor updateProcessor,
-                     TelegramReplyAssembler replyAssembler,
                      @Value("${bot.token}") String token,
                      @Value("${bot.username}") String username) {
         this.updateProcessor = updateProcessor;
-        this.replyAssembler = replyAssembler;
         this.token = token;
         this.username = username;
     }
@@ -47,7 +41,7 @@ public class EstateBot extends TelegramLongPollingBot {
         log.debug("Receiving update: {}", update);
         final UpdateWrapper updateWrapper = new UpdateWrapper(update);
         this.updateProcessor.processUpdate(updateWrapper).ifPresent(response -> {
-            final SendMessage sendMessage = new SendMessage(response.getForUser(), response.getMessage());
+            final SendMessage sendMessage = new SendMessage(response.getForUser(), response.toString());
             executeApiAction(sendMessage);
         });
 

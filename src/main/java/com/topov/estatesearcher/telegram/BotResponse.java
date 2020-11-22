@@ -2,15 +2,21 @@ package com.topov.estatesearcher.telegram;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class BotResponse {
     private final String forUser;
-    private final String message;
+    private final String reply;
 
     @Builder
-    public BotResponse(Long forUser, String stateMessage, String reply) {
+    public BotResponse(Long forUser, String reply) {
         this.forUser = forUser.toString();
-        this.message = String.format("%s\n\n%s", stateMessage, reply);
+        this.reply = reply;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s", this.reply);
     }
 }

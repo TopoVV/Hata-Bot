@@ -2,7 +2,7 @@ package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.telegram.TelegramCommand;
-import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
+import com.topov.estatesearcher.telegram.UserContext;
 import com.topov.estatesearcher.telegram.state.AbstractSubscriptionBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.CommandResult;
@@ -11,7 +11,9 @@ import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.springframework.context.MessageSource;
+
+import java.util.Locale;
 
 @Log4j2
 @TelegramBotState(commands = {
@@ -26,70 +28,28 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class SubscriptionBotState extends AbstractSubscriptionBotState {
 
     @Autowired
-    public SubscriptionBotState(SubscriptionCache subscriptionCache) {
-        super(BotStateName.SUBSCRIPTION, subscriptionCache);
-    }
-
-    @Override
-    public UpdateResult handleUpdate(Update update) {
-        final String text = update.getMessage().getText();
-        final Long chatId = update.getMessage().getChatId();
-
-        return new UpdateResult("SUBSCRIPTION BOT STATE");
-    }
-
-    @Override
-    public String getEntranceMessage() {
-        return "SUBSCRIPTION BOT STATE";
+    public SubscriptionBotState(SubscriptionCache subscriptionCache, MessageSource messageSource) {
+        super(BotStateName.SUBSCRIPTION, messageSource, subscriptionCache);
     }
 
     @CommandMapping(forCommand = "/minPrice")
-    public CommandResult handleMinPriceCommand(TelegramCommand command) {
+    public CommandResult handleMinPriceCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /minPrice command");
-        return new CommandResult(BotStateName.SUBSCRIPTION_MIN_PRICE, "/minPrice command executed");
+        changeState.accept(BotStateName.SUBSCRIPTION_MIN_PRICE);
+        return new CommandResult(command.getChatId(), this.messageSource.getMessage("subscription.minPrice.entrance", null, Locale.ENGLISH));
     }
 
     @CommandMapping(forCommand = "/maxPrice")
-    public CommandResult handleMaxPriceCommand(TelegramCommand command) {
+    public CommandResult handleMaxPriceCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /maxPrice command");
-        return new CommandResult(BotStateName.SUBSCRIPTION_MAX_PRICE, "/maxPrice command executed");
+        changeState.accept(BotStateName.SUBSCRIPTION_MAX_PRICE);
+        return new CommandResult(command.getChatId(), this.messageSource.getMessage("subscription.maxPrice.entrance", null, Locale.ENGLISH));
     }
 
     @CommandMapping(forCommand = "/city")
-    public CommandResult handleCityCommand(TelegramCommand command) {
+    public CommandResult handleCityCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /city command");
-        return new CommandResult(BotStateName.SUBSCRIPTION_CITY, "/city command executed");
+        changeState.accept(BotStateName.SUBSCRIPTION_CITY);
+        return new CommandResult(command.getChatId(), this.messageSource.getMessage("subscription.city.entrance", null, Locale.ENGLISH));
     }
-
-
-//
-//    @Override
-//    public Keyboard createKeyboard(Update update) {
-//        final Long chatId = update.getMessage().getChatId();
-//        final Optional<SubscriptionHandlerName> currentStepName =
-//            this.handlerEvaluator.getSubscriptionHandlerNameForUser(chatId);
-//
-//        final Keyboard keyboard = new Keyboard();
-//
-//        keyboard.addOneButton(new KeyboardButton("/cancel"));
-//        keyboard.addOneButton(new KeyboardButton("/save"));
-//
-//        if (!currentStepName.isPresent()) {
-//            keyboard.addOneButton(new KeyboardButton("/minPrice"));
-//            keyboard.addOneButton(new KeyboardButton("/maxPrice"));
-//            keyboard.addOneButton(new KeyboardButton("/city"));
-//        } else {
-//            final SubscriptionHandler subscriptionHandler = this.handlerProvider.getSubscriptionHandler(currentStepName.get());
-//            keyboard.AddButtons(subscriptionHandler.getKeyboardButtons(update));
-//        }
-//
-//        return keyboard;
-//    }
-//
-//    private UpdateResult delegateToStep(long chatId, Update update, SubscriptionHandlerName handlerName) {
-//        final SubscriptionHandler step = this.handlerProvider.getSubscriptionHandler(handlerName);
-//        final UpdateResult updateResult = step.handleAction(update);
-//        //this.stepProvider.resetSubscriptionStepForUser(chatId);
-//        return updateResult;
-//    }
 }
