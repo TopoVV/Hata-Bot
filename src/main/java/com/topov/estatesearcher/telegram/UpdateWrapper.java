@@ -16,6 +16,10 @@ public class UpdateWrapper {
     }
 
     public boolean isCommand() {
-        return this.update.getMessage().getText().startsWith("/")
+        return this.update.getMessage().getText().startsWith("/");
+    }
+
+    public TelegramCommand unwrapCommand() {
+        return new TelegramCommand(this.update);
     }
 }

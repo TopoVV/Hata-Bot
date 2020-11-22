@@ -1,7 +1,6 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
-import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractSubscriptionBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
@@ -13,14 +12,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main"),
+    @AcceptedCommand(commandName = "/help"),
     @AcceptedCommand(commandName = "/cancel")
 })
 public class MaxPriceSubscriptionBotState extends AbstractSubscriptionBotState {
 
     @Autowired
-    public MaxPriceSubscriptionBotState(BotStateEvaluator stateEvaluator, SubscriptionCache subscriptionCache) {
-        super(BotStateName.SUBSCRIPTION_MAX_PRICE, stateEvaluator, subscriptionCache);
+    public MaxPriceSubscriptionBotState(SubscriptionCache subscriptionCache) {
+        super(BotStateName.SUBSCRIPTION_MAX_PRICE, subscriptionCache);
     }
 
     @Override
@@ -32,6 +31,12 @@ public class MaxPriceSubscriptionBotState extends AbstractSubscriptionBotState {
 
         return new UpdateResult("SUBSCRIPTION MAX PRICE BOT STATE");
     }
+
+    @Override
+    public String getEntranceMessage() {
+        return "SUBSCRIPTION MAX PRICE BOT STATE";
+    }
+
 
 //    private UpdateResult handleMaxPriceUpdate(Update update) {
 //        final Long chatId = update.getMessage().getChatId();

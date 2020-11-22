@@ -1,6 +1,6 @@
 package com.topov.estatesearcher.telegram.state;
 
-import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
+import com.topov.estatesearcher.telegram.TelegramCommand;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
@@ -17,12 +17,9 @@ public abstract class AbstractBotState implements BotState {
     private final BotStateName botStateName;
     private final Map<String, CommandHandler> handlers;
 
-    protected final BotStateEvaluator stateEvaluator;
-
-    protected AbstractBotState(BotStateName botStateName, BotStateEvaluator stateEvaluator) {
+    protected AbstractBotState(BotStateName botStateName) {
         this.botStateName = botStateName;
         this.handlers = new HashMap<>();
-        this.stateEvaluator = stateEvaluator;
     }
 
     @Override
@@ -31,27 +28,21 @@ public abstract class AbstractBotState implements BotState {
     }
 
     @Override
-    public UpdateResult executeCommand(String command, Update update) {
-        return this.handlers.get(command).act(update);
+    public CommandResult executeCommand(TelegramCommand command) {
+        return this.handlers.get(command.getCommand()).act(command);
     }
 
     @CommandMapping(forCommand = "/main")
-    public UpdateResult handleMainCommand(Update update) {
+    public CommandResult handleMainCommand(TelegramCommand command) {
         log.info("Executing /main command");
-        if (botStateName.equals(BotStateName.INITIAL)) {
-            return new UpdateResult("Commands:\n" + getAvailableCommandsInfo());
-        }
-        final long chatId = update.getMessage().getChatId();
-        changeState(chatId, BotStateName.INITIAL);
-        return new UpdateResult("/main command executed");
+        return new CommandResult(BotStateName.INITIAL, "/main command executed");
     }
 
     @CommandMapping(forCommand = "/help")
-    public UpdateResult handleHelpCommand(Update update) {
+    public CommandResult handleHelpCommand(TelegramCommand command) {
         log.info("Executing /help command");
-        return new UpdateResult("Commands:\n" + getAvailableCommandsInfo());
+        return new CommandResult("Commands:\n" + getAvailableCommandsInfo());
     }
-
 
     @Override
     public Keyboard createKeyboard(Update update) {
@@ -69,10 +60,6 @@ public abstract class AbstractBotState implements BotState {
     }
 
     public void addCommandHandler(CommandHandler commandHandler) {
-        this.handlers.put(commandHandler.getCommand(), commandHandler);
-    }
-
-    protected void changeState(long chatId, BotStateName newState) {
-        this.stateEvaluator.setStateForUser(chatId, newState);
+        this.handlers.put(commandHandler.getCommandPath(), commandHandler);
     }
 }

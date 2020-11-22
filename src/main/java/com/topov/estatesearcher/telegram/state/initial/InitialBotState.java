@@ -1,10 +1,11 @@
 package com.topov.estatesearcher.telegram.state.initial;
 
-import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
+import com.topov.estatesearcher.service.UserContextService;
+import com.topov.estatesearcher.telegram.TelegramCommand;
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
-import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
+import com.topov.estatesearcher.telegram.state.CommandResult;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
@@ -15,14 +16,18 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 @Log4j2
 @TelegramBotState(commands = {
+    @AcceptedCommand(commandName = "/help"),
+    @AcceptedCommand(commandName = "/start"),
     @AcceptedCommand(commandName = "/subscribe"),
     @AcceptedCommand(commandName = "/subscriptions")
 })
 public class InitialBotState extends AbstractBotState {
+    private final UserContextService contextService;
 
     @Autowired
-    public InitialBotState(BotStateEvaluator stateEvaluator) {
-        super(BotStateName.INITIAL, stateEvaluator);
+    public InitialBotState(UserContextService contextService) {
+        super(BotStateName.INITIAL);
+        this.contextService = contextService;
     }
 
     @Override
@@ -34,19 +39,27 @@ public class InitialBotState extends AbstractBotState {
         return keyboard;
     }
 
+    @Override
+    public String getEntranceMessage() {
+        return "INITIAL BOT STATE";
+    }
+
+    @CommandMapping(forCommand = "/start")
+    public CommandResult handleStart(TelegramCommand command) {
+        log.info("Executing /start command");
+        contextService.createContext(command.getChatId());
+        return new CommandResult(BotStateName.INITIAL, "Welcome");
+    }
+
     @CommandMapping(forCommand = "/subscribe")
-    public UpdateResult handleSubscribe(Update update) {
+    public CommandResult handleSubscribe(TelegramCommand command) {
         log.info("Executing /subscribe command");
-        final long chatId = update.getMessage().getChatId();
-        changeState(chatId, BotStateName.SUBSCRIPTION);
-        return new UpdateResult("/subscribe command executed");
+        return new CommandResult(BotStateName.SUBSCRIPTION, "/subscribe command executed");
     }
 
     @CommandMapping(forCommand = "/subscriptions" )
-    public UpdateResult commandHandler(Update update) {
+    public CommandResult commandHandler(TelegramCommand command) {
         log.info("Executing /subscriptions command");
-        final long chatId = update.getMessage().getChatId();
-        changeState(chatId, BotStateName.MANAGEMENT);
-        return new UpdateResult("/subscriptions command executed");
+        return new CommandResult(BotStateName.MANAGEMENT, "/subscriptions command executed");
     }
 }

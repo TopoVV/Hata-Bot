@@ -1,11 +1,11 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
-import com.topov.estatesearcher.telegram.UpdateResultFactory;
-import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
+import com.topov.estatesearcher.telegram.TelegramCommand;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractSubscriptionBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
+import com.topov.estatesearcher.telegram.state.CommandResult;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
@@ -15,20 +15,19 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Log4j2
 @TelegramBotState(commands = {
+    @AcceptedCommand(commandName = "/main"),
+    @AcceptedCommand(commandName = "/help"),
+    @AcceptedCommand(commandName = "/cancel"),
+    @AcceptedCommand(commandName = "/save"),
     @AcceptedCommand(commandName = "/minPrice"),
     @AcceptedCommand(commandName = "/maxPrice"),
     @AcceptedCommand(commandName = "/city"),
-    @AcceptedCommand(commandName = "/cancel"),
-    @AcceptedCommand(commandName = "/save"),
-    @AcceptedCommand(commandName = "/main")
 })
 public class SubscriptionBotState extends AbstractSubscriptionBotState {
-    private final UpdateResultFactory updateResultFactory;
 
     @Autowired
-    public SubscriptionBotState(BotStateEvaluator stateEvaluator, SubscriptionCache subscriptionCache, UpdateResultFactory updateResultFactory) {
-        super(BotStateName.SUBSCRIPTION, stateEvaluator, subscriptionCache);
-        this.updateResultFactory = updateResultFactory;
+    public SubscriptionBotState(SubscriptionCache subscriptionCache) {
+        super(BotStateName.SUBSCRIPTION, subscriptionCache);
     }
 
     @Override
@@ -39,28 +38,27 @@ public class SubscriptionBotState extends AbstractSubscriptionBotState {
         return new UpdateResult("SUBSCRIPTION BOT STATE");
     }
 
+    @Override
+    public String getEntranceMessage() {
+        return "SUBSCRIPTION BOT STATE";
+    }
+
     @CommandMapping(forCommand = "/minPrice")
-    public UpdateResult handleMinPriceCommand(Update update) {
+    public CommandResult handleMinPriceCommand(TelegramCommand command) {
         log.info("Executing /minPrice command");
-        final long chatId = update.getMessage().getChatId();
-        changeState(chatId, BotStateName.SUBSCRIPTION_MIN_PRICE);
-        return new UpdateResult("/minPrice command executed");
+        return new CommandResult(BotStateName.SUBSCRIPTION_MIN_PRICE, "/minPrice command executed");
     }
 
     @CommandMapping(forCommand = "/maxPrice")
-    public UpdateResult handleMaxPriceCommand(Update update) {
+    public CommandResult handleMaxPriceCommand(TelegramCommand command) {
         log.info("Executing /maxPrice command");
-        final long chatId = update.getMessage().getChatId();
-        changeState(chatId, BotStateName.SUBSCRIPTION_MAX_PRICE);
-        return new UpdateResult("/maxPrice command executed");
+        return new CommandResult(BotStateName.SUBSCRIPTION_MAX_PRICE, "/maxPrice command executed");
     }
 
     @CommandMapping(forCommand = "/city")
-    public UpdateResult handleCityCommand(Update update) {
+    public CommandResult handleCityCommand(TelegramCommand command) {
         log.info("Executing /city command");
-        final long chatId = update.getMessage().getChatId();
-        changeState(chatId, BotStateName.SUBSCRIPTION_CITY);
-        return new UpdateResult("/city command executed");
+        return new CommandResult(BotStateName.SUBSCRIPTION_CITY, "/city command executed");
     }
 
 

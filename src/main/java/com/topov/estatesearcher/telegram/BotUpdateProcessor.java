@@ -1,12 +1,12 @@
 package com.topov.estatesearcher.telegram;
 
 import com.topov.estatesearcher.telegram.reply.component.Keyboard;
-import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Optional;
+
 public interface BotUpdateProcessor {
-    UpdateResult processUpdate(UpdateWrapper update);
-    UpdateResult processFirstInteraction(long chatId);
+    Optional<BotResponse> processUpdate(UpdateWrapper update);
     Keyboard getKeyboard(Update update);
 
 }

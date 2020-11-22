@@ -2,7 +2,6 @@ package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.service.CityService;
-import com.topov.estatesearcher.telegram.evaluator.BotStateEvaluator;
 import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractSubscriptionBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
@@ -14,15 +13,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main"),
+    @AcceptedCommand(commandName = "/help"),
     @AcceptedCommand(commandName = "/cancel")
 })
 public class CitySubscriptionBotState extends AbstractSubscriptionBotState {
     private final CityService cityService;
 
     @Autowired
-    public CitySubscriptionBotState(SubscriptionCache subscriptionCache, CityService cityService, BotStateEvaluator stateEvaluator) {
-        super(BotStateName.SUBSCRIPTION_CITY, stateEvaluator, subscriptionCache);
+    public CitySubscriptionBotState(SubscriptionCache subscriptionCache, CityService cityService) {
+        super(BotStateName.SUBSCRIPTION_CITY, subscriptionCache);
         this.cityService = cityService;
     }
 
@@ -34,6 +33,12 @@ public class CitySubscriptionBotState extends AbstractSubscriptionBotState {
 
         return new UpdateResult("SUBSCRIPTION CITY BOT STATE");
     }
+
+    @Override
+    public String getEntranceMessage() {
+        return "SUBSCRIPTION CITY BOT STATE";
+    }
+
 
 
     //    private UpdateResult handleCityUpdate(Update update) {

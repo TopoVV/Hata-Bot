@@ -1,9 +1,8 @@
 package com.topov.estatesearcher.telegram.state;
 
-import com.topov.estatesearcher.telegram.reply.component.UpdateResult;
+import com.topov.estatesearcher.telegram.TelegramCommand;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,18 +13,18 @@ public class CommandHandler {
     private final Method method;
 
     @Getter
-    private final String command;
+    private final String commandPath;
 
-    public CommandHandler(Object bean, Method method, String command) {
+    public CommandHandler(Object bean, Method method, String commandPath) {
         this.bean = bean;
         this.method = method;
-        this.command = command;
+        this.commandPath = commandPath;
     }
 
-    public UpdateResult act(Update update)
+    public CommandResult act(TelegramCommand command)
     {
         try {
-            return (UpdateResult) this.method.invoke(this.bean, update);
+            return (CommandResult) this.method.invoke(this.bean, command);
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Error handler method invocation", e);
             throw new RuntimeException("Cannot execute", e);
