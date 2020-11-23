@@ -69,14 +69,14 @@ public class MinPriceSubscriptionBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /back command");
+        log.info("Executing /back command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /cancel command");
+    public CommandResult onCurrent(TelegramCommand command) {
+        log.info("Executing /cancel command for user {}", command.getChatId());
 
         final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())
             .map(Subscription::toString)

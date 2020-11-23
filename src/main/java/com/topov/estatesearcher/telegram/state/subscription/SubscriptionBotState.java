@@ -52,35 +52,35 @@ public class SubscriptionBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/minPrice")
     public CommandResult onMinPrice(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /minPrice command");
+        log.info("Executing /minPrice command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION_MIN_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/maxPrice")
     public CommandResult onMaxPrice(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /maxPrice command");
+        log.info("Executing /maxPrice command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION_MAX_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/city")
     public CommandResult onCity(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /city command");
+        log.info("Executing /city command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION_CITY);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /main command");
+        log.info("Executing /main command for user {}", command.getChatId());
         changeState.accept(BotStateName.INITIAL);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/save")
-    public CommandResult onSave(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /save command");
+    public CommandResult onSave(TelegramCommand command) {
+        log.info("Executing /save command for user {}", command.getChatId());
         if (this.subscriptionCache.flush(command.getChatId())) {
             return CommandResult.withMessage("The subscription saved.");
         }
@@ -90,15 +90,15 @@ public class SubscriptionBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/cancel")
     public CommandResult onCancel(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /cancel command");
+        log.info("Executing /cancel command for user {}", command.getChatId());
         this.subscriptionCache.removeCachedSubscription(command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.withMessage("Subscription canceled.");
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /cancel command");
+    public CommandResult onCurrent(TelegramCommand command) {
+        log.info("Executing /current command for user {}", command.getChatId());
 
         final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())
             .map(Subscription::toString)

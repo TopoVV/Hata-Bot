@@ -76,8 +76,8 @@ public class CitySubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/cities")
-    public CommandResult onCities(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /city command");
+    public CommandResult onCities(TelegramCommand command) {
+        log.info("Executing /city command for user {}", command.getChatId());
         final String cities = this.cityService.getCities().stream()
             .map(City::getCityName)
             .collect(Collectors.joining("\n"));
@@ -87,14 +87,14 @@ public class CitySubscriptionBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /back command");
+        log.info("Executing /back command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /cancel command");
+    public CommandResult onCurrent(TelegramCommand command) {
+        log.info("Executing /cancel command for user {}", command.getChatId());
 
         final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())
             .map(Subscription::toString)

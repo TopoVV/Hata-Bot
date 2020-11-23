@@ -35,22 +35,22 @@ public class InitialBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/start")
-    public CommandResult onStart(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /start command");
+    public CommandResult onStart(TelegramCommand command) {
+        log.info("Executing /start command for user {}", command.getChatId());
         this.contextService.createContext(command.getChatId());
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/subscribe")
     public CommandResult onSubscribe(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /subscribe command");
+        log.info("Executing /subscribe command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/subscriptions" )
     public CommandResult onSubscriptions(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /subscriptions command");
+        log.info("Executing /subscriptions command for user {}", command.getChatId());
         changeState.accept(BotStateName.MANAGEMENT);
         return CommandResult.empty();
     }

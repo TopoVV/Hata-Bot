@@ -38,14 +38,14 @@ public class ManagementBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/unsubscribe")
     public CommandResult onUnsubscribe(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /unsubscribe command");
+        log.info("Executing /unsubscribe command for user {}", command.getChatId());
         changeState.accept(BotStateName.UNSUBSCRIBE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /main command");
+        log.info("Executing /main command for user {}", command.getChatId());
         changeState.accept(BotStateName.INITIAL);
         return CommandResult.empty();
     }

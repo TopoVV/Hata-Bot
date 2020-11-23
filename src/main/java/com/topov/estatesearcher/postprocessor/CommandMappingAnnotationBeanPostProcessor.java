@@ -41,27 +41,19 @@ public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProces
 
         try {
             final Method injectorMethod = getInjectorMethod(aClass);
-            scan(aClass, bean, injectorMethod, acceptedCommands);
+            for (Method method : aClass.getMethods()) {
+                if (method.isAnnotationPresent(CommandMapping.class)) {
+                    CommandMapping annotation = method.getAnnotation(CommandMapping.class);
+                    final String commandPath = annotation.forCommand();
+                    if (acceptedCommands.contains(commandPath)) {
+                        injectorMethod.invoke(bean, new CommandHandler(bean, method, commandPath));
+                    }
+                }
+            }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return bean;
-    }
-
-    private void scan(Class<?> aClass, Object bean, Method injectorMethod, Set<String> acceptedCommands) throws InvocationTargetException, IllegalAccessException {
-        if (aClass == null || aClass == Object.class) {
-            return;
-        }
-        scan(aClass.getSuperclass(), bean, injectorMethod, acceptedCommands);
-        for (Method method : aClass.getMethods()) {
-            if (method.isAnnotationPresent(CommandMapping.class)) {
-                CommandMapping annotation = method.getAnnotation(CommandMapping.class);
-                final String commandPath = annotation.forCommand();
-                if (acceptedCommands.contains(commandPath)) {
-                    injectorMethod.invoke(bean, new CommandHandler(bean, method, commandPath));
-                }
-            }
-        }
     }
 
     private Method getInjectorMethod(Class<?> aClass) throws NoSuchMethodException {

@@ -39,8 +39,8 @@ public class UnsubscribeBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/my")
-    public CommandResult onMy(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /my command");
+    public CommandResult onMy(TelegramCommand command) {
+        log.info("Executing /my command for user {}", command.getChatId());
         final Long chatId = command.getChatId();
         final String subscriptions = getSubscriptionsInfo(chatId);
         return CommandResult.withMessage(String.format("Your subscriptions:\n\n%s", subscriptions));
@@ -48,8 +48,7 @@ public class UnsubscribeBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /back command");
-        final Long chatId = command.getChatId();
+        log.info("Executing /back command for user {}", command.getChatId());
         changeState.accept(BotStateName.MANAGEMENT);
         return CommandResult.empty();
     }

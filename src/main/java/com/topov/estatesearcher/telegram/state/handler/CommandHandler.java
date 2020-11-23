@@ -10,7 +10,10 @@ import org.checkerframework.checker.nullness.Opt;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.CheckedOutputStream;
 
 /**
@@ -36,7 +39,12 @@ public class CommandHandler {
     public CommandResult act(TelegramCommand command, UserContext.ChangeStateCallback changeStateCallback)
     {
         try {
-            return (CommandResult) this.method.invoke(this.bean, command, changeStateCallback);
+            final List<Class<?>> params = Stream.of(this.method.getParameterTypes()).collect(Collectors.toList());
+            if (params.contains(UserContext.ChangeStateCallback.class)) {
+                return (CommandResult) this.method.invoke(this.bean, command, changeStateCallback);
+            } else {
+                return (CommandResult) this.method.invoke(this.bean, command);
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Error handler method invocation", e);
             throw new RuntimeException("Cannot execute", e);
