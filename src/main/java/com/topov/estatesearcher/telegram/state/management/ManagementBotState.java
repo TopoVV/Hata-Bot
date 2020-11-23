@@ -3,6 +3,8 @@ package com.topov.estatesearcher.telegram.state.management;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.SubscriptionService;
 import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
@@ -21,6 +23,10 @@ import java.util.stream.Collectors;
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/main", description = "go to main menu"),
     @AcceptedCommand(commandName = "/unsubscribe", description = "delete a subscription")
+})
+@KeyboardDescription(rows = {
+    @KeyboardRow(buttons = { "/main" }),
+    @KeyboardRow(buttons = { "/unsubscribe" }),
 })
 public class ManagementBotState extends AbstractBotState {
     private static final String ENTRANCE_MESSAGE = "Here you can manage your subscriptions.";

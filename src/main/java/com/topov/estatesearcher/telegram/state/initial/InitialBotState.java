@@ -2,6 +2,8 @@ package com.topov.estatesearcher.telegram.state.initial;
 
 import com.topov.estatesearcher.service.UserContextService;
 import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
@@ -20,6 +22,11 @@ import java.util.Optional;
     @AcceptedCommand(commandName = "/start", description = "restart"),
     @AcceptedCommand(commandName = "/subscribe",description = "create a subscription"),
     @AcceptedCommand(commandName = "/subscriptions",description = "manage my subscriptions")
+})
+@KeyboardDescription(rows = {
+    @KeyboardRow(buttons = { "/start" }),
+    @KeyboardRow(buttons = { "/subscribe" }),
+    @KeyboardRow(buttons = { "/subscriptions" }),
 })
 public class InitialBotState extends AbstractBotState {
     private static final String ENTRANCE_MESSAGE = "Main menu.";

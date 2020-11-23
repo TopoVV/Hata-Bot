@@ -1,6 +1,7 @@
 package com.topov.estatesearcher;
 
 import com.topov.estatesearcher.postprocessor.CommandMappingAnnotationBeanPostProcessor;
+import com.topov.estatesearcher.postprocessor.KeyboardDescriptionAnnotationPostProcessor;
 import com.topov.estatesearcher.telegram.EstateBot;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -35,6 +36,11 @@ public class EstateSearcher {
     @Bean
     CommandMappingAnnotationBeanPostProcessor telegramBotStateAnnotationBeanPostProcessor() {
         return new CommandMappingAnnotationBeanPostProcessor();
+    }
+
+    @Bean
+    KeyboardDescriptionAnnotationPostProcessor keyboardDescriptionAnnotationPostProcessor() {
+        return new KeyboardDescriptionAnnotationPostProcessor();
     }
 
 }

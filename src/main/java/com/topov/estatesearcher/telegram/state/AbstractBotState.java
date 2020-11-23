@@ -9,7 +9,9 @@ import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.handler.CommandHandler;
 import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -23,6 +25,9 @@ import java.util.stream.Collectors;
 public abstract class AbstractBotState implements BotState {
     private final BotStateName botStateName;
     private final Map<CommandInfo, CommandHandler> handlers;
+
+    @Setter
+    private Keyboard keyboard;
 
     protected AbstractBotState(BotStateName botStateName) {
         this.botStateName = botStateName;
@@ -41,11 +46,6 @@ public abstract class AbstractBotState implements BotState {
         } else {
             return CommandResult.withMessage("No such command supported");
         }
-    }
-
-    @Override
-    public Keyboard createKeyboard(Update update) {
-        return new Keyboard();
     }
 
     public void addCommandHandler(CommandHandler commandHandler, CommandInfo commandInfo) {

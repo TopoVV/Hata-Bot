@@ -13,5 +13,5 @@ public interface BotState {
     UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeStateCallback);
     CommandResult executeCommand(TelegramCommand command, UserContext.ChangeStateCallback changeStateCallback);
     String getEntranceMessage(UpdateWrapper update);
-    Keyboard createKeyboard(Update update);
+    Keyboard getKeyboard();
 }

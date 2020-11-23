@@ -3,6 +3,8 @@ package com.topov.estatesearcher.telegram.state.subscription;
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
@@ -25,6 +27,11 @@ import java.util.Optional;
     @AcceptedCommand(commandName = "/maxPrice", description = "specify max price"),
     @AcceptedCommand(commandName = "/city", description = "specify city"),
     @AcceptedCommand(commandName = "/current", description = "current subscription config")
+})
+@KeyboardDescription(rows = {
+    @KeyboardRow(buttons = { "/minPrice", "/maxPrice", "/city" }),
+    @KeyboardRow(buttons = { "/cancel", "/save", "/main" }),
+    @KeyboardRow(buttons = { "/current" })
 })
 public class SubscriptionBotState extends AbstractBotState {
     private static final String ENTRANCE_MESSAGE = "Here you can subscribe.";

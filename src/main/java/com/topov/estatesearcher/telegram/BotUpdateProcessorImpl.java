@@ -64,7 +64,10 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
         final BotState currentState = this.states.get(context.getCurrentStateName());
 
         final String entranceMessage = context.getEntranceMessage(currentState, update);
-        return new SendMessage(update.getChatId().toString(), entranceMessage);
+        final Keyboard keyboard = currentState.getKeyboard();
+        final SendMessage message = new SendMessage(update.getChatId().toString(), entranceMessage);
+        message.setReplyMarkup(keyboard.createKeyboardMarkup());
+        return message;
     }
 
 

@@ -5,6 +5,8 @@ import com.topov.estatesearcher.model.City;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.CityService;
 import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
+import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.request.TelegramUpdate;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
@@ -28,6 +30,11 @@ import java.util.stream.Collectors;
     @AcceptedCommand(commandName = "/back", description = "go back"),
     @AcceptedCommand(commandName = "/cities", description = "available cities"),
     @AcceptedCommand(commandName = "/current", description = "current subscription config")
+})
+@KeyboardDescription(rows = {
+    @KeyboardRow(buttons = { "/back" }),
+    @KeyboardRow(buttons = { "/cities" }),
+    @KeyboardRow(buttons = { "/current" }),
 })
 public class CitySubscriptionBotState extends AbstractBotState {
     private static final String ENTRANCE_MESSAGE = "Specify city.";
