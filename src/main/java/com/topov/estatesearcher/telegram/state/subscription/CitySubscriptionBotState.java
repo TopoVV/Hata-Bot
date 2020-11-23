@@ -61,13 +61,18 @@ public class CitySubscriptionBotState extends AbstractBotState {
             this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city));
             changeState.accept(BotStateName.SUBSCRIPTION);
 
-            return new UpdateResult("City saved.");
+            final String current = this.subscriptionCache.getCachedSubscription(chatId)
+                .map(Subscription::toString)
+                .orElse("Not yet created");
+
+            final String template = "Current:%s\n\nCity saved.";
+            return UpdateResult.withMessage(String.format(template, current));
         } catch (NumberFormatException e) {
             log.error("Invalid id {}", text, e);
-            return new UpdateResult(String.format("Invalid id %s", text));
+            return UpdateResult.withMessage(String.format("Invalid id %s", text));
         } catch (EmptyResultDataAccessException e) {
             log.error("City {} not found", text, e);
-            return new UpdateResult(String.format("City %s not found", text));
+            return UpdateResult.withMessage(String.format("City %s not found", text));
         }
     }
 

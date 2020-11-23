@@ -55,11 +55,10 @@ public class MinPriceSubscriptionBotState extends AbstractBotState {
                 .orElse("Not yet created");
 
             final String template = "Current:%s\n\nMin price saved.";
-            final String message = String.format(template, current);
-            return new UpdateResult(message);
+            return UpdateResult.withMessage(String.format(template, current));
         } catch (NumberFormatException e) {
             log.error("Invalid price: {}", text);
-            return new UpdateResult("Invalid price");
+            return  UpdateResult.withMessage("Invalid price");
         }
     }
 

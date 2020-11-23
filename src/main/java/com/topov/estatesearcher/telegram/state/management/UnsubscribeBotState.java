@@ -53,13 +53,13 @@ public class UnsubscribeBotState extends AbstractBotState {
             if (subscription.isPresent()) {
                 this.subscriptionService.removeSubscription(subscriptionId);
                 changeState.accept(BotStateName.MANAGEMENT);
-                return new UpdateResult("The subscription has been deleted.");
+                return UpdateResult.withMessage("The subscription has been deleted.");
             }
 
-            return new UpdateResult("Not found. Try another id.");
+            return UpdateResult.withMessage("Not found. Try another id.");
         } catch (NumberFormatException e) {
             log.error("Subscription not found", e);
-            return new UpdateResult("Invalid id");
+            return UpdateResult.withMessage("Invalid id");
         }
     }
 

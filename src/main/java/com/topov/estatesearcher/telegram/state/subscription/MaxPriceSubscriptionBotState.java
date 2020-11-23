@@ -54,12 +54,10 @@ public class MaxPriceSubscriptionBotState extends AbstractBotState {
                 .map(Subscription::toString)
                 .orElse("Not yet created");
 
-            final String template = "Current:\n%s\n\nMax price saved.";
-            final String message = String.format(template, current);
-            return new UpdateResult(message);
+            return UpdateResult.withMessage("Max price saved.");
         } catch (NumberFormatException e) {
             log.error("Invalid price: {}", text);
-            return new UpdateResult("Invalid price");
+            return UpdateResult.withMessage("Invalid price.");
         }
     }
 
