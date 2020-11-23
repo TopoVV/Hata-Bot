@@ -2,7 +2,6 @@ package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.Subscription;
-import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
@@ -73,6 +72,7 @@ public class SubscriptionBotState extends AbstractBotState {
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /main command for user {}", command.getChatId());
+        this.subscriptionCache.evictCache(command.getChatId());
         changeState.accept(BotStateName.INITIAL);
         return CommandResult.empty();
     }
@@ -90,7 +90,7 @@ public class SubscriptionBotState extends AbstractBotState {
     @CommandMapping(forCommand = "/cancel")
     public CommandResult onCancel(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /cancel command for user {}", command.getChatId());
-        this.subscriptionCache.removeCachedSubscription(command.getChatId());
+        this.subscriptionCache.evictCache(command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.withMessage("Subscription canceled.");
     }

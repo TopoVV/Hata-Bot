@@ -6,7 +6,7 @@ import com.topov.estatesearcher.telegram.state.subscription.update.SubscriptionU
 import java.util.Optional;
 
 public interface SubscriptionCache {
-    void removeCachedSubscription(long chatId);
+    void evictCache(long chatId);
     void modifySubscription(long chatId, SubscriptionUpdate subscriptionUpdate);
     Optional<Subscription> getCachedSubscription(Long chatId);
     boolean flush(Long chatId);

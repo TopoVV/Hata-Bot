@@ -26,7 +26,7 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
     }
 
     @Override
-    public void removeCachedSubscription(long chatId) {
+    public void evictCache(long chatId) {
         log.debug("Removing cached subscription for user: {}", chatId);
         this.subscriptions.remove(chatId);
     }

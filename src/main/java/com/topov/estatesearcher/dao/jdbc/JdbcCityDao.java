@@ -5,6 +5,7 @@ import com.topov.estatesearcher.model.City;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,6 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -21,8 +23,8 @@ import java.util.stream.Collectors;
 @Profile(value = "dev")
 public class JdbcCityDao implements CityDao {
     private static final String SELECT_ALL_CITIES = "SELECT DISTINCT * FROM cities";
-    private static final String SELECT_CITY_BY_ID =
-        "SELECT * FROM cities WHERE UPPER(city_name) = UPPER(:cityName) OR city_id = :cityId";
+    private static final String SELECT_CITY_BY_ID = "SELECT * FROM cities WHERE city_id = :cityId";
+    private static final String SELECT_CITY_BY_NAME = "SELECT * FROM cities WHERE UPPER(city_name) = UPPER(:cityName)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -44,19 +46,29 @@ public class JdbcCityDao implements CityDao {
     }
 
     @Override
-    public City getCity(String cityName) {
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("cityName", cityName);
-        params.addValue("cityId", null);
-        return this.jdbcTemplate.queryForObject(SELECT_CITY_BY_ID, params, cityRowMapper);
+    public Optional<City> getCity(String cityName) {
+        try {
+            final MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("cityName", cityName);
+            final City city = this.jdbcTemplate.queryForObject(SELECT_CITY_BY_NAME, params, cityRowMapper);
+            return Optional.ofNullable(city);
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Empty result set");
+            return Optional.empty();
+        }
     }
 
     @Override
-    public City getCity(Integer cityId) {
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("cityName", null);
-        params.addValue("cityId", cityId);
-        return this.jdbcTemplate.queryForObject(SELECT_CITY_BY_ID, params, cityRowMapper);
+    public Optional<City> getCity(Integer cityId) {
+        try {
+            final MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("cityId", cityId);
+            final City city = this.jdbcTemplate.queryForObject(SELECT_CITY_BY_ID, params, cityRowMapper);
+            return Optional.ofNullable(city);
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Empty result set");
+            return Optional.empty();
+        }
     }
 
     private static final RowMapper<City> cityRowMapper = (rs, rowNum) -> {

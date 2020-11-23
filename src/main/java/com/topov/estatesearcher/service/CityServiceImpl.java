@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -23,12 +24,12 @@ public class CityServiceImpl implements CityService {
         return cityDao.getCities();
     }
 
-    public City getCity(String city) {
+    public Optional<City> getCity(String city) {
         return cityDao.getCity(city);
     }
 
     @Override
-    public City getCity(Integer cityId) {
+    public Optional<City> getCity(Integer cityId) {
         return cityDao.getCity(cityId);
     }
 }

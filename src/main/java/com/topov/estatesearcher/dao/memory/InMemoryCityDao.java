@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -30,19 +31,17 @@ public class InMemoryCityDao implements CityDao {
     }
 
     @Override
-    public City getCity(String cityName) {
+    public Optional<City> getCity(String cityName) {
         return this.cities.stream()
             .filter(city -> city.getCityName().equals(cityName))
-            .findFirst()
-            .orElseThrow(() -> new EmptyResultDataAccessException(1));
+            .findFirst();
     }
 
     @Override
-    public City getCity(Integer cityId) {
+    public Optional<City> getCity(Integer cityId) {
         return this.cities.stream()
             .filter(city -> city.getCityId().equals(cityId))
-            .findFirst()
-            .orElseThrow(() -> new EmptyResultDataAccessException(1));
+            .findFirst();
     }
 
 }

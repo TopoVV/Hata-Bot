@@ -19,9 +19,11 @@ import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import com.topov.estatesearcher.telegram.state.subscription.update.CityUpdate;
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,26 +60,28 @@ public class CitySubscriptionBotState extends AbstractBotState {
         final String text = update.getText();
 
         try {
-            final City city = findCity(text);
-            this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city));
-            changeState.accept(BotStateName.SUBSCRIPTION);
+            final Optional<City> optionalCity = findCity(text);
+            if (optionalCity.isPresent()) {
+                final City city = optionalCity.get();
+                this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city));
+                changeState.accept(BotStateName.SUBSCRIPTION);
 
-            final String current = this.subscriptionCache.getCachedSubscription(chatId)
-                .map(Subscription::toString)
-                .orElse("Not yet created");
+                final String current = this.subscriptionCache.getCachedSubscription(chatId)
+                    .map(Subscription::toString)
+                    .orElse("Not yet created");
 
-            final String template = "Current:%s\n\nCity saved.";
-            return UpdateResult.withMessage(String.format(template, current));
+                final String template = "Current:%s\n\nCity saved.";
+                return UpdateResult.withMessage(String.format(template, current));
+            }
+
+            return UpdateResult.withMessage(String.format("City %s not found", text));
         } catch (NumberFormatException e) {
             log.error("Invalid id {}", text, e);
             return UpdateResult.withMessage(String.format("Invalid id %s", text));
-        } catch (EmptyResultDataAccessException e) {
-            log.error("City {} not found", text, e);
-            return UpdateResult.withMessage(String.format("City %s not found", text));
         }
     }
 
-    private City findCity(String text) throws NumberFormatException, EmptyResultDataAccessException {
+    private Optional<City> findCity(String text) throws NumberFormatException {
         final Pattern p = Pattern.compile("[0-9]+");
         final Matcher matcher = p.matcher(text);
 

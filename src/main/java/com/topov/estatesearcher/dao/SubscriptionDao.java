@@ -8,8 +8,6 @@ import java.util.Optional;
 public interface SubscriptionDao {
     void saveSubscription(Subscription subscription);
     List<Subscription> getAllSubscriptions();
-
     Optional<Subscription> findSubscription(long subscriptionId, long chatId);
-
     void deleteSubscription(Long subscriptionId);
 }
