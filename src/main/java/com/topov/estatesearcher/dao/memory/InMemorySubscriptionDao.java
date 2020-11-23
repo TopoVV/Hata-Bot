@@ -15,17 +15,18 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Profile("dev-light")
 public class InMemorySubscriptionDao implements SubscriptionDao {
-    private final Map<Long, List<Subscription>> subscriptions = new HashMap<>();
+    private final Map<String, List<Subscription>> subscriptions = new HashMap<>();
 
     @PostConstruct
     void init() {
         log.info("In memory subscription DAO is initialized");
-        this.subscriptions.put(517142416L, Collections.singletonList(new Subscription(String.valueOf(517142416L))));
+        final String chatIdDefault = String.valueOf(517142416L);
+        this.subscriptions.put(chatIdDefault, Collections.singletonList(new Subscription(chatIdDefault)));
     }
 
     @Override
     public void saveSubscription(Subscription subscription) {
-        final Long chatId = Long.valueOf(subscription.getChatId());
+        final String chatId = subscription.getChatId();
         if (!this.subscriptions.containsKey(chatId)) {
             this.subscriptions.put(chatId, new ArrayList<>());
         }
@@ -44,7 +45,7 @@ public class InMemorySubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public Optional<Subscription> findSubscription(long subscriptionId, long chatId) {
+    public Optional<Subscription> findSubscription(long subscriptionId, String chatId) {
         return this.subscriptions.get(chatId)
             .stream()
             .filter(s -> s.getSubscriptionId().equals(subscriptionId))

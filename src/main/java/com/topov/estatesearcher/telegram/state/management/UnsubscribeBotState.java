@@ -2,6 +2,7 @@ package com.topov.estatesearcher.telegram.state.management;
 
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.SubscriptionService;
+import com.topov.estatesearcher.telegram.EntranceMessage;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
@@ -11,7 +12,6 @@ import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
-import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
@@ -20,7 +20,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -45,7 +44,7 @@ public class UnsubscribeBotState extends AbstractBotState {
 
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
-        final Long chatId = update.getChatId();
+        final String chatId = context.getChatId();
         final String text = update.getText();
 
         try {
@@ -66,11 +65,12 @@ public class UnsubscribeBotState extends AbstractBotState {
     }
 
     @Override
-    public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
+        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
     }
 
-    private String getSubscriptionsInfo(Long chatId) {
+    private String getSubscriptionsInfo(String chatId) {
         return this.subscriptionService.getAllSubscriptionsForUser(chatId).stream()
             .map(Subscription::toString)
             .collect(Collectors.joining("\n----------\n"));
@@ -78,15 +78,15 @@ public class UnsubscribeBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/my")
     public CommandResult onMy(TelegramCommand command, UserContext context) {
-        log.info("Executing /my command for user {}", command.getChatId());
-        final Long chatId = command.getChatId();
+        log.info("Executing /my command for user {}", context.getChatId());
+        final String chatId = context.getChatId();
         final String subscriptions = getSubscriptionsInfo(chatId);
         return CommandResult.withMessage(String.format("Your subscriptions:\n\n%s", subscriptions));
     }
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", command.getChatId());
+        log.info("Executing /back command for user {}", context.getChatId());
         context.changeState(BotStateName.MANAGEMENT);
         return CommandResult.empty();
     }

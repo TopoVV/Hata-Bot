@@ -18,7 +18,7 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class SubscriptionCacheImpl implements SubscriptionCache {
-    private final Map<Long, Subscription> subscriptions = new HashMap<>();
+    private final Map<String, Subscription> subscriptions = new HashMap<>();
     private final SubscriptionService subscriptionService;
 
     public SubscriptionCacheImpl(SubscriptionService subscriptionService) {
@@ -26,7 +26,7 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
     }
 
     @Override
-    public void evictCache(long chatId) {
+    public void evictCache(String chatId) {
         log.debug("Removing cached subscription for user: {}", chatId);
         this.subscriptions.remove(chatId);
     }
@@ -38,7 +38,7 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
      * subscription and returns a copy with new values
      */
     @Override
-    public void modifySubscription(long chatId, SubscriptionUpdate subscriptionUpdate) {
+    public void modifySubscription(String chatId, SubscriptionUpdate subscriptionUpdate) {
         log.debug("Updating subscription for user {}. Modified: {}", chatId, subscriptionUpdate);
         final Subscription currentSubscription = this.subscriptions.getOrDefault(chatId, new Subscription(String.valueOf(chatId)));
         final Subscription merged = subscriptionUpdate.update(currentSubscription);
@@ -46,13 +46,13 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
     }
 
     @Override
-    public Optional<Subscription> getCachedSubscription(Long chatId) {
+    public Optional<Subscription> getCachedSubscription(String chatId) {
         log.debug("Retrieving cached subscription for user: {}", chatId);
         return Optional.ofNullable(subscriptions.get(chatId));
     }
 
     @Override
-    public boolean flush(Long chatId) {
+    public boolean flush(String chatId) {
         if (this.subscriptions.containsKey(chatId)) {
             final Subscription subscription = this.subscriptions.remove(chatId);
             this.subscriptionService.saveSubscription(subscription);

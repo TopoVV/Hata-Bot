@@ -10,8 +10,8 @@ public class BotResponse {
     private final String reply;
 
     @Builder
-    public BotResponse(Long forUser, String reply) {
-        this.forUser = forUser.toString();
+    public BotResponse(String  chatId, String reply) {
+        this.forUser = chatId;
         this.reply = reply;
     }
 

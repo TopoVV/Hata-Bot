@@ -6,16 +6,9 @@ import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.BotState;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.checkerframework.checker.nullness.Opt;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.zip.CheckedOutputStream;
 
 /**
  * Spring MVC - like wrapper for all command handling methods. Created by

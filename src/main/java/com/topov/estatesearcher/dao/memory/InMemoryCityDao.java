@@ -4,7 +4,6 @@ import com.topov.estatesearcher.dao.CityDao;
 import com.topov.estatesearcher.model.City;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

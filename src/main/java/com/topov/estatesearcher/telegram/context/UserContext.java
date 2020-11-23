@@ -1,5 +1,6 @@
 package com.topov.estatesearcher.telegram.context;
 
+import com.topov.estatesearcher.telegram.EntranceMessage;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.request.TelegramUpdate;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
@@ -10,17 +11,16 @@ import com.topov.estatesearcher.telegram.state.BotStateName;
 import lombok.Getter;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Context object of the State design pattern.
  */
 @Getter
 public class UserContext {
-    private final Long chatId;
+    private final String chatId;
     private BotStateName currentStateName;
 
-    public UserContext(Long chatId, BotStateName currentStateName) {
+    public UserContext(String chatId, BotStateName currentStateName) {
         this.chatId = chatId;
         this.currentStateName = currentStateName;
     }
@@ -42,7 +42,7 @@ public class UserContext {
         return state.handleUpdate(update, this);
     }
 
-    public String getEntranceMessage(BotState currentState, UpdateWrapper update) {
-        return currentState.getEntranceMessage(update);
+    public Optional<EntranceMessage> getEntranceMessage(BotState currentState, UpdateWrapper update) {
+        return currentState.getEntranceMessage(update, this);
     }
 }

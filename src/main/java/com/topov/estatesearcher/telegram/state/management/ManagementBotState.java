@@ -2,6 +2,7 @@ package com.topov.estatesearcher.telegram.state.management;
 
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.SubscriptionService;
+import com.topov.estatesearcher.telegram.EntranceMessage;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
@@ -16,6 +17,7 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -41,33 +43,34 @@ public class ManagementBotState extends AbstractBotState {
     }
 
     @Override
-    public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
+        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
     }
 
     @CommandMapping(forCommand = "/unsubscribe")
     public CommandResult onUnsubscribe(TelegramCommand command, UserContext context) {
-        log.info("Executing /unsubscribe command for user {}", command.getChatId());
+        log.info("Executing /unsubscribe command for user {}", context.getChatId());
         context.changeState(BotStateName.UNSUBSCRIBE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext context) {
-        log.info("Executing /main command for user {}", command.getChatId());
+        log.info("Executing /main command for user {}", context.getChatId());
         context.changeState(BotStateName.MAIN);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/my")
     public CommandResult onMy(TelegramCommand command, UserContext context) {
-        log.info("Executing /my command for user {}", command.getChatId());
-        final Long chatId = command.getChatId();
+        log.info("Executing /my command for user {}", context.getChatId());
+        final String chatId = context.getChatId();
         final String subscriptions = getSubscriptionsInfo(chatId);
         return CommandResult.withMessage(String.format("Your subscriptions:\n\n%s", subscriptions));
     }
 
-    private String getSubscriptionsInfo(Long chatId) {
+    private String getSubscriptionsInfo(String chatId) {
         return this.subscriptionService.getAllSubscriptionsForUser(chatId).stream()
             .map(Subscription::toString)
             .collect(Collectors.joining("\n----------\n"));

@@ -4,6 +4,6 @@ import com.topov.estatesearcher.telegram.context.UserContext;
 
 public interface UserContextService {
     void setContext(UserContext userContext);
-    UserContext getContextForUser(Long chatId);
-    void createContext(Long chatId);
+    UserContext getContextForUser(String chatId);
+    void createContext(String chatId);
 }

@@ -15,8 +15,8 @@ public class UpdateWrapper {
         this.update = update;
     }
 
-    public Long getChatId() {
-        return update.getMessage().getChatId();
+    public String getChatId() {
+        return this.update.getMessage().getChatId().toString();
     }
 
     public boolean isCommand() {

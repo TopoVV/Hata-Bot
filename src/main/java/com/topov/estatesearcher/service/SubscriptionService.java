@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface SubscriptionService {
     void saveSubscription(Subscription subscription);
-    List<Subscription> getAllSubscriptionsForUser(long chatId);
-    Optional<Subscription> findSubscription(long subscriptionId, long chatId);
+    List<Subscription> getAllSubscriptionsForUser(String chatId);
+    Optional<Subscription> findSubscription(long subscriptionId, String chatId);
     void removeSubscription(Long subscriptionId);
 }

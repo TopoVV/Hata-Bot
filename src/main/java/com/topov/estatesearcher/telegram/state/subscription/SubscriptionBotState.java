@@ -2,6 +2,7 @@ package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.telegram.EntranceMessage;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
@@ -15,6 +16,8 @@ import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
 
 @Log4j2
 @TelegramBotState(commands = {
@@ -43,43 +46,44 @@ public class SubscriptionBotState extends AbstractBotState {
     }
 
     @Override
-    public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
+        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
     }
 
     @CommandMapping(forCommand = "/minPrice")
     public CommandResult onMinPrice(TelegramCommand command, UserContext context) {
-        log.info("Executing /minPrice command for user {}", command.getChatId());
+        log.info("Executing /minPrice command for user {}", context.getChatId());
         context.changeState(BotStateName.SUBSCRIPTION_MIN_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/maxPrice")
     public CommandResult onMaxPrice(TelegramCommand command, UserContext context) {
-        log.info("Executing /maxPrice command for user {}", command.getChatId());
+        log.info("Executing /maxPrice command for user {}", context.getChatId());
         context.changeState(BotStateName.SUBSCRIPTION_MAX_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/city")
     public CommandResult onCity(TelegramCommand command, UserContext context) {
-        log.info("Executing /city command for user {}", command.getChatId());
+        log.info("Executing /city command for user {}", context.getChatId());
         context.changeState(BotStateName.SUBSCRIPTION_CITY);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext context) {
-        log.info("Executing /main command for user {}", command.getChatId());
-        this.subscriptionCache.evictCache(command.getChatId());
+        log.info("Executing /main command for user {}", context.getChatId());
+        this.subscriptionCache.evictCache(context.getChatId());
         context.changeState(BotStateName.MAIN);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/save")
     public CommandResult onSave(TelegramCommand command, UserContext context) {
-        log.info("Executing /save command for user {}", command.getChatId());
-        if (this.subscriptionCache.flush(command.getChatId())) {
+        log.info("Executing /save command for user {}", context.getChatId());
+        if (this.subscriptionCache.flush(context.getChatId())) {
             return CommandResult.withMessage("The subscription saved.");
         }
 
@@ -88,17 +92,17 @@ public class SubscriptionBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/cancel")
     public CommandResult onCancel(TelegramCommand command, UserContext context) {
-        log.info("Executing /cancel command for user {}", command.getChatId());
-        this.subscriptionCache.evictCache(command.getChatId());
+        log.info("Executing /cancel command for user {}", context.getChatId());
+        this.subscriptionCache.evictCache(context.getChatId());
         context.changeState(BotStateName.SUBSCRIPTION);
         return CommandResult.withMessage("Subscription canceled.");
     }
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /current command for user {}", command.getChatId());
+        log.info("Executing /current command for user {}", context.getChatId());
 
-        final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())
+        final String current = this.subscriptionCache.getCachedSubscription(context.getChatId())
             .map(Subscription::toString)
             .orElse("Not created yet");
 

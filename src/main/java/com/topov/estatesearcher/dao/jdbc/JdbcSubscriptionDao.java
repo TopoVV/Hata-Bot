@@ -20,11 +20,14 @@ import java.util.Optional;
 @Profile(value = "dev")
 public class JdbcSubscriptionDao implements SubscriptionDao {
     private static final String SELECT_ALL_SUBSCRIPTIONS = "SELECT * FROM subscriptions";
+
     private static final String SELECT_SUBSCRIPTION_BY_ID_AND_CHAT_ID =
         "SELECT * FROM subscriptions WHERE subscription_id = :subscriptionId AND chat_id = :chatId";
+
     private static final String INSERT_SUBSCRIPTION =
         "INSERT INTO subscriptions (chat_id, min_price, max_price, city_id, city_name) " +
             "VALUES (:chatId, :minPrice, :maxPrice, :cityId, :cityName)";
+
     private static final String DELETE_SUBSCRIPTION = "DELETE FROM subscriptions WHERE subscription_id = :subscriptionId";
 //"INSERT INTO subscriptions (subscription_id, chat_id, min_price, max_price, city_id) " +
 //    "VALUES (:subscriptionId, :chatId, :minPrice, :maxPrice, :cityId) " +
@@ -46,7 +49,7 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
     public void saveSubscription(Subscription subscription) {
         final MapSqlParameterSource params = new MapSqlParameterSource();
        // params.addValue("subscriptionId", subscription.getSubscriptionsId());
-        params.addValue("chatId", String.valueOf(subscription.getChatId()));
+        params.addValue("chatId", subscription.getChatId());
         params.addValue("minPrice", subscription.getMinPrice());
         params.addValue("maxPrice", subscription.getMaxPrice());
         params.addValue("cityId", subscription.getCityId());
@@ -70,10 +73,10 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public Optional<Subscription> findSubscription(long subscriptionId, long chatId) {
+    public Optional<Subscription> findSubscription(long subscriptionId, String chatId) {
         final MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("subscriptionId", subscriptionId);
-        params.addValue("chatId", String.valueOf(chatId));
+        params.addValue("chatId", chatId);
 
         try {
             return this.jdbcTemplate.queryForObject(SELECT_SUBSCRIPTION_BY_ID_AND_CHAT_ID, params, (rs, rowNum) -> {

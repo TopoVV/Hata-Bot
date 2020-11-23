@@ -13,7 +13,6 @@ import com.topov.estatesearcher.telegram.state.BotStateName;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toMap;
 
 @Log4j2
@@ -45,15 +43,13 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
 
     @Override
     public Optional<BotResponse> processUpdate(UpdateWrapper update) {
-        final Long chatId = update.getChatId();
+        final String chatId = update.getChatId();
         final UserContext context = this.contextService.getContextForUser(chatId);
         final BotState currentState = this.states.get(context.getCurrentStateName());
 
         if (update.isCommand()) {
             final CommandResult commandResult = context.executeCommand(update.unwrapCommand(), currentState);
-            if (!update.unwrapCommand().isStart()) {
-                this.contextService.setContext(context);
-            }
+            this.contextService.setContext(context);
             return commandResult.createResponse(chatId);
         } else {
             final UpdateResult updateResult = context.handleUpdate(update.unwrapUpdate(), currentState);
@@ -63,13 +59,10 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
     }
 
     @Override
-    public EntranceMessage getEntranceMessage(UpdateWrapper update) {
+    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update) {
         final UserContext context = this.contextService.getContextForUser(update.getChatId());
         final BotState currentState = this.states.get(context.getCurrentStateName());
-
-        final String entranceText = context.getEntranceMessage(currentState, update);
-        final Keyboard keyboard = currentState.getKeyboard();
-        return new EntranceMessage(update.getChatId().toString(), entranceText, keyboard);
+        return context.getEntranceMessage(currentState, update);
     }
 
 

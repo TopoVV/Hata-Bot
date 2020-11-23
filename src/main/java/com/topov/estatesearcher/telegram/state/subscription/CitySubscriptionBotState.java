@@ -4,6 +4,7 @@ import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.City;
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.CityService;
+import com.topov.estatesearcher.telegram.EntranceMessage;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
@@ -19,12 +20,9 @@ import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import com.topov.estatesearcher.telegram.state.subscription.update.CityUpdate;
 import lombok.extern.log4j.Log4j2;
-import org.checkerframework.checker.nullness.Opt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -56,7 +54,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
         log.debug("Handling city update");
-        final Long chatId = update.getChatId();
+        final String chatId = context.getChatId();
         final String text = update.getText();
 
         try {
@@ -94,13 +92,14 @@ public class CitySubscriptionBotState extends AbstractBotState {
     }
 
     @Override
-    public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
+        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
     }
 
     @CommandMapping(forCommand = "/cities")
     public CommandResult onCities(TelegramCommand command, UserContext context) {
-        log.info("Executing /city command for user {}", command.getChatId());
+        log.info("Executing /city command for user {}", context.getChatId());
         final String cities = this.cityService.getCities().stream()
             .map(City::toString)
             .collect(Collectors.joining("\n"));
@@ -110,16 +109,16 @@ public class CitySubscriptionBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", command.getChatId());
+        log.info("Executing /back command for user {}", context.getChatId());
         context.changeState(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /cancel command for user {}", command.getChatId());
+        log.info("Executing /cancel command for user {}", context.getChatId());
 
-        final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())
+        final String current = this.subscriptionCache.getCachedSubscription(context.getChatId())
             .map(Subscription::toString)
             .orElse("Not created yet");
 

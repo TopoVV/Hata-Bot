@@ -1,6 +1,5 @@
 package com.topov.estatesearcher.telegram.result;
 
-import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.response.BotResponse;
 import lombok.Getter;
 
@@ -18,9 +17,9 @@ public class UpdateResult {
         this.message = message;
     }
 
-    public Optional<BotResponse> createResponse(Long chatId) {
+    public Optional<BotResponse> createResponse(String chatId) {
         final BotResponse response = BotResponse.builder()
-            .forUser(chatId)
+            .chatId(chatId)
             .reply(message)
             .build();
 

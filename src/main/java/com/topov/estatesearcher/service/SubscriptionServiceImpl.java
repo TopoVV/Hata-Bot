@@ -25,12 +25,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<Subscription> getAllSubscriptionsForUser(long chatId) {
+    public List<Subscription> getAllSubscriptionsForUser(String chatId) {
         return this.subscriptionDao.getAllSubscriptions();
     }
 
     @Override
-    public Optional<Subscription> findSubscription(long subscriptionId, long chatId) {
+    public Optional<Subscription> findSubscription(long subscriptionId, String chatId) {
         return this.subscriptionDao.findSubscription(subscriptionId, chatId);
     }
 

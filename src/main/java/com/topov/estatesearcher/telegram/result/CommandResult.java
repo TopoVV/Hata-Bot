@@ -1,12 +1,8 @@
 package com.topov.estatesearcher.telegram.result;
 
 import com.topov.estatesearcher.telegram.response.BotResponse;
-import org.checkerframework.checker.nullness.Opt;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public class CommandResult {
     private final String message;
@@ -30,10 +26,10 @@ public class CommandResult {
         this.isEmpty = true;
     }
 
-    public Optional<BotResponse> createResponse(Long chatId) {
+    public Optional<BotResponse> createResponse(String chatId) {
         if (!this.isEmpty) {
             final BotResponse response = BotResponse.builder()
-                .forUser(chatId)
+                .chatId(chatId)
                 .reply(this.message)
                 .build();
 
