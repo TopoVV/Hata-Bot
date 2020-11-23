@@ -16,6 +16,8 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.function.Consumer;
+
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/main", description = "go to main menu"),
@@ -48,28 +50,28 @@ public class SubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/minPrice")
-    public CommandResult onMinPrice(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onMinPrice(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /minPrice command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION_MIN_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/maxPrice")
-    public CommandResult onMaxPrice(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onMaxPrice(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /maxPrice command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION_MAX_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/city")
-    public CommandResult onCity(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onCity(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /city command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION_CITY);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onMain(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /main command for user {}", command.getChatId());
         changeState.accept(BotStateName.INITIAL);
         return CommandResult.empty();
@@ -86,7 +88,7 @@ public class SubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/cancel")
-    public CommandResult onCancel(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onCancel(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /cancel command for user {}", command.getChatId());
         this.subscriptionCache.removeCachedSubscription(command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);

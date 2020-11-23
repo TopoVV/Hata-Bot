@@ -31,7 +31,7 @@ public class UserContext {
     }
 
     public CommandResult executeCommand(TelegramCommand command, BotState state) {
-        return state.executeCommand(command, new ChangeStateCallback(this));
+        return state.executeCommand(command, this::changeState);
     }
 
     public void changeState(BotStateName newState) {
@@ -39,27 +39,10 @@ public class UserContext {
     }
 
     public UpdateResult handleUpdate(TelegramUpdate update, BotState state) {
-        return state.handleUpdate(update, new ChangeStateCallback(this));
+        return state.handleUpdate(update, this::changeState);
     }
 
     public String getEntranceMessage(BotState currentState, UpdateWrapper update) {
         return currentState.getEntranceMessage(update);
-    }
-
-    /**
-     * Callback for replacement of the state inside {@link UserContext}
-     * directly from the {@link BotState} command execution functions if needed.
-     */
-    public static final class ChangeStateCallback implements Consumer<BotStateName> {
-        private final UserContext context;
-
-        public ChangeStateCallback(UserContext context) {
-            this.context = context;
-        }
-
-        @Override
-        public void accept(BotStateName botStateName) {
-            this.context.changeState(botStateName);
-        }
     }
 }

@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -35,14 +36,14 @@ public abstract class AbstractBotState implements BotState {
     }
 
     @Override
-    public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
+    public UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeState) {
         return UpdateResult.withMessage("I dont understand!");
     }
 
     @Override
-    public CommandResult executeCommand(TelegramCommand command, UserContext.ChangeStateCallback changeStateCallback) {
+    public CommandResult executeCommand(TelegramCommand command, Consumer<BotStateName> changeState) {
         if (this.handlers.containsKey(command.getCommand())) {
-            return this.handlers.get(command.getCommand()).act(command, changeStateCallback);
+            return this.handlers.get(command.getCommand()).act(command, changeState);
         } else {
             return CommandResult.withMessage("No such command supported");
         }

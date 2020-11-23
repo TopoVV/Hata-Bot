@@ -12,6 +12,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.function.Consumer;
+
 @Log4j2
 @Service
 public class EstateBot extends TelegramLongPollingBot {
@@ -42,8 +44,7 @@ public class EstateBot extends TelegramLongPollingBot {
         log.debug("Receiving update: {}", update);
         final UpdateWrapper updateWrapper = new UpdateWrapper(update);
         this.updateProcessor.processUpdate(updateWrapper).ifPresent(response -> {
-            final SendMessage sendMessage = new SendMessage(response.getForUser(), response.toString());
-            executeApiAction(sendMessage);
+            executeApiAction(response.createTelegramMessage());
         });
 
         final EntranceMessage entranceMessage = this.updateProcessor.getEntranceMessage(updateWrapper);

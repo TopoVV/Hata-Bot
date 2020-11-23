@@ -23,24 +23,29 @@ public class UserContextServiceImpl implements UserContextService {
 
     @Override
     public UserContext getContextForUser(Long chatId) {
-
-        if (this.userContexts.containsKey(chatId)) {
-            return new UserContext(this.userContexts.get(chatId));
-        } else {
-            return new UserContext(chatId, BotStateName.INITIAL) {
-                @Override
-                public CommandResult executeCommand(TelegramCommand command, BotState state) {
-                    if (command.isStart()) {
-                        return state.executeCommand(command, new ChangeStateCallback(this));
-                    }
-                    throw new RuntimeException("Temporal exception");
-                }
-            };
-        }
+        return this.userContexts.getOrDefault(chatId, new AnonymousUserContext(chatId, this));
     }
 
     @Override
     public void createContext(Long chatId) {
         this.userContexts.put(chatId, new UserContext(chatId, BotStateName.INITIAL));
+    }
+
+    public static class AnonymousUserContext extends UserContext {
+        private final UserContextService contextService;
+
+        public AnonymousUserContext(Long chatId, UserContextService contextService) {
+            super(chatId, BotStateName.INITIAL);
+            this.contextService = contextService;
+        }
+
+        @Override
+        public CommandResult executeCommand(TelegramCommand command, BotState state) {
+            if (command.isStart()) {
+                this.contextService.createContext(this.getChatId());
+                return CommandResult.withMessage("Welcome");
+            }
+            throw new RuntimeException("Temporal exception");
+        }
     }
 }

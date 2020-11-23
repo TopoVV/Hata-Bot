@@ -22,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
     }
 
     @Override
-    public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
+    public UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeState) {
         log.debug("Handling city update");
         final Long chatId = update.getChatId();
         final String text = update.getText();
@@ -104,7 +105,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onBack(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /back command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();

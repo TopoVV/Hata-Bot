@@ -16,6 +16,7 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -46,14 +47,14 @@ public class ManagementBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/unsubscribe")
-    public CommandResult onUnsubscribe(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onUnsubscribe(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /unsubscribe command for user {}", command.getChatId());
         changeState.accept(BotStateName.UNSUBSCRIBE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onMain(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /main command for user {}", command.getChatId());
         changeState.accept(BotStateName.INITIAL);
         return CommandResult.empty();

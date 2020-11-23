@@ -2,6 +2,7 @@ package com.topov.estatesearcher.telegram.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Getter
 public class BotResponse {
@@ -14,8 +15,7 @@ public class BotResponse {
         this.reply = reply;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s", this.reply);
+    public SendMessage createTelegramMessage() {
+        return new SendMessage(this.forUser, this.reply);
     }
 }

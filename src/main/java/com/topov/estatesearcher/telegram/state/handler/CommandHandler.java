@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.CheckedOutputStream;
@@ -36,12 +37,12 @@ public class CommandHandler {
         this.commandPath = commandPath;
     }
 
-    public CommandResult act(TelegramCommand command, UserContext.ChangeStateCallback changeStateCallback)
+    public <T> CommandResult act(TelegramCommand command, Consumer<T> changeState)
     {
         try {
             final List<Class<?>> params = Stream.of(this.method.getParameterTypes()).collect(Collectors.toList());
-            if (params.contains(UserContext.ChangeStateCallback.class)) {
-                return (CommandResult) this.method.invoke(this.bean, command, changeStateCallback);
+            if (params.contains(Consumer.class)) {
+                return (CommandResult) this.method.invoke(this.bean, command, changeState);
             } else {
                 return (CommandResult) this.method.invoke(this.bean, command);
             }

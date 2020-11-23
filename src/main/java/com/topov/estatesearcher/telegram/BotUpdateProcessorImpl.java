@@ -51,7 +51,9 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
 
         if (update.isCommand()) {
             final CommandResult commandResult = context.executeCommand(update.unwrapCommand(), currentState);
-            this.contextService.setContext(context);
+            if (!update.unwrapCommand().isStart()) {
+                this.contextService.setContext(context);
+            }
             return commandResult.createResponse(chatId);
         } else {
             final UpdateResult updateResult = context.handleUpdate(update.unwrapUpdate(), currentState);

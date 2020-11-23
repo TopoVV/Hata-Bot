@@ -19,6 +19,8 @@ import com.topov.estatesearcher.telegram.state.subscription.update.MaxPriceUpdat
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.function.Consumer;
+
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/back", description = "go back"),
@@ -40,7 +42,7 @@ public class MaxPriceSubscriptionBotState extends AbstractBotState {
     }
 
     @Override
-    public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
+    public UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeState) {
         log.debug("Handling max price update");
         final Long chatId = update.getChatId();
         final String text = update.getText();
@@ -67,7 +69,7 @@ public class MaxPriceSubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onBack(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /back command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();

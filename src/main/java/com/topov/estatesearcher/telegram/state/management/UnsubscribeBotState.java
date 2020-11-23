@@ -11,6 +11,7 @@ import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
+import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
@@ -19,6 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -42,7 +44,7 @@ public class UnsubscribeBotState extends AbstractBotState {
     }
 
     @Override
-    public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
+    public UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeState) {
         final Long chatId = update.getChatId();
         final String text = update.getText();
 
@@ -83,7 +85,7 @@ public class UnsubscribeBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onBack(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /back command for user {}", command.getChatId());
         changeState.accept(BotStateName.MANAGEMENT);
         return CommandResult.empty();

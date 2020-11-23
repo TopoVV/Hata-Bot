@@ -5,15 +5,20 @@ import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
+import com.topov.estatesearcher.telegram.request.TelegramUpdate;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
+import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.function.Consumer;
 
 @Log4j2
 @TelegramBotState(commands = {
@@ -29,12 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class InitialBotState extends AbstractBotState {
     private static final String HEADER = "Main menu.";
 
-    private final UserContextService contextService;
 
     @Autowired
-    public InitialBotState(UserContextService contextService) {
+    public InitialBotState() {
         super(BotStateName.INITIAL);
-        this.contextService = contextService;
     }
 
     @Override
@@ -42,22 +45,15 @@ public class InitialBotState extends AbstractBotState {
         return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
     }
 
-    @CommandMapping(forCommand = "/start")
-    public CommandResult onStart(TelegramCommand command) {
-        log.info("Executing /start command for user {}", command.getChatId());
-        this.contextService.createContext(command.getChatId());
-        return CommandResult.empty();
-    }
-
     @CommandMapping(forCommand = "/subscribe")
-    public CommandResult onSubscribe(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onSubscribe(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /subscribe command for user {}", command.getChatId());
         changeState.accept(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/subscriptions" )
-    public CommandResult onSubscriptions(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onSubscriptions(TelegramCommand command, Consumer<BotStateName> changeState) {
         log.info("Executing /subscriptions command for user {}", command.getChatId());
         changeState.accept(BotStateName.MANAGEMENT);
         return CommandResult.empty();
