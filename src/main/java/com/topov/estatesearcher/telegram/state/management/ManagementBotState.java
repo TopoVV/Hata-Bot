@@ -16,20 +16,21 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/main", description = "go to main menu"),
+    @AcceptedCommand(commandName = "/my", description = "list my subscriptions"),
     @AcceptedCommand(commandName = "/unsubscribe", description = "delete a subscription")
 })
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/main" }),
+    @KeyboardRow(buttons = { "/my" }),
     @KeyboardRow(buttons = { "/unsubscribe" }),
 })
 public class ManagementBotState extends AbstractBotState {
-    private static final String ENTRANCE_MESSAGE = "Here you can manage your subscriptions.";
+    private static final String HEADER = "Here you can manage your subscriptions.";
 
     private final SubscriptionService subscriptionService;
 
@@ -37,6 +38,11 @@ public class ManagementBotState extends AbstractBotState {
     protected ManagementBotState(SubscriptionService subscriptionService) {
         super(BotStateName.MANAGEMENT);
         this.subscriptionService = subscriptionService;
+    }
+
+    @Override
+    public String getEntranceMessage(UpdateWrapper update) {
+        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/unsubscribe")
@@ -53,9 +59,12 @@ public class ManagementBotState extends AbstractBotState {
         return CommandResult.empty();
     }
 
-    @Override
-    public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
+    @CommandMapping(forCommand = "/my")
+    public CommandResult onMy(TelegramCommand command) {
+        log.info("Executing /my command for user {}", command.getChatId());
+        final Long chatId = command.getChatId();
+        final String subscriptions = getSubscriptionsInfo(chatId);
+        return CommandResult.withMessage(String.format("Your subscriptions:\n\n%s", subscriptions));
     }
 
     private String getSubscriptionsInfo(Long chatId) {

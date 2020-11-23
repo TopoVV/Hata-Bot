@@ -15,8 +15,6 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
-
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/start", description = "restart"),
@@ -29,7 +27,7 @@ import java.util.Optional;
     @KeyboardRow(buttons = { "/subscriptions" }),
 })
 public class InitialBotState extends AbstractBotState {
-    private static final String ENTRANCE_MESSAGE = "Main menu.";
+    private static final String HEADER = "Main menu.";
 
     private final UserContextService contextService;
 
@@ -37,6 +35,11 @@ public class InitialBotState extends AbstractBotState {
     public InitialBotState(UserContextService contextService) {
         super(BotStateName.INITIAL);
         this.contextService = contextService;
+    }
+
+    @Override
+    public String getEntranceMessage(UpdateWrapper update) {
+        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/start")
@@ -58,10 +61,5 @@ public class InitialBotState extends AbstractBotState {
         log.info("Executing /subscriptions command for user {}", command.getChatId());
         changeState.accept(BotStateName.MANAGEMENT);
         return CommandResult.empty();
-    }
-
-    @Override
-    public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
     }
 }

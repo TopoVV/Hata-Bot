@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface CityDao {
     List<City> getCities();
-    City getCity(String city);
+    City getCity(String cityName);
+    City getCity(Integer cityId);
 }

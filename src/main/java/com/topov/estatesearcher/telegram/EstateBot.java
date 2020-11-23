@@ -46,9 +46,8 @@ public class EstateBot extends TelegramLongPollingBot {
             executeApiAction(sendMessage);
         });
 
-        final SendMessage message = this.updateProcessor.getMessage(updateWrapper);
-        executeApiAction(message);
-
+        final EntranceMessage entranceMessage = this.updateProcessor.getEntranceMessage(updateWrapper);
+        executeApiAction(entranceMessage.createTelegramMessage());
     }
 
     private void executeApiAction(BotApiMethod<?> action) {

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toMap;
 
 @Log4j2
@@ -59,15 +60,14 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
         }
     }
 
-    public SendMessage getMessage(UpdateWrapper update) {
+    @Override
+    public EntranceMessage getEntranceMessage(UpdateWrapper update) {
         final UserContext context = this.contextService.getContextForUser(update.getChatId());
         final BotState currentState = this.states.get(context.getCurrentStateName());
 
-        final String entranceMessage = context.getEntranceMessage(currentState, update);
+        final String entranceText = context.getEntranceMessage(currentState, update);
         final Keyboard keyboard = currentState.getKeyboard();
-        final SendMessage message = new SendMessage(update.getChatId().toString(), entranceMessage);
-        message.setReplyMarkup(keyboard.createKeyboardMarkup());
-        return message;
+        return new EntranceMessage(update.getChatId().toString(), entranceText, keyboard);
     }
 
 

@@ -22,7 +22,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
     @KeyboardRow(buttons = { "/current" }),
 })
 public class CitySubscriptionBotState extends AbstractBotState {
-    private static final String ENTRANCE_MESSAGE = "Specify city.";
+    private static final String HEADER = "Specify city.";
 
     private final CityService cityService;
     private final SubscriptionCache subscriptionCache;
@@ -51,38 +52,47 @@ public class CitySubscriptionBotState extends AbstractBotState {
 
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
-        log.debug("Handling city subscription step");
+        log.debug("Handling city update");
         final Long chatId = update.getChatId();
         final String text = update.getText();
 
         try {
-            final City city = this.cityService.getCity(text);
+            final City city = findCity(text);
             this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city));
             changeState.accept(BotStateName.SUBSCRIPTION);
 
-            final String current = this.subscriptionCache.getCachedSubscription(chatId)
-                .map(Subscription::toString)
-                .orElse("Not yet created");
-
-            final String template = "Current:\n%s\n\nCity saved.";
-            final String message = String.format(template, current);
-            return new UpdateResult(message);
+            return new UpdateResult("City saved.");
+        } catch (NumberFormatException e) {
+            log.error("Invalid id {}", text, e);
+            return new UpdateResult(String.format("Invalid id %s", text));
         } catch (EmptyResultDataAccessException e) {
             log.error("City {} not found", text, e);
             return new UpdateResult(String.format("City %s not found", text));
         }
     }
 
+    private City findCity(String text) throws NumberFormatException, EmptyResultDataAccessException {
+        final Pattern p = Pattern.compile("[0-9]+");
+        final Matcher matcher = p.matcher(text);
+
+        if (matcher.matches()) {
+            final Integer cityId = Integer.valueOf(text);
+            return this.cityService.getCity(cityId);
+        } else {
+            return this.cityService.getCity(text);
+        }
+    }
+
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
+        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/cities")
     public CommandResult onCities(TelegramCommand command) {
         log.info("Executing /city command for user {}", command.getChatId());
         final String cities = this.cityService.getCities().stream()
-            .map(City::getCityName)
+            .map(City::toString)
             .collect(Collectors.joining("\n"));
 
         return CommandResult.withMessage(String.format("Available cities:\n%s", cities));

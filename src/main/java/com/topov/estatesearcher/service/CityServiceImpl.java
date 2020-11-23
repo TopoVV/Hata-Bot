@@ -26,4 +26,9 @@ public class CityServiceImpl implements CityService {
     public City getCity(String city) {
         return cityDao.getCity(city);
     }
+
+    @Override
+    public City getCity(Integer cityId) {
+        return cityDao.getCity(cityId);
+    }
 }

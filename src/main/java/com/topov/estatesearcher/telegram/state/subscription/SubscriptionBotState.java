@@ -16,8 +16,6 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
-
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/main", description = "go to main menu"),
@@ -34,7 +32,7 @@ import java.util.Optional;
     @KeyboardRow(buttons = { "/current" })
 })
 public class SubscriptionBotState extends AbstractBotState {
-    private static final String ENTRANCE_MESSAGE = "Here you can subscribe.";
+    private static final String HEADER = "Here you can subscribe.";
 
     private final SubscriptionCache subscriptionCache;
 
@@ -46,7 +44,7 @@ public class SubscriptionBotState extends AbstractBotState {
 
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
+        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/minPrice")

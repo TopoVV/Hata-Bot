@@ -37,4 +37,12 @@ public class InMemoryCityDao implements CityDao {
             .orElseThrow(() -> new EmptyResultDataAccessException(1));
     }
 
+    @Override
+    public City getCity(Integer cityId) {
+        return this.cities.stream()
+            .filter(city -> city.getCityId().equals(cityId))
+            .findFirst()
+            .orElseThrow(() -> new EmptyResultDataAccessException(1));
+    }
+
 }

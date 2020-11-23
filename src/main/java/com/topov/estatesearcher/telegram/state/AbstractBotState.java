@@ -36,7 +36,7 @@ public abstract class AbstractBotState implements BotState {
 
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
-        return new UpdateResult("I dont understand! Tap /help to see options");
+        return new UpdateResult("I dont understand!");
     }
 
     @Override

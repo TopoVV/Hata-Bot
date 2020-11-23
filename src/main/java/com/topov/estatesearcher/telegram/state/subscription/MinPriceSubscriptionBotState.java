@@ -19,8 +19,6 @@ import com.topov.estatesearcher.telegram.state.subscription.update.MinPriceUpdat
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
-
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/back", description = "go back"),
@@ -31,7 +29,7 @@ import java.util.Optional;
     @KeyboardRow(buttons = { "/current" }),
 })
 public class MinPriceSubscriptionBotState extends AbstractBotState {
-    private static final String ENTRANCE_MESSAGE = "Specify min price.";
+    private static final String HEADER = "Specify min price.";
 
     private final SubscriptionCache subscriptionCache;
 
@@ -43,7 +41,7 @@ public class MinPriceSubscriptionBotState extends AbstractBotState {
 
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext.ChangeStateCallback changeState) {
-        log.debug("Handling price update");
+        log.debug("Handling min price update");
         final Long chatId = update.getChatId();
         final String text = update.getText();
 
@@ -67,7 +65,7 @@ public class MinPriceSubscriptionBotState extends AbstractBotState {
 
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
+        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/back")

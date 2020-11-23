@@ -7,4 +7,6 @@ import java.util.List;
 public interface CityService {
     List<City> getCities();
     City getCity(String city);
+
+    City getCity(Integer cityId);
 }

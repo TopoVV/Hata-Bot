@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
     @KeyboardRow(buttons = { "/my" }),
 })
 public class UnsubscribeBotState extends AbstractBotState {
-    private static final String ENTRANCE_MESSAGE = "Specify the id of the subscription you want to delete.";
+    private static final String HEADER = "Specify the id of the subscription you want to delete.";
 
     private final SubscriptionService subscriptionService;
 
@@ -39,21 +39,6 @@ public class UnsubscribeBotState extends AbstractBotState {
     public UnsubscribeBotState(SubscriptionService subscriptionService) {
         super(BotStateName.UNSUBSCRIBE);
         this.subscriptionService = subscriptionService;
-    }
-
-    @CommandMapping(forCommand = "/my")
-    public CommandResult onMy(TelegramCommand command) {
-        log.info("Executing /my command for user {}", command.getChatId());
-        final Long chatId = command.getChatId();
-        final String subscriptions = getSubscriptionsInfo(chatId);
-        return CommandResult.withMessage(String.format("Your subscriptions:\n\n%s", subscriptions));
-    }
-
-    @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
-        log.info("Executing /back command for user {}", command.getChatId());
-        changeState.accept(BotStateName.MANAGEMENT);
-        return CommandResult.empty();
     }
 
     @Override
@@ -78,14 +63,31 @@ public class UnsubscribeBotState extends AbstractBotState {
         }
     }
 
+    @Override
+    public String getEntranceMessage(UpdateWrapper update) {
+        return String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
+    }
+
     private String getSubscriptionsInfo(Long chatId) {
         return this.subscriptionService.getAllSubscriptionsForUser(chatId).stream()
             .map(Subscription::toString)
             .collect(Collectors.joining("\n----------\n"));
     }
 
-    @Override
-    public String getEntranceMessage(UpdateWrapper update) {
-        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
+    @CommandMapping(forCommand = "/my")
+    public CommandResult onMy(TelegramCommand command) {
+        log.info("Executing /my command for user {}", command.getChatId());
+        final Long chatId = command.getChatId();
+        final String subscriptions = getSubscriptionsInfo(chatId);
+        return CommandResult.withMessage(String.format("Your subscriptions:\n\n%s", subscriptions));
     }
+
+    @CommandMapping(forCommand = "/back")
+    public CommandResult onBack(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+        log.info("Executing /back command for user {}", command.getChatId());
+        changeState.accept(BotStateName.MANAGEMENT);
+        return CommandResult.empty();
+    }
+
+
 }
