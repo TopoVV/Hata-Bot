@@ -13,9 +13,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -27,6 +30,9 @@ public abstract class AbstractBotState implements BotState {
     private final BotStateName botStateName;
     private final Map<CommandInfo, CommandHandler> handlers;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Setter
     private Keyboard keyboard;
 
@@ -36,14 +42,14 @@ public abstract class AbstractBotState implements BotState {
     }
 
     @Override
-    public UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeState) {
+    public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
         return UpdateResult.withMessage("I dont understand!");
     }
 
     @Override
-    public CommandResult executeCommand(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult executeCommand(TelegramCommand command, UserContext context) {
         if (this.handlers.containsKey(command.getCommand())) {
-            return this.handlers.get(command.getCommand()).act(command, changeState);
+            return this.handlers.get(command.getCommand()).act(command, context);
         } else {
             return CommandResult.withMessage("No such command supported");
         }
@@ -54,8 +60,13 @@ public abstract class AbstractBotState implements BotState {
     }
 
     protected String commandsInformationString() {
+        final Locale locale = new Locale("ru");
         return this.handlers.keySet().stream()
-            .map(CommandInfo::toString)
+            .map(commandInfo -> {
+                final StringBuilder info = new StringBuilder(commandInfo.getCommandName() + " - ");
+                final String desc = this.messageSource.getMessage(commandInfo.getDescription(), null, locale);
+                return info.append(desc).toString();
+            })
             .collect(Collectors.joining("\n"));
     }
 }

@@ -37,15 +37,10 @@ public class CommandHandler {
         this.commandPath = commandPath;
     }
 
-    public <T> CommandResult act(TelegramCommand command, Consumer<T> changeState)
+    public CommandResult act(TelegramCommand command, UserContext context)
     {
         try {
-            final List<Class<?>> params = Stream.of(this.method.getParameterTypes()).collect(Collectors.toList());
-            if (params.contains(Consumer.class)) {
-                return (CommandResult) this.method.invoke(this.bean, command, changeState);
-            } else {
-                return (CommandResult) this.method.invoke(this.bean, command);
-            }
+            return (CommandResult) this.method.invoke(this.bean, command, context);
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Error handler method invocation", e);
             throw new RuntimeException("Cannot execute", e);

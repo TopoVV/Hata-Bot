@@ -1,5 +1,7 @@
 package com.topov.estatesearcher.config;
 
+import com.topov.estatesearcher.postprocessor.CommandMappingAnnotationBeanPostProcessor;
+import com.topov.estatesearcher.postprocessor.KeyboardDescriptionAnnotationPostProcessor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +33,20 @@ public class RootConfig {
     MessageSource messageSource() {
         log.info("Instantiating the message source");
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasenames("messages/replies", "messages/commands");
+        source.setBasenames("messages/commands");
+        source.setCacheSeconds(3600);
+        source.setDefaultEncoding("UTF-8");
         source.setUseCodeAsDefaultMessage(true);
         return source;
+    }
+
+    @Bean
+    CommandMappingAnnotationBeanPostProcessor telegramBotStateAnnotationBeanPostProcessor() {
+        return new CommandMappingAnnotationBeanPostProcessor();
+    }
+
+    @Bean
+    KeyboardDescriptionAnnotationPostProcessor keyboardDescriptionAnnotationPostProcessor() {
+        return new KeyboardDescriptionAnnotationPostProcessor();
     }
 }

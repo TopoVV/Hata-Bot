@@ -12,8 +12,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.function.Consumer;
 
 public interface BotState {
-    UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeStateCallback);
-    CommandResult executeCommand(TelegramCommand command, Consumer<BotStateName> changeStateCallback);
+    UpdateResult handleUpdate(TelegramUpdate update, UserContext context);
+    CommandResult executeCommand(TelegramCommand command, UserContext context);
     String getEntranceMessage(UpdateWrapper update);
     Keyboard getKeyboard();
 }

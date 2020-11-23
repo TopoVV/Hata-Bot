@@ -32,15 +32,4 @@ public class EstateSearcher {
             throw new RuntimeException("Cannot instantiate bot");
         }
     }
-
-    @Bean
-    CommandMappingAnnotationBeanPostProcessor telegramBotStateAnnotationBeanPostProcessor() {
-        return new CommandMappingAnnotationBeanPostProcessor();
-    }
-
-    @Bean
-    KeyboardDescriptionAnnotationPostProcessor keyboardDescriptionAnnotationPostProcessor() {
-        return new KeyboardDescriptionAnnotationPostProcessor();
-    }
-
 }

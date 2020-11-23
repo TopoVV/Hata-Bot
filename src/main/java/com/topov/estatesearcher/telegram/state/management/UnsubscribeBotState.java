@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/back", description = "go back to management"),
-    @AcceptedCommand(commandName = "/my", description = "list my subscriptions")
+    @AcceptedCommand(commandName = "/back", description = "back.description"),
+    @AcceptedCommand(commandName = "/my", description = "my.description")
 })
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/back" }),
@@ -44,7 +44,7 @@ public class UnsubscribeBotState extends AbstractBotState {
     }
 
     @Override
-    public UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeState) {
+    public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
         final Long chatId = update.getChatId();
         final String text = update.getText();
 
@@ -54,7 +54,7 @@ public class UnsubscribeBotState extends AbstractBotState {
 
             if (subscription.isPresent()) {
                 this.subscriptionService.removeSubscription(subscriptionId);
-                changeState.accept(BotStateName.MANAGEMENT);
+                context.changeState(BotStateName.MANAGEMENT);
                 return UpdateResult.withMessage("The subscription has been deleted.");
             }
 
@@ -77,7 +77,7 @@ public class UnsubscribeBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/my")
-    public CommandResult onMy(TelegramCommand command) {
+    public CommandResult onMy(TelegramCommand command, UserContext context) {
         log.info("Executing /my command for user {}", command.getChatId());
         final Long chatId = command.getChatId();
         final String subscriptions = getSubscriptionsInfo(chatId);
@@ -85,9 +85,9 @@ public class UnsubscribeBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onBack(TelegramCommand command, UserContext context) {
         log.info("Executing /back command for user {}", command.getChatId());
-        changeState.accept(BotStateName.MANAGEMENT);
+        context.changeState(BotStateName.MANAGEMENT);
         return CommandResult.empty();
     }
 

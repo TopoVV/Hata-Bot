@@ -2,6 +2,7 @@ package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
 import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
@@ -15,17 +16,15 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.function.Consumer;
-
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main", description = "go to main menu"),
-    @AcceptedCommand(commandName = "/cancel", description = "cancel subscription"),
-    @AcceptedCommand(commandName = "/save", description = "save the subscription"),
-    @AcceptedCommand(commandName = "/minPrice", description = "specify min price"),
-    @AcceptedCommand(commandName = "/maxPrice", description = "specify max price"),
-    @AcceptedCommand(commandName = "/city", description = "specify city"),
-    @AcceptedCommand(commandName = "/current", description = "current subscription config")
+    @AcceptedCommand(commandName = "/main", description = "main.description"),
+    @AcceptedCommand(commandName = "/cancel", description = "cancel.description"),
+    @AcceptedCommand(commandName = "/save", description = "save.description"),
+    @AcceptedCommand(commandName = "/minPrice", description = "minPrice.description"),
+    @AcceptedCommand(commandName = "/maxPrice", description = "maxPrice.description"),
+    @AcceptedCommand(commandName = "/city", description = "city.description"),
+    @AcceptedCommand(commandName = "/current", description = "current.description")
 })
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/minPrice", "/maxPrice", "/city" }),
@@ -49,36 +48,36 @@ public class SubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/minPrice")
-    public CommandResult onMinPrice(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onMinPrice(TelegramCommand command, UserContext context) {
         log.info("Executing /minPrice command for user {}", command.getChatId());
-        changeState.accept(BotStateName.SUBSCRIPTION_MIN_PRICE);
+        context.changeState(BotStateName.SUBSCRIPTION_MIN_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/maxPrice")
-    public CommandResult onMaxPrice(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onMaxPrice(TelegramCommand command, UserContext context) {
         log.info("Executing /maxPrice command for user {}", command.getChatId());
-        changeState.accept(BotStateName.SUBSCRIPTION_MAX_PRICE);
+        context.changeState(BotStateName.SUBSCRIPTION_MAX_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/city")
-    public CommandResult onCity(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onCity(TelegramCommand command, UserContext context) {
         log.info("Executing /city command for user {}", command.getChatId());
-        changeState.accept(BotStateName.SUBSCRIPTION_CITY);
+        context.changeState(BotStateName.SUBSCRIPTION_CITY);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onMain(TelegramCommand command, UserContext context) {
         log.info("Executing /main command for user {}", command.getChatId());
         this.subscriptionCache.evictCache(command.getChatId());
-        changeState.accept(BotStateName.INITIAL);
+        context.changeState(BotStateName.MAIN);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/save")
-    public CommandResult onSave(TelegramCommand command) {
+    public CommandResult onSave(TelegramCommand command, UserContext context) {
         log.info("Executing /save command for user {}", command.getChatId());
         if (this.subscriptionCache.flush(command.getChatId())) {
             return CommandResult.withMessage("The subscription saved.");
@@ -88,15 +87,15 @@ public class SubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/cancel")
-    public CommandResult onCancel(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onCancel(TelegramCommand command, UserContext context) {
         log.info("Executing /cancel command for user {}", command.getChatId());
         this.subscriptionCache.evictCache(command.getChatId());
-        changeState.accept(BotStateName.SUBSCRIPTION);
+        context.changeState(BotStateName.SUBSCRIPTION);
         return CommandResult.withMessage("Subscription canceled.");
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command) {
+    public CommandResult onCurrent(TelegramCommand command, UserContext context) {
         log.info("Executing /current command for user {}", command.getChatId());
 
         final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())

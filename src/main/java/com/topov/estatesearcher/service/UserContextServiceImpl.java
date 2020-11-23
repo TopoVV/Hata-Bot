@@ -28,14 +28,14 @@ public class UserContextServiceImpl implements UserContextService {
 
     @Override
     public void createContext(Long chatId) {
-        this.userContexts.put(chatId, new UserContext(chatId, BotStateName.INITIAL));
+        this.userContexts.put(chatId, new UserContext(chatId, BotStateName.MAIN));
     }
 
     public static class AnonymousUserContext extends UserContext {
         private final UserContextService contextService;
 
         public AnonymousUserContext(Long chatId, UserContextService contextService) {
-            super(chatId, BotStateName.INITIAL);
+            super(chatId, BotStateName.MAIN);
             this.contextService = contextService;
         }
 

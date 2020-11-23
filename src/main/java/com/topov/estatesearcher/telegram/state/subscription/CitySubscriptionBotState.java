@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/back", description = "go back"),
-    @AcceptedCommand(commandName = "/cities", description = "available cities"),
-    @AcceptedCommand(commandName = "/current", description = "current subscription config")
+    @AcceptedCommand(commandName = "/back", description = "back.description"),
+    @AcceptedCommand(commandName = "/cities", description = "cities.description"),
+    @AcceptedCommand(commandName = "/current", description = "current.description")
 })
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/back" }),
@@ -54,7 +54,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
     }
 
     @Override
-    public UpdateResult handleUpdate(TelegramUpdate update, Consumer<BotStateName> changeState) {
+    public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
         log.debug("Handling city update");
         final Long chatId = update.getChatId();
         final String text = update.getText();
@@ -64,7 +64,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
             if (optionalCity.isPresent()) {
                 final City city = optionalCity.get();
                 this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city));
-                changeState.accept(BotStateName.SUBSCRIPTION);
+                context.changeState(BotStateName.SUBSCRIPTION);
 
                 final String current = this.subscriptionCache.getCachedSubscription(chatId)
                     .map(Subscription::toString)
@@ -99,7 +99,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/cities")
-    public CommandResult onCities(TelegramCommand command) {
+    public CommandResult onCities(TelegramCommand command, UserContext context) {
         log.info("Executing /city command for user {}", command.getChatId());
         final String cities = this.cityService.getCities().stream()
             .map(City::toString)
@@ -109,14 +109,14 @@ public class CitySubscriptionBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onBack(TelegramCommand command, UserContext context) {
         log.info("Executing /back command for user {}", command.getChatId());
-        changeState.accept(BotStateName.SUBSCRIPTION);
+        context.changeState(BotStateName.SUBSCRIPTION);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command) {
+    public CommandResult onCurrent(TelegramCommand command, UserContext context) {
         log.info("Executing /cancel command for user {}", command.getChatId());
 
         final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())

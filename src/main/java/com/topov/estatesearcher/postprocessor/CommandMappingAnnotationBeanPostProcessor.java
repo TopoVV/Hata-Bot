@@ -7,6 +7,7 @@ import com.topov.estatesearcher.telegram.state.handler.CommandHandler;
 import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.MessageSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

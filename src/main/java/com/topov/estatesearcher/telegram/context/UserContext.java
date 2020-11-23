@@ -31,7 +31,7 @@ public class UserContext {
     }
 
     public CommandResult executeCommand(TelegramCommand command, BotState state) {
-        return state.executeCommand(command, this::changeState);
+        return state.executeCommand(command, this);
     }
 
     public void changeState(BotStateName newState) {
@@ -39,7 +39,7 @@ public class UserContext {
     }
 
     public UpdateResult handleUpdate(TelegramUpdate update, BotState state) {
-        return state.handleUpdate(update, this::changeState);
+        return state.handleUpdate(update, this);
     }
 
     public String getEntranceMessage(BotState currentState, UpdateWrapper update) {

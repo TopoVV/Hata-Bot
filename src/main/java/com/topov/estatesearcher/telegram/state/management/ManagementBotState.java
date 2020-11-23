@@ -16,14 +16,13 @@ import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main", description = "go to main menu"),
-    @AcceptedCommand(commandName = "/my", description = "list my subscriptions"),
-    @AcceptedCommand(commandName = "/unsubscribe", description = "delete a subscription")
+    @AcceptedCommand(commandName = "/main", description = "main.description"),
+    @AcceptedCommand(commandName = "/my", description = "my.description"),
+    @AcceptedCommand(commandName = "/unsubscribe", description = "unsubscribe.descriptions")
 })
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/main" }),
@@ -47,21 +46,21 @@ public class ManagementBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/unsubscribe")
-    public CommandResult onUnsubscribe(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onUnsubscribe(TelegramCommand command, UserContext context) {
         log.info("Executing /unsubscribe command for user {}", command.getChatId());
-        changeState.accept(BotStateName.UNSUBSCRIBE);
+        context.changeState(BotStateName.UNSUBSCRIBE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, Consumer<BotStateName> changeState) {
+    public CommandResult onMain(TelegramCommand command, UserContext context) {
         log.info("Executing /main command for user {}", command.getChatId());
-        changeState.accept(BotStateName.INITIAL);
+        context.changeState(BotStateName.MAIN);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/my")
-    public CommandResult onMy(TelegramCommand command) {
+    public CommandResult onMy(TelegramCommand command, UserContext context) {
         log.info("Executing /my command for user {}", command.getChatId());
         final Long chatId = command.getChatId();
         final String subscriptions = getSubscriptionsInfo(chatId);

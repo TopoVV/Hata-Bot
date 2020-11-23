@@ -1,7 +1,7 @@
 package com.topov.estatesearcher.telegram.state;
 
 public enum BotStateName {
-    INITIAL,
+    MAIN,
     SUBSCRIPTION,
     SUBSCRIPTION_MIN_PRICE,
     SUBSCRIPTION_MAX_PRICE,
