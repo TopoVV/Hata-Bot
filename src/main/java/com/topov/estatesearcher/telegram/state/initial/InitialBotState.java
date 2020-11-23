@@ -17,14 +17,12 @@ import java.util.Optional;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/start"),
-    @AcceptedCommand(commandName = "/subscribe"),
-    @AcceptedCommand(commandName = "/subscriptions")
+    @AcceptedCommand(commandName = "/start", description = "restart"),
+    @AcceptedCommand(commandName = "/subscribe",description = "create a subscription"),
+    @AcceptedCommand(commandName = "/subscriptions",description = "manage my subscriptions")
 })
 public class InitialBotState extends AbstractBotState {
-    public static final String ENTRANCE_MESSAGE = "Main menu.\n\nCommands:\n" +
-        "/subscribe - create a subscription\n" +
-        "/subscriptions - manage my subscriptions\n";
+    private static final String ENTRANCE_MESSAGE = "Main menu.";
 
     private final UserContextService contextService;
 
@@ -57,6 +55,6 @@ public class InitialBotState extends AbstractBotState {
 
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return ENTRANCE_MESSAGE;
+        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
     }
 }

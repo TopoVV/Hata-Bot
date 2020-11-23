@@ -25,16 +25,12 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/back"),
-    @AcceptedCommand(commandName = "/cities"),
-    @AcceptedCommand(commandName = "/current")
+    @AcceptedCommand(commandName = "/back", description = "go back"),
+    @AcceptedCommand(commandName = "/cities", description = "available cities"),
+    @AcceptedCommand(commandName = "/current", description = "current subscription config")
 })
 public class CitySubscriptionBotState extends AbstractBotState {
-    public static final String ENTRANCE_MESSAGE = "Specify city.\n\n" +
-        "Commands:\n" +
-        "/cancel - go back\n" +
-        "/cities - available cities\n" +
-        "/current - city current subscription config";
+    private static final String ENTRANCE_MESSAGE = "Specify city.";
 
     private final CityService cityService;
     private final SubscriptionCache subscriptionCache;
@@ -72,7 +68,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
 
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return ENTRANCE_MESSAGE;
+        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/cities")

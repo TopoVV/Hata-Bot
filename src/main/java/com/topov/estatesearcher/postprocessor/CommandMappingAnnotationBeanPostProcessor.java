@@ -4,6 +4,7 @@ import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import com.topov.estatesearcher.telegram.state.handler.CommandHandler;
+import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
@@ -11,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,8 +37,8 @@ public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProces
 
         final Class<?> aClass = this.states.get(beanName);
         final TelegramBotState stateDefinition = aClass.getAnnotation(TelegramBotState.class);
-        final Set<String> acceptedCommands = Stream.of(stateDefinition.commands())
-            .map(AcceptedCommand::commandName)
+        final Set<CommandInfo> acceptedCommands = Stream.of(stateDefinition.commands())
+            .map(command -> new CommandInfo(command.commandName(), command.description()))
             .collect(Collectors.toSet());
 
         try {
@@ -44,9 +46,14 @@ public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProces
             for (Method method : aClass.getMethods()) {
                 if (method.isAnnotationPresent(CommandMapping.class)) {
                     CommandMapping annotation = method.getAnnotation(CommandMapping.class);
-                    final String commandPath = annotation.forCommand();
-                    if (acceptedCommands.contains(commandPath)) {
-                        injectorMethod.invoke(bean, new CommandHandler(bean, method, commandPath));
+
+                    final Optional<CommandInfo> found = acceptedCommands.stream().
+                        filter(info -> info.getCommandName().equals(annotation.forCommand()))
+                        .findFirst();
+
+                    if (found.isPresent()) {
+                        final CommandInfo commandInfo = found.get();
+                        injectorMethod.invoke(bean, new CommandHandler(bean, method, commandInfo.getCommandName()), commandInfo);
                     }
                 }
             }
@@ -57,6 +64,6 @@ public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProces
     }
 
     private Method getInjectorMethod(Class<?> aClass) throws NoSuchMethodException {
-        return aClass.getMethod("addCommandHandler", CommandHandler.class);
+        return aClass.getMethod("addCommandHandler", CommandHandler.class, CommandInfo.class);
     }
 }

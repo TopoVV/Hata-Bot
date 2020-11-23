@@ -21,14 +21,11 @@ import java.util.Optional;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/back"),
-    @AcceptedCommand(commandName = "/current")
+    @AcceptedCommand(commandName = "/back", description = "go back"),
+    @AcceptedCommand(commandName = "/current", description = "current subscription config")
 })
 public class MinPriceSubscriptionBotState extends AbstractBotState {
-    public static final String ENTRANCE_MESSAGE = "Specify min price.\n\n" +
-        "Commands:\n" +
-        "/cancel - go back\n" +
-        "/current - city current subscription config";
+    private static final String ENTRANCE_MESSAGE = "Specify min price.";
 
     private final SubscriptionCache subscriptionCache;
 
@@ -64,7 +61,7 @@ public class MinPriceSubscriptionBotState extends AbstractBotState {
 
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return ENTRANCE_MESSAGE;
+        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/back")

@@ -8,6 +8,7 @@ import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.handler.CommandHandler;
+import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -15,12 +16,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Getter
 public abstract class AbstractBotState implements BotState {
     private final BotStateName botStateName;
-    private final Map<String, CommandHandler> handlers;
+    private final Map<CommandInfo, CommandHandler> handlers;
 
     protected AbstractBotState(BotStateName botStateName) {
         this.botStateName = botStateName;
@@ -46,7 +48,13 @@ public abstract class AbstractBotState implements BotState {
         return new Keyboard();
     }
 
-    public void addCommandHandler(CommandHandler commandHandler) {
-        this.handlers.put(commandHandler.getCommandPath(), commandHandler);
+    public void addCommandHandler(CommandHandler commandHandler, CommandInfo commandInfo) {
+        this.handlers.put(commandInfo, commandHandler);
+    }
+
+    protected String commandsInformationString() {
+        return this.handlers.keySet().stream()
+            .map(CommandInfo::toString)
+            .collect(Collectors.joining("\n"));
     }
 }

@@ -18,24 +18,16 @@ import java.util.Optional;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main"),
-    @AcceptedCommand(commandName = "/cancel"),
-    @AcceptedCommand(commandName = "/save"),
-    @AcceptedCommand(commandName = "/minPrice"),
-    @AcceptedCommand(commandName = "/maxPrice"),
-    @AcceptedCommand(commandName = "/city"),
-    @AcceptedCommand(commandName = "/current")
+    @AcceptedCommand(commandName = "/main", description = "go to main menu"),
+    @AcceptedCommand(commandName = "/cancel", description = "cancel subscription"),
+    @AcceptedCommand(commandName = "/save", description = "save the subscription"),
+    @AcceptedCommand(commandName = "/minPrice", description = "specify min price"),
+    @AcceptedCommand(commandName = "/maxPrice", description = "specify max price"),
+    @AcceptedCommand(commandName = "/city", description = "specify city"),
+    @AcceptedCommand(commandName = "/current", description = "current subscription config")
 })
 public class SubscriptionBotState extends AbstractBotState {
-    public static final String ENTRANCE_MESSAGE = "Here you can subscribe.\n\n" +
-        "Commands:\n" +
-        "/main - go to main menu\n" +
-        "/cancel - cancel subscription\n" +
-        "/save - save the subscription\n" +
-        "/minPrice - specify min price\n" +
-        "/maxPrice - specify max price\n" +
-        "/city - specify city\n" +
-        "/current - city current subscription config";
+    private static final String ENTRANCE_MESSAGE = "Here you can subscribe.";
 
     private final SubscriptionCache subscriptionCache;
 
@@ -47,7 +39,7 @@ public class SubscriptionBotState extends AbstractBotState {
 
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return ENTRANCE_MESSAGE;
+        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
     }
 
     @CommandMapping(forCommand = "/minPrice")

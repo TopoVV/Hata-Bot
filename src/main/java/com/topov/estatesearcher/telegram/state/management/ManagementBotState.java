@@ -19,14 +19,11 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main"),
-    @AcceptedCommand(commandName = "/unsubscribe")
+    @AcceptedCommand(commandName = "/main", description = "go to main menu"),
+    @AcceptedCommand(commandName = "/unsubscribe", description = "delete a subscription")
 })
 public class ManagementBotState extends AbstractBotState {
-    public static final String ENTRANCE_MESSAGE =
-        "Here you can manage your subscriptions:\n\n%s\n\nCommands:\n" +
-        "/main - go to main menu\n" +
-        "/unsubscribe - delete a subscription\n";
+    private static final String ENTRANCE_MESSAGE = "Here you can manage your subscriptions.";
 
     private final SubscriptionService subscriptionService;
 
@@ -52,7 +49,7 @@ public class ManagementBotState extends AbstractBotState {
 
     @Override
     public String getEntranceMessage(UpdateWrapper update) {
-        return String.format(ENTRANCE_MESSAGE, getSubscriptionsInfo(update.getChatId()));
+        return String.format("%s\n\nCommands:\n%s", ENTRANCE_MESSAGE, commandsInformationString());
     }
 
     private String getSubscriptionsInfo(Long chatId) {
