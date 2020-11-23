@@ -1,14 +1,16 @@
-package com.topov.estatesearcher.telegram;
+package com.topov.estatesearcher.telegram.context;
 
+import com.topov.estatesearcher.telegram.request.TelegramCommand;
+import com.topov.estatesearcher.telegram.request.TelegramUpdate;
+import com.topov.estatesearcher.telegram.request.UpdateWrapper;
+import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
-import com.topov.estatesearcher.telegram.state.CommandResult;
-import com.topov.estatesearcher.telegram.state.TelegramUpdate;
 import lombok.Getter;
 
+import java.util.Optional;
 import java.util.function.Consumer;
-
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Context object of the State design pattern.
@@ -38,6 +40,10 @@ public class UserContext {
 
     public UpdateResult handleUpdate(TelegramUpdate update, BotState state) {
         return state.handleUpdate(update, new ChangeStateCallback(this));
+    }
+
+    public String getEntranceMessage(BotState currentState, UpdateWrapper update) {
+        return currentState.getEntranceMessage(update);
     }
 
     /**

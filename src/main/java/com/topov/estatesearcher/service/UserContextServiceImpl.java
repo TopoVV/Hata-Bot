@@ -1,14 +1,11 @@
 package com.topov.estatesearcher.service;
 
-import com.topov.estatesearcher.telegram.TelegramCommand;
-import com.topov.estatesearcher.telegram.UserContext;
+import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.request.TelegramCommand;
+import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
-import com.topov.estatesearcher.telegram.state.CommandResult;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

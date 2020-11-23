@@ -1,12 +1,17 @@
-package com.topov.estatesearcher.telegram.state;
+package com.topov.estatesearcher.telegram.state.handler;
 
-import com.topov.estatesearcher.telegram.TelegramCommand;
-import com.topov.estatesearcher.telegram.UserContext;
+import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.request.TelegramCommand;
+import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.state.BotState;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
+import java.util.zip.CheckedOutputStream;
 
 /**
  * Spring MVC - like wrapper for all command handling methods. Created by

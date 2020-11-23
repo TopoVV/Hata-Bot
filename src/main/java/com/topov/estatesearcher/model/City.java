@@ -15,4 +15,9 @@ public class City {
         this.cityId = cityId;
         this.cityName = cityName;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s - %s", this.cityId, this.cityName);
+    }
 }

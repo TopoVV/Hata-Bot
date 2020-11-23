@@ -4,12 +4,12 @@ import com.topov.estatesearcher.dao.CityDao;
 import com.topov.estatesearcher.model.City;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @Service
@@ -30,10 +30,11 @@ public class InMemoryCityDao implements CityDao {
     }
 
     @Override
-    public Optional<City> getCity(int cityId) {
+    public City getCity(String cityName) {
         return this.cities.stream()
-            .filter(city -> city.getCityId().equals(cityId))
-            .findFirst();
+            .filter(city -> city.getCityName().equals(cityName))
+            .findFirst()
+            .orElseThrow(() -> new EmptyResultDataAccessException(1));
     }
 
 }

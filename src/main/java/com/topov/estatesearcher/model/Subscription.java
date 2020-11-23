@@ -30,7 +30,11 @@ public class Subscription {
 
     @Override
     public String toString() {
-        final String template = "[id = %d | min price = %d | max price = %d | city = %s]";
-        return String.format(template, subscriptionId, minPrice, maxPrice, cityName);
+        final String minPrice = this.minPrice == null ? "Not specified" : this.minPrice.toString();
+        final String maxPrice = this.maxPrice == null ? "Not specified" : this.maxPrice.toString();
+        final String cityName = this.cityName == null ? "Not specified" : this.cityName;
+        final String id = this.subscriptionId == null ? "" : String.format("id = %d", this.subscriptionId);
+        final String template = "%s\nmin price = %s\nmax price = %s\ncity = %s";
+        return String.format(template, id, minPrice, maxPrice, cityName);
     }
 }

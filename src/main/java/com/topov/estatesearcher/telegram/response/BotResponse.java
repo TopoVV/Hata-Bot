@@ -1,8 +1,7 @@
-package com.topov.estatesearcher.telegram;
+package com.topov.estatesearcher.telegram.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class BotResponse {

@@ -9,4 +9,5 @@ public interface SubscriptionCache {
     void removeCachedSubscription(long chatId);
     void modifySubscription(long chatId, SubscriptionUpdate subscriptionUpdate);
     Optional<Subscription> getCachedSubscription(Long chatId);
+    boolean flush(Long chatId);
 }

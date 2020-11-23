@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 @Profile(value = "dev")
 public class JdbcCityDao implements CityDao {
     private static final String SELECT_ALL_CITIES = "SELECT DISTINCT * FROM cities";
-    private static final String SELECT_CITY_BY_ID = "SELECT * FROM cities WHERE city_id = :cityId";
+    private static final String SELECT_CITY_BY_ID = "SELECT * FROM cities WHERE UPPER(city_name) = UPPER(:city)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -44,13 +43,10 @@ public class JdbcCityDao implements CityDao {
     }
 
     @Override
-    public Optional<City> getCity(int cityId) {
+    public City getCity(String city) {
         final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("cityId", cityId);
-
-        final City city = this.jdbcTemplate.queryForObject(SELECT_CITY_BY_ID, params, cityRowMapper);
-
-        return Optional.ofNullable(city);
+        params.addValue("city", city);
+        return this.jdbcTemplate.queryForObject(SELECT_CITY_BY_ID, params, cityRowMapper);
     }
 
     private static final RowMapper<City> cityRowMapper = (rs, rowNum) -> {

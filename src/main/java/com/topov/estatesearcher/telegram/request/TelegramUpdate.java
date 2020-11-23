@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.state;
+package com.topov.estatesearcher.telegram.request;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 

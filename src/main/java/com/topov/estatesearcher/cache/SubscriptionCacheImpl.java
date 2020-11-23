@@ -1,6 +1,7 @@
 package com.topov.estatesearcher.cache;
 
 import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.service.SubscriptionService;
 import com.topov.estatesearcher.telegram.state.subscription.update.SubscriptionUpdate;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,11 @@ import java.util.Optional;
 @Service
 public class SubscriptionCacheImpl implements SubscriptionCache {
     private final Map<Long, Subscription> subscriptions = new HashMap<>();
+    private final SubscriptionService subscriptionService;
+
+    public SubscriptionCacheImpl(SubscriptionService subscriptionService) {
+        this.subscriptionService = subscriptionService;
+    }
 
     @Override
     public void removeCachedSubscription(long chatId) {
@@ -43,5 +49,15 @@ public class SubscriptionCacheImpl implements SubscriptionCache {
     public Optional<Subscription> getCachedSubscription(Long chatId) {
         log.debug("Retrieving cached subscription for user: {}", chatId);
         return Optional.ofNullable(subscriptions.get(chatId));
+    }
+
+    @Override
+    public boolean flush(Long chatId) {
+        if (this.subscriptions.containsKey(chatId)) {
+            final Subscription subscription = this.subscriptions.remove(chatId);
+            this.subscriptionService.saveSubscription(subscription);
+            return true;
+        }
+        return false;
     }
 }

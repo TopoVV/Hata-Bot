@@ -1,6 +1,7 @@
 package com.topov.estatesearcher.telegram;
 
 import com.topov.estatesearcher.model.Announcement;
+import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,9 @@ public class EstateBot extends TelegramLongPollingBot {
             final SendMessage sendMessage = new SendMessage(response.getForUser(), response.toString());
             executeApiAction(sendMessage);
         });
+
+        final SendMessage message = this.updateProcessor.getMessage(updateWrapper);
+        executeApiAction(message);
 
     }
 

@@ -1,55 +1,109 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
 import com.topov.estatesearcher.cache.SubscriptionCache;
-import com.topov.estatesearcher.telegram.TelegramCommand;
-import com.topov.estatesearcher.telegram.UserContext;
-import com.topov.estatesearcher.telegram.state.AbstractSubscriptionBotState;
+import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.request.TelegramCommand;
+import com.topov.estatesearcher.telegram.request.UpdateWrapper;
+import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
-import com.topov.estatesearcher.telegram.state.CommandResult;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 
-import java.util.Locale;
+import java.util.Optional;
 
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/main"),
-    @AcceptedCommand(commandName = "/help"),
     @AcceptedCommand(commandName = "/cancel"),
     @AcceptedCommand(commandName = "/save"),
     @AcceptedCommand(commandName = "/minPrice"),
     @AcceptedCommand(commandName = "/maxPrice"),
     @AcceptedCommand(commandName = "/city"),
+    @AcceptedCommand(commandName = "/current")
 })
-public class SubscriptionBotState extends AbstractSubscriptionBotState {
+public class SubscriptionBotState extends AbstractBotState {
+    public static final String ENTRANCE_MESSAGE = "Here you can subscribe.\n\n" +
+        "Commands:\n" +
+        "/main - go to main menu\n" +
+        "/cancel - cancel subscription\n" +
+        "/save - save the subscription\n" +
+        "/minPrice - specify min price\n" +
+        "/maxPrice - specify max price\n" +
+        "/city - specify city\n" +
+        "/current - city current subscription config";
+
+    private final SubscriptionCache subscriptionCache;
 
     @Autowired
-    public SubscriptionBotState(SubscriptionCache subscriptionCache, MessageSource messageSource) {
-        super(BotStateName.SUBSCRIPTION, messageSource, subscriptionCache);
+    public SubscriptionBotState(SubscriptionCache subscriptionCache) {
+        super(BotStateName.SUBSCRIPTION);
+        this.subscriptionCache = subscriptionCache;
+    }
+
+    @Override
+    public String getEntranceMessage(UpdateWrapper update) {
+        return ENTRANCE_MESSAGE;
     }
 
     @CommandMapping(forCommand = "/minPrice")
-    public CommandResult handleMinPriceCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onMinPrice(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /minPrice command");
         changeState.accept(BotStateName.SUBSCRIPTION_MIN_PRICE);
-        return new CommandResult(command.getChatId(), this.messageSource.getMessage("subscription.minPrice.entrance", null, Locale.ENGLISH));
+        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/maxPrice")
-    public CommandResult handleMaxPriceCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onMaxPrice(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /maxPrice command");
         changeState.accept(BotStateName.SUBSCRIPTION_MAX_PRICE);
-        return new CommandResult(command.getChatId(), this.messageSource.getMessage("subscription.maxPrice.entrance", null, Locale.ENGLISH));
+        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/city")
-    public CommandResult handleCityCommand(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+    public CommandResult onCity(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
         log.info("Executing /city command");
         changeState.accept(BotStateName.SUBSCRIPTION_CITY);
-        return new CommandResult(command.getChatId(), this.messageSource.getMessage("subscription.city.entrance", null, Locale.ENGLISH));
+        return CommandResult.empty();
+    }
+
+    @CommandMapping(forCommand = "/main")
+    public CommandResult onMain(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+        log.info("Executing /main command");
+        changeState.accept(BotStateName.INITIAL);
+        return CommandResult.empty();
+    }
+
+    @CommandMapping(forCommand = "/save")
+    public CommandResult onSave(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+        log.info("Executing /save command");
+        if (this.subscriptionCache.flush(command.getChatId())) {
+            return CommandResult.withMessage("The subscription saved.");
+        }
+
+        return CommandResult.withMessage("You didnt create any new subscriptions.");
+    }
+
+    @CommandMapping(forCommand = "/cancel")
+    public CommandResult onCancel(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+        log.info("Executing /cancel command");
+        this.subscriptionCache.removeCachedSubscription(command.getChatId());
+        changeState.accept(BotStateName.SUBSCRIPTION);
+        return CommandResult.withMessage("Subscription canceled.");
+    }
+
+    @CommandMapping(forCommand = "/current")
+    public CommandResult onCurrent(TelegramCommand command, UserContext.ChangeStateCallback changeState) {
+        log.info("Executing /cancel command");
+
+        final String current = this.subscriptionCache.getCachedSubscription(command.getChatId())
+            .map(Subscription::toString)
+            .orElse("Not created yet");
+
+        return CommandResult.withMessage(String.format("Current:\n%s", current));
     }
 }

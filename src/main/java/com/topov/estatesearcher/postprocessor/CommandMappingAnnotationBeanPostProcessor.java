@@ -1,9 +1,9 @@
 package com.topov.estatesearcher.postprocessor;
 
-import com.topov.estatesearcher.telegram.state.CommandHandler;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
+import com.topov.estatesearcher.telegram.state.handler.CommandHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
