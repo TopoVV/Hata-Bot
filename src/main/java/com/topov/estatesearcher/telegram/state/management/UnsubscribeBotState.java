@@ -64,12 +64,6 @@ public class UnsubscribeBotState extends AbstractBotState {
         }
     }
 
-    @Override
-    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
-        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
-    }
-
     private String getSubscriptionsInfo(String chatId) {
         return this.subscriptionService.getAllSubscriptionsForUser(chatId).stream()
             .map(Subscription::toString)

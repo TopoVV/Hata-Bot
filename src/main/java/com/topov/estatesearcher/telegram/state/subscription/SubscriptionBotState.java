@@ -45,12 +45,6 @@ public class SubscriptionBotState extends AbstractBotState {
         this.subscriptionCache = subscriptionCache;
     }
 
-    @Override
-    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
-        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
-    }
-
     @CommandMapping(forCommand = "/minPrice")
     public CommandResult onMinPrice(TelegramCommand command, UserContext context) {
         log.info("Executing /minPrice command for user {}", context.getChatId());

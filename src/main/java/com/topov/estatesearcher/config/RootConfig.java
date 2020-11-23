@@ -33,7 +33,7 @@ public class RootConfig {
     MessageSource messageSource() {
         log.info("Instantiating the message source");
         ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasenames("messages/commands");
+        source.setBasenames("messages/messages_ru");
         source.setCacheSeconds(3600);
         source.setDefaultEncoding("UTF-8");
         source.setUseCodeAsDefaultMessage(true);

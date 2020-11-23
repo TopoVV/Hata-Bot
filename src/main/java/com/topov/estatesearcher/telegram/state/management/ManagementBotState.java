@@ -42,12 +42,6 @@ public class ManagementBotState extends AbstractBotState {
         this.subscriptionService = subscriptionService;
     }
 
-    @Override
-    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
-        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
-    }
-
     @CommandMapping(forCommand = "/unsubscribe")
     public CommandResult onUnsubscribe(TelegramCommand command, UserContext context) {
         log.info("Executing /unsubscribe command for user {}", context.getChatId());

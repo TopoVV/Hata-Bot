@@ -29,16 +29,9 @@ import java.util.Optional;
 public class InitialBotState extends AbstractBotState {
     private static final String HEADER = "Main menu.";
 
-
     @Autowired
     public InitialBotState() {
         super(BotStateName.MAIN);
-    }
-
-    @Override
-    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
-        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
     }
 
     @CommandMapping(forCommand = "/subscribe")

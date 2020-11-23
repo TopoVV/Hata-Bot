@@ -91,12 +91,6 @@ public class CitySubscriptionBotState extends AbstractBotState {
         }
     }
 
-    @Override
-    public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        final String entranceText = String.format("%s\n\nCommands:\n%s", HEADER, commandsInformationString());
-        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.getKeyboard()));
-    }
-
     @CommandMapping(forCommand = "/cities")
     public CommandResult onCities(TelegramCommand command, UserContext context) {
         log.info("Executing /city command for user {}", context.getChatId());

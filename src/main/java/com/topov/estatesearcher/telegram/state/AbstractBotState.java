@@ -39,6 +39,10 @@ public abstract class AbstractBotState implements BotState {
         this.handlers = new HashMap<>();
     }
 
+    public void addCommandHandler(CommandHandler commandHandler, CommandInfo commandInfo) {
+        this.handlers.put(commandInfo, commandHandler);
+    }
+
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
         return UpdateResult.withMessage("I dont understand!");
@@ -55,15 +59,19 @@ public abstract class AbstractBotState implements BotState {
 
     @Override
     public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        return Optional.empty();
-    }
-
-    public void addCommandHandler(CommandHandler commandHandler, CommandInfo commandInfo) {
-        this.handlers.put(commandInfo, commandHandler);
-    }
-
-    protected String commandsInformationString() {
         final Locale locale = new Locale("ru");
+        final String headerKey = getCurrentStateHeaderKey();
+        final String header = messageSource.getMessage(headerKey, null, locale);
+        final String commandsInformationString = commandsInformationString(locale);
+        final String entranceText = this.messageSource.getMessage("entrance.template", new Object[]{header, commandsInformationString}, locale);
+        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.keyboard));
+    }
+
+    protected String getCurrentStateHeaderKey() {
+        return "main.header";
+    }
+
+    private String commandsInformationString(Locale locale) {
         return this.handlers.keySet().stream()
             .map(commandInfo -> {
                 final StringBuilder info = new StringBuilder(commandInfo.getCommandName() + " - ");
