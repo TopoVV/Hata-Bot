@@ -37,7 +37,7 @@ public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProces
         final Class<?> aClass = this.states.get(beanName);
         final TelegramBotState stateDefinition = aClass.getAnnotation(TelegramBotState.class);
         final Set<CommandInfo> acceptedCommands = Stream.of(stateDefinition.commands())
-            .map(command -> new CommandInfo(command.commandName(), command.description()))
+            .map(command -> new CommandInfo(command.commandName()))
             .collect(Collectors.toSet());
 
         try {

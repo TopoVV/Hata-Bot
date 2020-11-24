@@ -13,11 +13,8 @@ import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,16 +23,19 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class AbstractBotState implements BotState {
     private final BotStateName botStateName;
+    private final String headerKey;
+    private final String commandsKey;
     private final Map<CommandInfo, CommandHandler> handlers;
-
-    @Autowired
-    private MessageSource messageSource;
+    private final MessageSourceAdapter messageSource;
 
     @Setter
     private Keyboard keyboard;
 
-    protected AbstractBotState(BotStateName botStateName) {
+    protected AbstractBotState(BotStateName botStateName, String headerKey, String commandsKey, MessageSourceAdapter messageSource) {
         this.botStateName = botStateName;
+        this.headerKey = headerKey;
+        this.commandsKey = commandsKey;
+        this.messageSource = messageSource;
         this.handlers = new HashMap<>();
     }
 
@@ -59,25 +59,10 @@ public abstract class AbstractBotState implements BotState {
 
     @Override
     public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        final Locale locale = new Locale("ru");
-        final String headerKey = getCurrentStateHeaderKey();
-        final String header = messageSource.getMessage(headerKey, null, locale);
-        final String commandsInformationString = commandsInformationString(locale);
-        final String entranceText = this.messageSource.getMessage("entrance.template", new Object[]{header, commandsInformationString}, locale);
-        return Optional.of(new EntranceMessage(context.getChatId(), entranceText, this.keyboard));
-    }
-
-    protected String getCurrentStateHeaderKey() {
-        return "main.header";
-    }
-
-    private String commandsInformationString(Locale locale) {
-        return this.handlers.keySet().stream()
-            .map(commandInfo -> {
-                final StringBuilder info = new StringBuilder(commandInfo.getCommandName() + " - ");
-                final String desc = this.messageSource.getMessage(commandInfo.getDescription(), null, locale);
-                return info.append(desc).toString();
-            })
-            .collect(Collectors.joining("\n"));
+        final String header = this.messageSource.getMessage(this.headerKey, context);
+        final String commands = this.messageSource.getMessage(this.commandsKey, context);
+        final String entranceText = this.messageSource.getMessage("entrance.template", context, header, commands);
+        final EntranceMessage entranceMessage = new EntranceMessage(context.getChatId(), entranceText, this.keyboard);
+        return Optional.of(entranceMessage);
     }
 }

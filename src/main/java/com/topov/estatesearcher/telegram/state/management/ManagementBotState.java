@@ -2,29 +2,27 @@ package com.topov.estatesearcher.telegram.state.management;
 
 import com.topov.estatesearcher.model.Subscription;
 import com.topov.estatesearcher.service.SubscriptionService;
-import com.topov.estatesearcher.telegram.EntranceMessage;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
-import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
+import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main", description = "main.description"),
-    @AcceptedCommand(commandName = "/my", description = "my.description"),
-    @AcceptedCommand(commandName = "/unsubscribe", description = "unsubscribe.descriptions")
+    @AcceptedCommand(commandName = "/main"),
+    @AcceptedCommand(commandName = "/my"),
+    @AcceptedCommand(commandName = "/unsubscribe")
 })
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/main" }),
@@ -32,27 +30,25 @@ import java.util.stream.Collectors;
     @KeyboardRow(buttons = { "/unsubscribe" }),
 })
 public class ManagementBotState extends AbstractBotState {
-    private static final String HEADER = "Here you can manage your subscriptions.";
-
     private final SubscriptionService subscriptionService;
 
     @Autowired
-    protected ManagementBotState(SubscriptionService subscriptionService) {
-        super(BotStateName.MANAGEMENT);
+    public ManagementBotState(SubscriptionService subscriptionService, MessageSourceAdapter messageSource) {
+        super(BotStateName.MANAGEMENT, "management.header", "management.commands", messageSource);
         this.subscriptionService = subscriptionService;
     }
 
     @CommandMapping(forCommand = "/unsubscribe")
     public CommandResult onUnsubscribe(TelegramCommand command, UserContext context) {
         log.info("Executing /unsubscribe command for user {}", context.getChatId());
-        context.changeState(BotStateName.UNSUBSCRIBE);
+        context.setCurrentStateName(BotStateName.UNSUBSCRIBE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext context) {
         log.info("Executing /main command for user {}", context.getChatId());
-        context.changeState(BotStateName.MAIN);
+        context.setCurrentStateName(BotStateName.MAIN);
         return CommandResult.empty();
     }
 

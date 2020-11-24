@@ -7,16 +7,9 @@ import java.util.Objects;
 @Getter
 public class CommandInfo {
     private final String commandName;
-    private final String description;
-
-    public CommandInfo(String commandName, String description) {
-        this.commandName = commandName;
-        this.description = description;
-    }
 
     public CommandInfo(String commandName) {
         this.commandName = commandName;
-        this.description = "";
     }
 
     @Override
@@ -38,6 +31,6 @@ public class CommandInfo {
 
     @Override
     public String toString() {
-        return String.format("%s - %s", this.commandName, this.description);
+        return this.commandName;
     }
 }

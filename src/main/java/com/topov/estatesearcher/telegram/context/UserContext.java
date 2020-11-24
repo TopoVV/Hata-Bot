@@ -9,33 +9,35 @@ import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import lombok.Getter;
+import lombok.Setter;
 
+import java.util.Locale;
 import java.util.Optional;
 
 /**
  * Context object of the State design pattern.
  */
 @Getter
+@Setter
 public class UserContext {
     private final String chatId;
+    private Locale locale;
     private BotStateName currentStateName;
 
     public UserContext(String chatId, BotStateName currentStateName) {
         this.chatId = chatId;
         this.currentStateName = currentStateName;
+        this.locale = new Locale("en");
     }
 
     public UserContext(UserContext context) {
         this.chatId = context.getChatId();
         this.currentStateName = context.getCurrentStateName();
+        this.locale = context.locale;
     }
 
     public CommandResult executeCommand(TelegramCommand command, BotState state) {
         return state.executeCommand(command, this);
-    }
-
-    public void changeState(BotStateName newState) {
-        this.currentStateName = newState;
     }
 
     public UpdateResult handleUpdate(TelegramUpdate update, BotState state) {

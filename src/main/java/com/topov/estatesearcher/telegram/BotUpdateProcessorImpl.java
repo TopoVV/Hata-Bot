@@ -64,10 +64,4 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
         final BotState currentState = this.states.get(context.getCurrentStateName());
         return context.getEntranceMessage(currentState, update);
     }
-
-
-    @Override
-    public Keyboard getKeyboard(Update update) {
-        return new Keyboard();
-    }
 }

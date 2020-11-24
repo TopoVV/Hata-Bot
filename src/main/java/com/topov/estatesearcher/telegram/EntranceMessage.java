@@ -1,7 +1,11 @@
 package com.topov.estatesearcher.telegram;
 
+import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.Keyboard;
+import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+
+import java.util.Optional;
 
 public class EntranceMessage {
     private final Keyboard keyboard;

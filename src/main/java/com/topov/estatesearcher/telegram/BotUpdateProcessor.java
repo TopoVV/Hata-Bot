@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface BotUpdateProcessor {
     Optional<BotResponse> processUpdate(UpdateWrapper update);
     Optional<EntranceMessage> getEntranceMessage(UpdateWrapper updateWrapper);
-    Keyboard getKeyboard(Update update);
-
 }
