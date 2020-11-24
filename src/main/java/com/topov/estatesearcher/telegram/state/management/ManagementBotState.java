@@ -32,13 +32,11 @@ import java.util.stream.Collectors;
     @KeyboardRow(buttons = { "/unsubscribe" }),
     @KeyboardRow(buttons = { "/donate", "/language" }),
 })
-public class ManagementBotState extends AbstractBotState {
-    private final SubscriptionService subscriptionService;
+public class ManagementBotState extends AbstractManagementBotState {
 
     @Autowired
     public ManagementBotState(SubscriptionService subscriptionService, MessageSourceAdapter messageSource) {
-        super(StateUtils.MANAGEMENT_PROPS, messageSource);
-        this.subscriptionService = subscriptionService;
+        super(StateUtils.MANAGEMENT_PROPS, messageSource, subscriptionService);
     }
 
     @CommandMapping(forCommand = "/unsubscribe")
@@ -50,38 +48,21 @@ public class ManagementBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext context) {
-        log.info("Executing /main command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.MAIN);
-        return CommandResult.empty();
+        return this.defaultMain(command, context);
     }
 
     @CommandMapping(forCommand = "/language" )
     public CommandResult onLanguage(TelegramCommand command, UserContext context) {
-        log.info("Executing /language command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
-        return CommandResult.empty();
+        return this.defaultLanguage(command, context);
     }
 
     @CommandMapping(forCommand = "/my")
     public CommandResult onMy(TelegramCommand command, UserContext context) {
-        log.info("Executing /my command for user {}", context.getChatId());
-        final String chatId = context.getChatId();
-        final String subscriptions = getSubscriptionsInfo(chatId);
-        final String message = getMessage("management.my.reply", context, subscriptions);
-        return CommandResult.withMessage(message);
+        return this.defaultMy(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        log.info("Executing /donate command for user: {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.DONATE);
-        final String message = getMessage("management.donate.reply", context);
-        return CommandResult.withMessage(message);
-    }
-
-    private String getSubscriptionsInfo(String chatId) {
-        return this.subscriptionService.getAllSubscriptionsForUser(chatId).stream()
-            .map(Subscription::toString)
-            .collect(Collectors.joining("\n----------\n"));
+        return this.defaultDonate(command, context);
     }
 }

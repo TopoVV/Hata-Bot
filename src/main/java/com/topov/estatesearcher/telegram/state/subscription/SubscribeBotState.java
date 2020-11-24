@@ -34,13 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
     @KeyboardRow(buttons = { "/cancel", "/save", "/main" }),
     @KeyboardRow(buttons = { "/language", "/donate" })
 })
-public class SubscribeBotState extends AbstractBotState {
-    private final SubscriptionCache subscriptionCache;
+public class SubscribeBotState extends AbstractSubscribeBotState {
 
     @Autowired
     public SubscribeBotState(SubscriptionCache subscriptionCache, MessageSourceAdapter messageSource) {
-        super(StateUtils.SUBSCRIBE_PROPS, messageSource);
-        this.subscriptionCache = subscriptionCache;
+        super(StateUtils.SUBSCRIBE_PROPS, messageSource, subscriptionCache);
     }
 
     @CommandMapping(forCommand = "/minPrice")
@@ -61,14 +59,6 @@ public class SubscribeBotState extends AbstractBotState {
     public CommandResult onCity(TelegramCommand command, UserContext context) {
         log.info("Executing /city command for user {}", context.getChatId());
         context.setCurrentStateName(BotStateName.SUBSCRIPTION_CITY);
-        return CommandResult.empty();
-    }
-
-    @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, UserContext context) {
-        log.info("Executing /main command for user {}", context.getChatId());
-        this.subscriptionCache.evictCache(context.getChatId());
-        context.setCurrentStateName(BotStateName.MAIN);
         return CommandResult.empty();
     }
 
@@ -95,28 +85,23 @@ public class SubscribeBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /current command for user {}", context.getChatId());
-
-        final String current = this.subscriptionCache.getCachedSubscription(context.getChatId())
-            .map(Subscription::toString)
-            .orElse(getMessage("subscribe.current.notCreated.reply", context));
-
-        final String message = getMessage("subscribe.current.success.reply", context, current);
-        return CommandResult.withMessage(message);
+        return this.defaultCurrent(command, context);
     }
+
+    @CommandMapping(forCommand = "/main")
+    public CommandResult onMain(TelegramCommand command, UserContext context) {
+        this.subscriptionCache.evictCache(context.getChatId());
+        return this.defaultMain(command, context);
+    }
+
 
     @CommandMapping(forCommand = "/language" )
     public CommandResult onLanguage(TelegramCommand command, UserContext context) {
-        log.info("Executing /language command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
-        return CommandResult.empty();
+        return this.defaultLanguage(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        log.info("Executing /donate command for user: {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.DONATE);
-        final String message = getMessage("subscribe.donate.reply", context);
-        return CommandResult.withMessage(message);
+        return this.defaultDonate(command, context);
     }
 }

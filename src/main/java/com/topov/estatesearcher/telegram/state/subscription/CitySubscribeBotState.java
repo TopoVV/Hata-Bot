@@ -38,14 +38,12 @@ import java.util.stream.Collectors;
     @KeyboardRow(buttons = { "/cities" }),
     @KeyboardRow(buttons = { "/current" }),
 })
-public class CitySubscriptionBotState extends AbstractBotState {
+public class CitySubscribeBotState extends AbstractSubscribeBotState {
     private final CityService cityService;
-    private final SubscriptionCache subscriptionCache;
 
     @Autowired
-    public CitySubscriptionBotState(SubscriptionCache subscriptionCache, CityService cityService, MessageSourceAdapter messageSource) {
-        super(StateUtils.CITY_PROPS, messageSource);
-        this.subscriptionCache = subscriptionCache;
+    public CitySubscribeBotState(SubscriptionCache subscriptionCache, CityService cityService, MessageSourceAdapter messageSource) {
+        super(StateUtils.CITY_PROPS, messageSource, subscriptionCache);
         this.cityService = cityService;
     }
 
@@ -103,20 +101,11 @@ public class CitySubscriptionBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.SUBSCRIBE);
-        return CommandResult.empty();
+        return this.defaultBack(command, context);
     }
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /cancel command for user {}", context.getChatId());
-
-        final String current = this.subscriptionCache.getCachedSubscription(context.getChatId())
-            .map(Subscription::toString)
-            .orElse(getMessage("subscribe.current.notCreated.reply", context));
-
-        final String message = getMessage("subscribe.current.success.reply", context, current);
-        return CommandResult.withMessage(message);
+        return this.defaultCurrent(command, context);
     }
 }

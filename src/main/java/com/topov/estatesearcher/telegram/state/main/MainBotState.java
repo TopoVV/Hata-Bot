@@ -50,16 +50,11 @@ public class MainBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/language" )
     public CommandResult onLanguage(TelegramCommand command, UserContext context) {
-        log.info("Executing /language command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
-        return CommandResult.empty();
+        return this.defaultLanguage(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        log.info("Executing /donate command for user: {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.DONATE);
-        final String message = getMessage("main.donate.reply", context);
-        return CommandResult.withMessage(message);
+        return this.defaultDonate(command, context);
     }
 }

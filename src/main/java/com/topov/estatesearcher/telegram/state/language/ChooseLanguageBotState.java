@@ -58,9 +58,7 @@ public class ChooseLanguageBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext context) {
-        log.info("Executing /main command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.MAIN);
-        return CommandResult.empty();
+        return this.defaultMain(command, context);
     }
 
 

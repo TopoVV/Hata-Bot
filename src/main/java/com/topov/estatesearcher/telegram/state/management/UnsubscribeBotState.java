@@ -31,13 +31,11 @@ import java.util.stream.Collectors;
     @KeyboardRow(buttons = { "/back" }),
     @KeyboardRow(buttons = { "/my" }),
 })
-public class UnsubscribeBotState extends AbstractBotState {
-    private final SubscriptionService subscriptionService;
+public class UnsubscribeBotState extends AbstractManagementBotState {
 
     @Autowired
     public UnsubscribeBotState(SubscriptionService subscriptionService, MessageSourceAdapter messageSource) {
-        super(StateUtils.UNSUBSCRIBE_PROPS, messageSource);
-        this.subscriptionService = subscriptionService;
+        super(StateUtils.UNSUBSCRIBE_PROPS, messageSource, subscriptionService);
     }
 
     @Override
@@ -65,19 +63,9 @@ public class UnsubscribeBotState extends AbstractBotState {
         }
     }
 
-    private String getSubscriptionsInfo(String chatId) {
-        return this.subscriptionService.getAllSubscriptionsForUser(chatId).stream()
-            .map(Subscription::toString)
-            .collect(Collectors.joining("\n----------\n"));
-    }
-
     @CommandMapping(forCommand = "/my")
     public CommandResult onMy(TelegramCommand command, UserContext context) {
-        log.info("Executing /my command for user {}", context.getChatId());
-        final String chatId = context.getChatId();
-        final String subscriptions = getSubscriptionsInfo(chatId);
-        final String message = getMessage("unsubscribe.my.reply", context, subscriptions);
-        return CommandResult.withMessage(message);
+        return this.defaultMy(command, context);
     }
 
     @CommandMapping(forCommand = "/back")

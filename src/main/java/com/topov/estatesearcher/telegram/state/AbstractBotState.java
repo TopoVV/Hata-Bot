@@ -10,6 +10,7 @@ import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.handler.CommandHandler;
 import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
+import com.topov.estatesearcher.telegram.state.subscription.CommandExecutor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -62,6 +63,18 @@ public abstract class AbstractBotState implements BotState {
         return this.messageSource.getMessage(key, context, args);
     }
 
+    protected CommandResult defaultMain(TelegramCommand command, UserContext context) {
+        return new MainCommandExecutor().executeCommand(command, context);
+    }
+
+    protected CommandResult defaultLanguage(TelegramCommand command, UserContext context) {
+        return new LanguageCommandExecutor().executeCommand(command, context);
+    }
+
+    protected CommandResult defaultDonate(TelegramCommand command, UserContext context) {
+        return new DonateCommandExecutor().executeCommand(command, context);
+    }
+
     @Override
     public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
         final String headerKey = this.props.getHeaderKey();
@@ -75,5 +88,33 @@ public abstract class AbstractBotState implements BotState {
 
     public final BotStateName getStateName() {
         return this.props.getStateName();
+    }
+
+    private final class MainCommandExecutor implements CommandExecutor {
+        @Override
+        public CommandResult executeCommand(TelegramCommand command, UserContext context) {
+            log.info("Executing /main command for user {}", context.getChatId());
+            context.setCurrentStateName(BotStateName.MAIN);
+            return CommandResult.empty();
+        }
+    }
+
+    private final class LanguageCommandExecutor implements CommandExecutor {
+        @Override
+        public CommandResult executeCommand(TelegramCommand command, UserContext context) {
+            log.info("Executing /language command for user {}", context.getChatId());
+            context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
+            return CommandResult.empty();
+        }
+    }
+
+    private final class DonateCommandExecutor implements CommandExecutor {
+        @Override
+        public CommandResult executeCommand(TelegramCommand command, UserContext context) {
+            log.info("Executing /donate command for user: {}", context.getChatId());
+            context.setCurrentStateName(BotStateName.DONATE);
+            final String message = getMessage("main.donate.reply", context);
+            return CommandResult.withMessage(message);
+        }
     }
 }
