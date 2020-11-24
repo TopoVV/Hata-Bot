@@ -8,6 +8,7 @@ import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
+import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
@@ -17,30 +18,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Log4j2
 @TelegramBotState(commands = {
     @AcceptedCommand(commandName = "/subscribe"),
-    @AcceptedCommand(commandName = "/subscriptions")
+    @AcceptedCommand(commandName = "/management"),
+    @AcceptedCommand(commandName = "/language"),
+    @AcceptedCommand(commandName = "/donate")
 })
 @KeyboardDescription(rows = {
-    @KeyboardRow(buttons = { "/subscribe" }),
-    @KeyboardRow(buttons = { "/subscriptions" }),
+    @KeyboardRow(buttons = { "/subscribe", "/management" }),
+    @KeyboardRow(buttons = { "/language" }),
+    @KeyboardRow(buttons = { "/donate" })
 })
 public class MainBotState extends AbstractBotState {
 
     @Autowired
     public MainBotState(MessageSourceAdapter messageSource) {
-        super(BotStateName.MAIN, "main.header", "main.commands", messageSource);
+        super(StateUtils.MAIN_PROPS, messageSource);
     }
 
     @CommandMapping(forCommand = "/subscribe")
     public CommandResult onSubscribe(TelegramCommand command, UserContext context) {
         log.info("Executing /subscribe command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.SUBSCRIPTION);
+        context.setCurrentStateName(BotStateName.SUBSCRIBE);
         return CommandResult.empty();
     }
 
-    @CommandMapping(forCommand = "/subscriptions" )
+    @CommandMapping(forCommand = "/management" )
     public CommandResult onSubscriptions(TelegramCommand command, UserContext context) {
-        log.info("Executing /subscriptions command for user {}", context.getChatId());
+        log.info("Executing /management command for user {}", context.getChatId());
         context.setCurrentStateName(BotStateName.MANAGEMENT);
         return CommandResult.empty();
+    }
+
+    @CommandMapping(forCommand = "/language" )
+    public CommandResult onLanguage(TelegramCommand command, UserContext context) {
+        log.info("Executing /language command for user {}", context.getChatId());
+        context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
+        return CommandResult.empty();
+    }
+
+    @CommandMapping(forCommand = "/donate")
+    public CommandResult onDonate(TelegramCommand command, UserContext context) {
+        log.info("Executing /donate command for user: {}", context.getChatId());
+        context.setCurrentStateName(BotStateName.DONATE);
+        final String message = getMessage("main.donate.reply", context);
+        return CommandResult.withMessage(message);
     }
 }

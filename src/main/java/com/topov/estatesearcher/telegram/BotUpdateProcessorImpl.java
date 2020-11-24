@@ -34,7 +34,7 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
         this.contextService = contextService;
         final Map<BotStateName, BotState> map = states.stream()
             .collect(toMap(
-                AbstractBotState::getBotStateName,
+                AbstractBotState::getStateName,
                 Function.identity()
             ));
         this.states = new HashMap<>(map);

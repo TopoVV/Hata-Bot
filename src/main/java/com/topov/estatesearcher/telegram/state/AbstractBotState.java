@@ -22,19 +22,16 @@ import java.util.stream.Collectors;
 @Log4j2
 @Getter
 public abstract class AbstractBotState implements BotState {
-    private final BotStateName botStateName;
-    private final String headerKey;
-    private final String commandsKey;
     private final Map<CommandInfo, CommandHandler> handlers;
-    private final MessageSourceAdapter messageSource;
+    private final StateProperties props;
+
+    protected final MessageSourceAdapter messageSource;
 
     @Setter
     private Keyboard keyboard;
 
-    protected AbstractBotState(BotStateName botStateName, String headerKey, String commandsKey, MessageSourceAdapter messageSource) {
-        this.botStateName = botStateName;
-        this.headerKey = headerKey;
-        this.commandsKey = commandsKey;
+    protected AbstractBotState(StateProperties props, MessageSourceAdapter messageSource) {
+        this.props = props;
         this.messageSource = messageSource;
         this.handlers = new HashMap<>();
     }
@@ -57,12 +54,26 @@ public abstract class AbstractBotState implements BotState {
         }
     }
 
+    protected String getMessage(String key, UserContext context) {
+        return this.messageSource.getMessage(key, context);
+    }
+
+    protected String getMessage(String key, UserContext context, Object ... args) {
+        return this.messageSource.getMessage(key, context, args);
+    }
+
     @Override
     public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
-        final String header = this.messageSource.getMessage(this.headerKey, context);
-        final String commands = this.messageSource.getMessage(this.commandsKey, context);
+        final String headerKey = this.props.getHeaderKey();
+        final String commandsKey = this.props.getCommandsKey();
+        final String header = this.messageSource.getMessage(headerKey, context);
+        final String commands = this.messageSource.getMessage(commandsKey, context);
         final String entranceText = this.messageSource.getMessage("entrance.template", context, header, commands);
         final EntranceMessage entranceMessage = new EntranceMessage(context.getChatId(), entranceText, this.keyboard);
         return Optional.of(entranceMessage);
+    }
+
+    public final BotStateName getStateName() {
+        return this.props.getStateName();
     }
 }

@@ -14,6 +14,7 @@ import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
+import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
@@ -43,7 +44,7 @@ public class CitySubscriptionBotState extends AbstractBotState {
 
     @Autowired
     public CitySubscriptionBotState(SubscriptionCache subscriptionCache, CityService cityService, MessageSourceAdapter messageSource) {
-        super(BotStateName.SUBSCRIPTION_CITY, "city.header", "city.commands", messageSource);
+        super(StateUtils.CITY_PROPS, messageSource);
         this.subscriptionCache = subscriptionCache;
         this.cityService = cityService;
     }
@@ -59,20 +60,21 @@ public class CitySubscriptionBotState extends AbstractBotState {
             if (optionalCity.isPresent()) {
                 final City city = optionalCity.get();
                 this.subscriptionCache.modifySubscription(chatId, new CityUpdate(city));
-                context.setCurrentStateName(BotStateName.SUBSCRIPTION);
+                context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
                 final String current = this.subscriptionCache.getCachedSubscription(chatId)
                     .map(Subscription::toString)
-                    .orElse("Not yet created");
+                    .orElse("");
 
-                final String template = "Current:%s\n\nCity saved.";
-                return UpdateResult.withMessage(String.format(template, current));
+                final String message = getMessage("city.success.reply", context, current);
+                return UpdateResult.withMessage(message);
             }
-
-            return UpdateResult.withMessage(String.format("City %s not found", text));
+            final String message = getMessage("city.notFound.reply", context, text);
+            return UpdateResult.withMessage(message);
         } catch (NumberFormatException e) {
             log.error("Invalid id {}", text, e);
-            return UpdateResult.withMessage(String.format("Invalid id %s", text));
+            final String message = getMessage("city.invalidInput.reply", context, text);
+            return UpdateResult.withMessage(message);
         }
     }
 
@@ -95,13 +97,14 @@ public class CitySubscriptionBotState extends AbstractBotState {
             .map(City::toString)
             .collect(Collectors.joining("\n"));
 
-        return CommandResult.withMessage(String.format("Available cities:\n%s", cities));
+        final String message = getMessage("city.availableCities.reply", context, cities);
+        return CommandResult.withMessage(message);
     }
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext context) {
         log.info("Executing /back command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.SUBSCRIPTION);
+        context.setCurrentStateName(BotStateName.SUBSCRIBE);
         return CommandResult.empty();
     }
 
@@ -111,8 +114,9 @@ public class CitySubscriptionBotState extends AbstractBotState {
 
         final String current = this.subscriptionCache.getCachedSubscription(context.getChatId())
             .map(Subscription::toString)
-            .orElse("Not created yet");
+            .orElse(getMessage("subscribe.current.notCreated.reply", context));
 
-        return CommandResult.withMessage(String.format("Current:\n%s", current));
+        final String message = getMessage("subscribe.current.success.reply", context, current);
+        return CommandResult.withMessage(message);
     }
 }

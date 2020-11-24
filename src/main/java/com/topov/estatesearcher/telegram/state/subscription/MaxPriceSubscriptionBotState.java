@@ -12,6 +12,7 @@ import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
+import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
@@ -33,7 +34,7 @@ public class MaxPriceSubscriptionBotState extends AbstractBotState {
 
     @Autowired
     public MaxPriceSubscriptionBotState(SubscriptionCache subscriptionCache, MessageSourceAdapter messageSource) {
-        super(BotStateName.SUBSCRIPTION_MAX_PRICE, "maxPrice.header", "maxPrice.commands", messageSource);
+        super(StateUtils.MAX_PRICE_PROPS, messageSource);
         this.subscriptionCache = subscriptionCache;
     }
 
@@ -46,24 +47,25 @@ public class MaxPriceSubscriptionBotState extends AbstractBotState {
         try {
             final int maxPrice = Integer.parseInt(text);
             this.subscriptionCache.modifySubscription(chatId, new MaxPriceUpdate(maxPrice));
-            context.setCurrentStateName(BotStateName.SUBSCRIPTION);
+            context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
             final String current = this.subscriptionCache.getCachedSubscription(chatId)
                 .map(Subscription::toString)
-                .orElse("Not yet created");
+                .orElse("");
 
-            final String template = "Current:%s\n\nMax price saved.";
-            return UpdateResult.withMessage(String.format(template, current));
+            final String message = getMessage("maxPrice.success.reply", context, current);
+            return UpdateResult.withMessage(message);
         } catch (NumberFormatException e) {
             log.error("Invalid price: {}", text);
-            return UpdateResult.withMessage("Invalid price.");
+            final String message = getMessage("price.invalidInput.reply", context, text);
+            return UpdateResult.withMessage(message);
         }
     }
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext context) {
         log.info("Executing /back command for user {}", context.getChatId());
-        context.setCurrentStateName(BotStateName.SUBSCRIPTION);
+        context.setCurrentStateName(BotStateName.SUBSCRIBE);
         return CommandResult.empty();
     }
 
@@ -73,8 +75,9 @@ public class MaxPriceSubscriptionBotState extends AbstractBotState {
 
         final String current = this.subscriptionCache.getCachedSubscription(context.getChatId())
             .map(Subscription::toString)
-            .orElse("Not created yet");
+            .orElse(getMessage("subscribe.current.notCreated.reply", context));
 
-        return CommandResult.withMessage(String.format("Current:\n%s", current));
+        final String message = getMessage("subscribe.current.success.reply", context, current);
+        return CommandResult.withMessage(message);
     }
 }

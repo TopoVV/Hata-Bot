@@ -10,6 +10,7 @@ import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
+import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
@@ -27,7 +28,7 @@ public class AnonymousBotState extends AbstractBotState {
 
     @Autowired
     public AnonymousBotState(MessageSourceAdapter messageSource) {
-        super(BotStateName.ANONYMOUS, "", "", messageSource);
+        super(StateUtils.ANONYMOUS_PROPS, messageSource);
     }
 
     @Override
@@ -42,7 +43,8 @@ public class AnonymousBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/start")
     public CommandResult onStart(TelegramCommand command, UserContext context) {
-        context.setCurrentStateName(BotStateName.MAIN);
-        return CommandResult.withMessage("Welcome");
+        context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
+        final String message = getMessage("anonymous.start.reply", context);
+        return CommandResult.withMessage(message);
     }
 }

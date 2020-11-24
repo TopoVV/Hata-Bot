@@ -12,6 +12,7 @@ import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
+import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
@@ -35,7 +36,7 @@ public class UnsubscribeBotState extends AbstractBotState {
 
     @Autowired
     public UnsubscribeBotState(SubscriptionService subscriptionService, MessageSourceAdapter messageSource) {
-        super(BotStateName.UNSUBSCRIBE, "unsubscribe.header", "unsubscribe.commands", messageSource);
+        super(StateUtils.UNSUBSCRIBE_PROPS, messageSource);
         this.subscriptionService = subscriptionService;
     }
 
@@ -48,16 +49,19 @@ public class UnsubscribeBotState extends AbstractBotState {
             final long subscriptionId = Long.parseLong(text);
             final Optional<Subscription> subscription = this.subscriptionService.findSubscription(subscriptionId, chatId);
 
-            if (subscription.isPresent()) {
-                this.subscriptionService.removeSubscription(subscriptionId);
-                context.setCurrentStateName(BotStateName.MANAGEMENT);
-                return UpdateResult.withMessage("The subscription has been deleted.");
+            if (!subscription.isPresent()) {
+                final String message = getMessage("unsubscribe.notFound.reply", context, subscriptionId);
+                return UpdateResult.withMessage(message);
             }
+            this.subscriptionService.removeSubscription(subscriptionId);
+            context.setCurrentStateName(BotStateName.MANAGEMENT);
+            final String message = getMessage("unsubscribe.success.reply", context, subscriptionId);
+            return UpdateResult.withMessage(message);
 
-            return UpdateResult.withMessage("Not found. Try another id.");
         } catch (NumberFormatException e) {
             log.error("Subscription not found", e);
-            return UpdateResult.withMessage("Invalid id");
+            final String message = getMessage("unsubscribe.invalidInput.reply", context, text);
+            return UpdateResult.withMessage(message);
         }
     }
 
@@ -72,7 +76,8 @@ public class UnsubscribeBotState extends AbstractBotState {
         log.info("Executing /my command for user {}", context.getChatId());
         final String chatId = context.getChatId();
         final String subscriptions = getSubscriptionsInfo(chatId);
-        return CommandResult.withMessage(String.format("Your subscriptions:\n\n%s", subscriptions));
+        final String message = getMessage("unsubscribe.my.reply", context, subscriptions);
+        return CommandResult.withMessage(message);
     }
 
     @CommandMapping(forCommand = "/back")
