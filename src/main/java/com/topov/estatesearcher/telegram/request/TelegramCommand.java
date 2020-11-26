@@ -1,6 +1,6 @@
 package com.topov.estatesearcher.telegram.request;
 
-import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
+import com.topov.estatesearcher.telegram.state.command.handler.CommandInfo;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class TelegramCommand {

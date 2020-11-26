@@ -1,15 +1,15 @@
 package com.topov.estatesearcher.telegram.state.subscription;
 
-import com.topov.estatesearcher.cache.SubscriptionCache;
+import com.topov.estatesearcher.adapter.MessageSourceAdapter;
 import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.service.SubscriptionService;
+import com.topov.estatesearcher.telegram.context.SubscriptionConfig;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.result.CommandResult;
-import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
-import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
 import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
@@ -35,10 +35,12 @@ import org.springframework.beans.factory.annotation.Autowired;
     @KeyboardRow(buttons = { "/language", "/donate" })
 })
 public class SubscribeBotState extends AbstractSubscribeBotState {
+    private final SubscriptionService subscriptionService;
 
     @Autowired
-    public SubscribeBotState(SubscriptionCache subscriptionCache, MessageSourceAdapter messageSource) {
-        super(StateUtils.SUBSCRIBE_PROPS, messageSource, subscriptionCache);
+    public SubscribeBotState(MessageSourceAdapter messageSource, SubscriptionService subscriptionService) {
+        super(StateUtils.SUBSCRIBE_PROPS, messageSource);
+        this.subscriptionService = subscriptionService;
     }
 
     @CommandMapping(forCommand = "/minPrice")
@@ -65,7 +67,9 @@ public class SubscribeBotState extends AbstractSubscribeBotState {
     @CommandMapping(forCommand = "/save")
     public CommandResult onSave(TelegramCommand command, UserContext context) {
         log.info("Executing /save command for user {}", context.getChatId());
-        if (this.subscriptionCache.flush(context.getChatId())) {
+        final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
+        if (subscriptionConfig.isConfigured()) {
+            this.subscriptionService.saveSubscription(new Subscription(subscriptionConfig));
             final String message = getMessage("subscribe.save.success.reply", context);
             return CommandResult.withMessage(message);
         }
@@ -77,7 +81,7 @@ public class SubscribeBotState extends AbstractSubscribeBotState {
     @CommandMapping(forCommand = "/cancel")
     public CommandResult onCancel(TelegramCommand command, UserContext context) {
         log.info("Executing /cancel command for user {}", context.getChatId());
-        this.subscriptionCache.evictCache(context.getChatId());
+        context.resetSubscriptionConfig();
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
         final String message = getMessage("subscribe.cancel.success.reply", context);
         return CommandResult.withMessage(message);
@@ -85,23 +89,30 @@ public class SubscribeBotState extends AbstractSubscribeBotState {
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        return this.defaultCurrent(command, context);
+        log.info("Executing /current command for user {}", context.getChatId());
+        final DefaultExecutor executor = new DefaultCurrentExecutor(this.messageSource);
+        return executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext context) {
-        this.subscriptionCache.evictCache(context.getChatId());
-        return this.defaultMain(command, context);
+        log.info("Executing /main command for user {}", context.getChatId());
+        final DefaultExecutor executor = new DefaultMainExecutor();
+        return executor.execute(command, context);
     }
 
 
     @CommandMapping(forCommand = "/language" )
     public CommandResult onLanguage(TelegramCommand command, UserContext context) {
-        return this.defaultLanguage(command, context);
+        log.info("Executing /language command for user {}", context.getChatId());
+        final DefaultExecutor executor = new DefaultLanguageExecutor();
+        return executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        return this.defaultDonate(command, context);
+        log.info("Executing /donate command for user: {}", context.getChatId());
+        final DefaultExecutor executor = new DefaultDonateExecutor(this.messageSource);
+        return executor.execute(command, context);
     }
 }

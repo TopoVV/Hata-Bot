@@ -19,7 +19,11 @@ import java.util.Optional;
 @Service
 @Profile(value = "dev")
 public class JdbcSubscriptionDao implements SubscriptionDao {
-    private static final String SELECT_ALL_SUBSCRIPTIONS = "SELECT * FROM subscriptions";
+    private static final String SELECT_ALL_SUBSCRIPTIONS =
+        "SELECT * FROM subscriptions";
+
+    private static final String SELECT_ALL_USER_SUBSCRIPTIONS =
+        "SELECT * FROM subscriptions WHERE chat_id = :chatId";
 
     private static final String SELECT_SUBSCRIPTION_BY_ID_AND_CHAT_ID =
         "SELECT * FROM subscriptions WHERE subscription_id = :subscriptionId AND chat_id = :chatId";
@@ -28,10 +32,8 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
         "INSERT INTO subscriptions (chat_id, min_price, max_price, city_id, city_name) " +
             "VALUES (:chatId, :minPrice, :maxPrice, :cityId, :cityName)";
 
-    private static final String DELETE_SUBSCRIPTION = "DELETE FROM subscriptions WHERE subscription_id = :subscriptionId";
-//"INSERT INTO subscriptions (subscription_id, chat_id, min_price, max_price, city_id) " +
-//    "VALUES (:subscriptionId, :chatId, :minPrice, :maxPrice, :cityId) " +
-//    "ON CONFLICT (subscription_id) DO UPDATE SET min_price = :minPrice, max_price = :maxPrice";
+    private static final String DELETE_SUBSCRIPTION =
+        "DELETE FROM subscriptions WHERE subscription_id = :subscriptionId";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -48,7 +50,6 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
     @Override
     public void saveSubscription(Subscription subscription) {
         final MapSqlParameterSource params = new MapSqlParameterSource();
-       // params.addValue("subscriptionId", subscription.getSubscriptionsId());
         params.addValue("chatId", subscription.getChatId());
         params.addValue("minPrice", subscription.getMinPrice());
         params.addValue("maxPrice", subscription.getMaxPrice());
@@ -59,8 +60,11 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public List<Subscription> getAllSubscriptions() {
-            return this.jdbcTemplate.query(SELECT_ALL_SUBSCRIPTIONS, (rs, rowNum) -> {
+    public List<Subscription> getAllUserSubscriptions(String chatId) {
+        final MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("chatId", chatId);
+
+        return this.jdbcTemplate.query(SELECT_ALL_USER_SUBSCRIPTIONS, params, (rs, rowNum) -> {
                 final Subscription obj = new Subscription();
                 obj.setSubscriptionId(rs.getLong("subscription_id"));
                 obj.setChatId(rs.getString("chat_id"));
@@ -70,6 +74,20 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
                 obj.setCityName(rs.getString("city_name"));
                 return obj;
             });
+    }
+
+    @Override
+    public List<Subscription> getAllSubscriptions() {
+        return this.jdbcTemplate.query(SELECT_ALL_SUBSCRIPTIONS, (rs, rowNum) -> {
+            final Subscription obj = new Subscription();
+            obj.setSubscriptionId(rs.getLong("subscription_id"));
+            obj.setChatId(rs.getString("chat_id"));
+            obj.setCityId(rs.getInt("city_id"));
+            obj.setMinPrice(rs.getInt("min_price"));
+            obj.setMaxPrice(rs.getInt("max_price"));
+            obj.setCityName(rs.getString("city_name"));
+            return obj;
+        });
     }
 
     @Override

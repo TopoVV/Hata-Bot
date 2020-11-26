@@ -2,7 +2,6 @@ package com.topov.estatesearcher.telegram;
 
 import com.topov.estatesearcher.service.UserContextService;
 import com.topov.estatesearcher.telegram.context.UserContext;
-import com.topov.estatesearcher.telegram.keyboard.Keyboard;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.response.BotResponse;
 import com.topov.estatesearcher.telegram.result.CommandResult;
@@ -13,7 +12,6 @@ import com.topov.estatesearcher.telegram.state.BotStateName;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.HashMap;
 import java.util.List;

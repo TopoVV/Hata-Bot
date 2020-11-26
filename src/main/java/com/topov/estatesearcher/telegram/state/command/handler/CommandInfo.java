@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.state.handler;
+package com.topov.estatesearcher.telegram.state.command.handler;
 
 import lombok.Getter;
 

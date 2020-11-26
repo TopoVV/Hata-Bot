@@ -1,9 +1,7 @@
 package com.topov.estatesearcher.telegram;
 
-import com.topov.estatesearcher.telegram.keyboard.Keyboard;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.response.BotResponse;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Optional;
 

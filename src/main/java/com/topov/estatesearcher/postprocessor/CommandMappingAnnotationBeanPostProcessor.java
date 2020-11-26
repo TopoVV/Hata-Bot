@@ -2,9 +2,10 @@ package com.topov.estatesearcher.postprocessor;
 
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
-import com.topov.estatesearcher.telegram.state.handler.CommandHandler;
-import com.topov.estatesearcher.telegram.state.handler.CommandInfo;
+import com.topov.estatesearcher.telegram.state.command.handler.CommandHandler;
+import com.topov.estatesearcher.telegram.state.command.handler.CommandInfo;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import java.lang.reflect.InvocationTargetException;
@@ -43,7 +44,7 @@ public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProces
         try {
             final Method injectorMethod = getInjectorMethod(aClass);
             for (Method method : aClass.getMethods()) {
-                if (method.isAnnotationPresent(CommandMapping.class)) {
+                if (method.isAnnotationPresent(CommandMapping.class) && !method.isAnnotationPresent(Lookup.class)) {
                     CommandMapping annotation = method.getAnnotation(CommandMapping.class);
 
                     final Optional<CommandInfo> found = acceptedCommands.stream().

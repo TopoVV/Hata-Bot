@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.state;
+package com.topov.estatesearcher.adapter;
 
 import com.topov.estatesearcher.telegram.context.UserContext;
 

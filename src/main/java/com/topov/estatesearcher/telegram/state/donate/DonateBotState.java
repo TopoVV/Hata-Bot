@@ -1,5 +1,6 @@
 package com.topov.estatesearcher.telegram.state.donate;
 
+import com.topov.estatesearcher.adapter.MessageSourceAdapter;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
@@ -7,12 +8,12 @@ import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
-import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
 import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Log4j2
 @TelegramBotState(commands = {
@@ -22,7 +23,9 @@ import lombok.extern.log4j.Log4j2;
     @KeyboardRow(buttons = { "/later" })
 })
 public class DonateBotState extends AbstractBotState {
-    protected DonateBotState(MessageSourceAdapter messageSource) {
+
+    @Autowired
+    public DonateBotState(MessageSourceAdapter messageSource) {
         super(StateUtils.DONATE_PROPS, messageSource);
     }
 

@@ -1,12 +1,10 @@
-package com.topov.estatesearcher.telegram.state;
+package com.topov.estatesearcher.adapter;
 
 import com.topov.estatesearcher.telegram.context.UserContext;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
-import java.util.Locale;
 
 @Log4j2
 @Service

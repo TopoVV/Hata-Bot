@@ -1,5 +1,6 @@
 package com.topov.estatesearcher.telegram.state.main;
 
+import com.topov.estatesearcher.adapter.MessageSourceAdapter;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardDescription;
 import com.topov.estatesearcher.telegram.keyboard.KeyboardRow;
@@ -7,7 +8,6 @@ import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;
-import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
 import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
@@ -50,11 +50,15 @@ public class MainBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/language" )
     public CommandResult onLanguage(TelegramCommand command, UserContext context) {
-        return this.defaultLanguage(command, context);
+        log.info("Executing /language command for user {}", context.getChatId());
+        final DefaultExecutor executor = new DefaultLanguageExecutor();
+        return executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        return this.defaultDonate(command, context);
+        log.info("Executing /donate command for user: {}", context.getChatId());
+        final DefaultExecutor executor = new DefaultDonateExecutor(this.messageSource);
+        return executor.execute(command, context);
     }
 }

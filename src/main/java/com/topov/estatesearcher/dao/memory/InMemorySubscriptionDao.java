@@ -35,6 +35,12 @@ public class InMemorySubscriptionDao implements SubscriptionDao {
     }
 
     @Override
+    public List<Subscription> getAllUserSubscriptions(String chatId) {
+        final List<Subscription> subscriptions = this.subscriptions.get(chatId);
+        return Collections.unmodifiableList(subscriptions);
+    }
+
+    @Override
     public List<Subscription> getAllSubscriptions() {
         final List<Subscription> subscriptions = this.subscriptions.values()
             .stream()

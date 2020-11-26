@@ -1,17 +1,15 @@
 package com.topov.estatesearcher.telegram.state.management;
 
-import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.adapter.MessageSourceAdapter;
 import com.topov.estatesearcher.service.SubscriptionService;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
-import com.topov.estatesearcher.telegram.state.MessageSourceAdapter;
 import com.topov.estatesearcher.telegram.state.StateProperties;
-import com.topov.estatesearcher.telegram.state.subscription.CommandExecutor;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.stream.Collectors;
+import java.text.MessageFormat;
 
 @Log4j2
 public class AbstractManagementBotState extends AbstractBotState {
@@ -22,25 +20,21 @@ public class AbstractManagementBotState extends AbstractBotState {
         this.subscriptionService = subscriptionService;
     }
 
-    protected CommandResult defaultMy(TelegramCommand command, UserContext context) {
-        return new MyCommandExecutor().executeCommand(command, context);
-    }
+    public static class DefaultMyExecutor implements DefaultExecutor {
+        private final MessageSourceAdapter messageSource;
+        private final SubscriptionService subscriptionService;
 
-    private final class MyCommandExecutor implements CommandExecutor {
+        DefaultMyExecutor(MessageSourceAdapter messageSource, SubscriptionService subscriptionService) {
+            this.messageSource = messageSource;
+            this.subscriptionService = subscriptionService;
+        }
+
         @Override
-        public CommandResult executeCommand(TelegramCommand command, UserContext context) {
-            log.info("Executing /my command for user {}", context.getChatId());
+        public CommandResult execute(TelegramCommand command, UserContext context) {
             final String chatId = context.getChatId();
-            final String subscriptions = getSubscriptionsInfo(chatId);
-            final String message = getMessage("management.my.reply", context, subscriptions);
+            final String subscriptions = this.subscriptionService.getUserSubscriptionsInfo(chatId);
+            final String message = this.messageSource.getMessage("management.my.reply", context, subscriptions);
             return CommandResult.withMessage(message);
         }
     }
-
-    protected String getSubscriptionsInfo(String chatId) {
-        return this.subscriptionService.getAllSubscriptionsForUser(chatId).stream()
-            .map(Subscription::toString)
-            .collect(Collectors.joining("\n----------\n"));
-    }
-
 }

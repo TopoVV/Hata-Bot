@@ -12,11 +12,10 @@ public class Keyboard {
     private final List<KeyboardRow> keyboardRows = new ArrayList<>();
 
     public ReplyKeyboardMarkup createKeyboardMarkup() {
-        return new ReplyKeyboardMarkup(keyboardRows, true, true, false);
+        return new ReplyKeyboardMarkup(keyboardRows, true, false, false);
     }
 
     public void addRow(KeyboardRow row) {
         this.keyboardRows.add(row);
     }
-
 }

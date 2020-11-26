@@ -1,5 +1,6 @@
 package com.topov.estatesearcher.model;
 
+import com.topov.estatesearcher.telegram.context.SubscriptionConfig;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,14 @@ public class Subscription {
         this.maxPrice = subscription.maxPrice;
         this.cityId = subscription.cityId;
         this.cityName = subscription.cityName;
+    }
+
+    public Subscription(SubscriptionConfig config) {
+        this.chatId = config.getChatId();
+        this.minPrice = config.getMinPrice();
+        this.maxPrice = config.getMaxPrice();
+        this.cityName = config.getCity().map(City::getCityName).orElse(null);
+        this.cityId = config.getCity().map(City::getCityId).orElse(null);
     }
 
     @Override

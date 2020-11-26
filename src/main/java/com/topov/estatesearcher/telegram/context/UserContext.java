@@ -23,17 +23,20 @@ public class UserContext {
     private final String chatId;
     private Locale locale;
     private BotStateName currentStateName;
+    private SubscriptionConfig subscriptionConfig;
 
     public UserContext(String chatId, BotStateName currentStateName) {
         this.chatId = chatId;
         this.currentStateName = currentStateName;
         this.locale = new Locale("en");
+        this.subscriptionConfig = new SubscriptionConfig(chatId);
     }
 
     public UserContext(UserContext context) {
         this.chatId = context.getChatId();
         this.currentStateName = context.getCurrentStateName();
         this.locale = context.locale;
+        this.subscriptionConfig = context.subscriptionConfig;
     }
 
     public CommandResult executeCommand(TelegramCommand command, BotState state) {
@@ -46,5 +49,9 @@ public class UserContext {
 
     public Optional<EntranceMessage> getEntranceMessage(BotState currentState, UpdateWrapper update) {
         return currentState.getEntranceMessage(update, this);
+    }
+
+    public void resetSubscriptionConfig() {
+        this.subscriptionConfig = new SubscriptionConfig(this.chatId);
     }
 }
