@@ -39,36 +39,35 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
     private final CityService cityService;
 
     @Autowired
-    public CitySubscribeBotState( CityService cityService, MessageSourceAdapter messageSource) {
-        super(StateUtils.CITY_PROPS, messageSource);
+    public CitySubscribeBotState(CityService cityService) {
+        super(StateUtils.CITY_PROPS);
         this.cityService = cityService;
     }
 
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
         log.debug("Handling city update");
-        final String chatId = context.getChatId();
         final String text = update.getText();
 
         try {
             final Optional<City> optionalCity = findCity(text);
-            if (optionalCity.isPresent()) {
-                final City city = optionalCity.get();
-                final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
-
-                subscriptionConfig.setCity(city);
-
-                context.setCurrentStateName(BotStateName.SUBSCRIBE);
-
-                final String current = subscriptionConfig.toString();
-                final String message = getMessage("city.success.reply", context, current);
+            if (!optionalCity.isPresent()) {
+                final String message = MessageHelper.getMessage("reply.city.not.found", context, text);
                 return UpdateResult.withMessage(message);
             }
-            final String message = getMessage("city.notFound.reply", context, text);
+
+            final City city = optionalCity.get();
+            final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
+            subscriptionConfig.setCity(city);
+            context.setSubscriptionConfig(new SubscriptionConfig(subscriptionConfig));
+            context.setCurrentStateName(BotStateName.SUBSCRIBE);
+
+            final String current = MessageHelper.subscriptionConfigToMessage(subscriptionConfig, context);
+            final String message = MessageHelper.getMessage("reply.city", context, current, city.getCityName());
             return UpdateResult.withMessage(message);
         } catch (NumberFormatException e) {
             log.error("Invalid id {}", text, e);
-            final String message = getMessage("city.invalidInput.reply", context, text);
+            final String message = MessageHelper.getMessage("reply.city.invalid.input", context, text);
             return UpdateResult.withMessage(message);
         }
     }
@@ -87,26 +86,26 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
 
     @CommandMapping(forCommand = "/cities")
     public CommandResult onCities(TelegramCommand command, UserContext context) {
-        log.info("Executing /city command for user {}", context.getChatId());
+        log.info("Executing /city command for user {}", context.getUserId());
         final String cities = this.cityService.getCities().stream()
             .map(City::toString)
             .collect(Collectors.joining("\n"));
 
-        final String message = getMessage("city.availableCities.reply", context, cities);
+        final String message = MessageHelper.getMessage("reply.cities", context, cities);
         return CommandResult.withMessage(message);
     }
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", context.getChatId());
+        log.info("Executing /back command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /current command for user {}", context.getChatId());
-        final DefaultExecutor executor = new DefaultCurrentExecutor(this.messageSource);
+        log.info("Executing /current command for user {}", context.getUserId());
+        final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);
     }
 }

@@ -26,7 +26,7 @@ public class InMemorySubscriptionDao implements SubscriptionDao {
 
     @Override
     public void saveSubscription(Subscription subscription) {
-        final String chatId = subscription.getChatId();
+        final String chatId = subscription.getUserId();
         if (!this.subscriptions.containsKey(chatId)) {
             this.subscriptions.put(chatId, new ArrayList<>());
         }

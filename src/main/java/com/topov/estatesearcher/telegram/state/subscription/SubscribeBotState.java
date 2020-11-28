@@ -30,89 +30,90 @@ import org.springframework.beans.factory.annotation.Autowired;
     @AcceptedCommand(commandName = "/donate")
 })
 @KeyboardDescription(rows = {
-    @KeyboardRow(buttons = { "/minPrice", "/maxPrice", "/city", "/current" }),
-    @KeyboardRow(buttons = { "/cancel", "/save", "/main" }),
-    @KeyboardRow(buttons = { "/language", "/donate" })
+    @KeyboardRow(buttons = { "/minPrice", "/maxPrice", "/city" }),
+    @KeyboardRow(buttons = { "/current", "/cancel", "/save" }),
+    @KeyboardRow(buttons = { "/main", "/language", "/donate" })
 })
 public class SubscribeBotState extends AbstractSubscribeBotState {
     private final SubscriptionService subscriptionService;
 
     @Autowired
-    public SubscribeBotState(MessageSourceAdapter messageSource, SubscriptionService subscriptionService) {
-        super(StateUtils.SUBSCRIBE_PROPS, messageSource);
+    public SubscribeBotState(SubscriptionService subscriptionService) {
+        super(StateUtils.SUBSCRIBE_PROPS);
         this.subscriptionService = subscriptionService;
     }
 
     @CommandMapping(forCommand = "/minPrice")
     public CommandResult onMinPrice(TelegramCommand command, UserContext context) {
-        log.info("Executing /minPrice command for user {}", context.getChatId());
+        log.info("Executing /minPrice command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIPTION_MIN_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/maxPrice")
     public CommandResult onMaxPrice(TelegramCommand command, UserContext context) {
-        log.info("Executing /maxPrice command for user {}", context.getChatId());
+        log.info("Executing /maxPrice command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIPTION_MAX_PRICE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/city")
     public CommandResult onCity(TelegramCommand command, UserContext context) {
-        log.info("Executing /city command for user {}", context.getChatId());
+        log.info("Executing /city command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIPTION_CITY);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/save")
     public CommandResult onSave(TelegramCommand command, UserContext context) {
-        log.info("Executing /save command for user {}", context.getChatId());
+    log.info("Executing /save command for user {}", context.getUserId());
         final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
         if (subscriptionConfig.isConfigured()) {
+            context.resetSubscriptionConfig();
             this.subscriptionService.saveSubscription(new Subscription(subscriptionConfig));
-            final String message = getMessage("subscribe.save.success.reply", context);
+            final String message = MessageHelper.getMessage("reply.save.success", context);
             return CommandResult.withMessage(message);
         }
 
-        final String message = getMessage("subscribe.save.notCreated.reply", context);
+        final String message = MessageHelper.getMessage("reply.save.not.created", context);
         return CommandResult.withMessage(message);
     }
 
     @CommandMapping(forCommand = "/cancel")
     public CommandResult onCancel(TelegramCommand command, UserContext context) {
-        log.info("Executing /cancel command for user {}", context.getChatId());
+        log.info("Executing /cancel command for user {}", context.getUserId());
         context.resetSubscriptionConfig();
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
-        final String message = getMessage("subscribe.cancel.success.reply", context);
+        final String message = MessageHelper.getMessage("reply.cancel", context);
         return CommandResult.withMessage(message);
     }
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /current command for user {}", context.getChatId());
-        final DefaultExecutor executor = new DefaultCurrentExecutor(this.messageSource);
+        log.info("Executing /current command for user {}", context.getUserId());
+        final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/main")
     public CommandResult onMain(TelegramCommand command, UserContext context) {
-        log.info("Executing /main command for user {}", context.getChatId());
-        final DefaultExecutor executor = new DefaultMainExecutor();
+        log.info("Executing /main command for user {}", context.getUserId());
+        final DefaultMainExecutor executor = new DefaultMainExecutor();
         return executor.execute(command, context);
     }
 
 
     @CommandMapping(forCommand = "/language" )
     public CommandResult onLanguage(TelegramCommand command, UserContext context) {
-        log.info("Executing /language command for user {}", context.getChatId());
-        final DefaultExecutor executor = new DefaultLanguageExecutor();
+        log.info("Executing /language command for user {}", context.getUserId());
+        final DefaultLanguageExecutor executor = new DefaultLanguageExecutor();
         return executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        log.info("Executing /donate command for user: {}", context.getChatId());
-        final DefaultExecutor executor = new DefaultDonateExecutor(this.messageSource);
+        log.info("Executing /donate command for user: {}", context.getUserId());
+        final DefaultDonateExecutor executor = new DefaultDonateExecutor();
         return executor.execute(command, context);
     }
 }

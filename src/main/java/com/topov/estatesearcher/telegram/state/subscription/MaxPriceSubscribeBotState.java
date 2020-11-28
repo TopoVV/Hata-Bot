@@ -27,46 +27,43 @@ import org.springframework.beans.factory.annotation.Autowired;
     @KeyboardRow(buttons = { "/current" }),
 })
 public class MaxPriceSubscribeBotState extends AbstractSubscribeBotState {
-
-    @Autowired
-    public MaxPriceSubscribeBotState(MessageSourceAdapter messageSource) {
-        super(StateUtils.MAX_PRICE_PROPS, messageSource);
+    public MaxPriceSubscribeBotState() {
+        super(StateUtils.MAX_PRICE_PROPS);
     }
 
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
         log.debug("Handling max price update");
-        final String chatId = context.getChatId();
         final String text = update.getText();
 
         try {
-            final int maxPrice = Integer.parseInt(text);
+            final Integer maxPrice = Integer.parseInt(text);
             final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
             subscriptionConfig.setMaxPrice(maxPrice);
-
+            context.setSubscriptionConfig(new SubscriptionConfig(subscriptionConfig));
             context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
-            final String current = subscriptionConfig.toString();
-            final String message = getMessage("maxPrice.success.reply", context, current);
+            final String current = MessageHelper.subscriptionConfigToMessage(subscriptionConfig, context);
+            final String message = MessageHelper.getMessage("reply.max.price", context, current, maxPrice);
             return UpdateResult.withMessage(message);
         } catch (NumberFormatException e) {
             log.error("Invalid price: {}", text);
-            final String message = getMessage("price.invalidInput.reply", context, text);
+            final String message = MessageHelper.getMessage("reply.price.invalid.input", context, text);
             return UpdateResult.withMessage(message);
         }
     }
 
     @CommandMapping(forCommand = "/back")
     public CommandResult onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", context.getChatId());
+        log.info("Executing /back command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
         return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /current command for user {}", context.getChatId());
-        final DefaultExecutor executor = new DefaultCurrentExecutor(this.messageSource);
+        log.info("Executing /current command for user {}", context.getUserId());
+        final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);
     }
 

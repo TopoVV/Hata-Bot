@@ -26,7 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
         Collection<Subscription> subscriptions = this.subscriptionDao.getAllSubscriptions();
         subscriptions.forEach(subscription -> {
             announcements.forEach(announcement -> {
-                this.estateBot.sendNotification(Long.valueOf(subscription.getChatId()), announcement);
+                this.estateBot.sendNotification(Long.valueOf(subscription.getUserId()), announcement);
             });
         });
     }
@@ -35,7 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifySubscribers(Announcement announcement) {
         Collection<Subscription> subscriptions = this.subscriptionDao.getAllSubscriptions();
         subscriptions.forEach(subscription -> {
-            this.estateBot.sendNotification(Long.valueOf(subscription.getChatId()), announcement);
+            this.estateBot.sendNotification(Long.valueOf(subscription.getUserId()), announcement);
         });
     }
 }

@@ -11,11 +11,11 @@ import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.command.handler.CommandHandler;
 import com.topov.estatesearcher.telegram.state.command.handler.CommandInfo;
+import com.topov.estatesearcher.telegram.state.subscription.MessageHelper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,14 +26,11 @@ public abstract class AbstractBotState implements BotState {
     private final Map<CommandInfo, CommandHandler> handlers;
     private final StateProperties props;
 
-    protected final MessageSourceAdapter messageSource;
-
     @Setter
     private Keyboard keyboard;
 
-    protected AbstractBotState(StateProperties props, MessageSourceAdapter messageSource) {
+    protected AbstractBotState(StateProperties props) {
         this.props = props;
-        this.messageSource = messageSource;
         this.handlers = new HashMap<>();
     }
 
@@ -59,31 +56,18 @@ public abstract class AbstractBotState implements BotState {
     public Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context) {
         final String headerKey = this.props.getHeaderKey();
         final String commandsKey = this.props.getCommandsKey();
-        final String header = this.messageSource.getMessage(headerKey, context);
-        final String commands = this.messageSource.getMessage(commandsKey, context);
-        final String entranceText = this.messageSource.getMessage("entrance.template", context, header, commands);
-        final EntranceMessage entranceMessage = new EntranceMessage(context.getChatId(), entranceText, this.keyboard);
+        final String header = MessageHelper.getMessage(headerKey, context);
+        final String commands = MessageHelper.getMessage(commandsKey, context);
+        final String entranceText = MessageHelper.getMessage("entrance.template", context, header, commands);
+        final EntranceMessage entranceMessage = new EntranceMessage(context.getUserId(), entranceText, this.keyboard);
         return Optional.of(entranceMessage);
-    }
-
-    protected String getMessage(String key, UserContext context) {
-        return this.messageSource.getMessage(key, context);
-    }
-
-    protected String getMessage(String key, UserContext context, Object ... args) {
-        return this.messageSource.getMessage(key, context, args);
     }
 
     public final BotStateName getStateName() {
         return this.props.getStateName();
     }
 
-    public interface DefaultExecutor {
-        CommandResult execute(TelegramCommand command, UserContext context);
-    }
-
-    public static class DefaultMainExecutor implements DefaultExecutor {
-        @Override
+    public static class DefaultMainExecutor {
         public CommandResult execute(TelegramCommand command, UserContext context) {
             context.resetSubscriptionConfig();
             context.setCurrentStateName(BotStateName.MAIN);
@@ -91,8 +75,7 @@ public abstract class AbstractBotState implements BotState {
         }
     }
 
-    public static class DefaultLanguageExecutor implements DefaultExecutor {
-        @Override
+    public static class DefaultLanguageExecutor {
         public CommandResult execute(TelegramCommand command, UserContext context) {
             context.resetSubscriptionConfig();
             context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
@@ -100,18 +83,11 @@ public abstract class AbstractBotState implements BotState {
         }
     }
 
-    public static class DefaultDonateExecutor implements DefaultExecutor {
-        private final MessageSourceAdapter messageSource;
-
-        public DefaultDonateExecutor(MessageSourceAdapter messageSource) {
-            this.messageSource = messageSource;
-        }
-
-        @Override
+    public static class DefaultDonateExecutor {
         public CommandResult execute(TelegramCommand command, UserContext context) {
             context.resetSubscriptionConfig();
             context.setCurrentStateName(BotStateName.DONATE);
-            final String message = this.messageSource.getMessage("main.donate.reply", context);
+            final String message = MessageHelper.getMessage("reply.donate", context);
             return CommandResult.withMessage(message);
         }
     }

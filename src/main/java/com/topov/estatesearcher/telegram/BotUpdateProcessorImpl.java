@@ -42,7 +42,7 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
     @Override
     public Optional<BotResponse> processUpdate(UpdateWrapper update) {
         final String chatId = update.getChatId();
-        final UserContext context = this.contextService.getContextForUser(chatId);
+        final UserContext context = this.contextService.getContextForUser(update.getUserId());
         final BotState currentState = this.states.get(context.getCurrentStateName());
 
         if (update.isCommand()) {

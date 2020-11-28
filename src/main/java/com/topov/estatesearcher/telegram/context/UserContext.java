@@ -20,20 +20,20 @@ import java.util.Optional;
 @Getter
 @Setter
 public class UserContext {
-    private final String chatId;
+    private final String userId;
     private Locale locale;
     private BotStateName currentStateName;
     private SubscriptionConfig subscriptionConfig;
 
-    public UserContext(String chatId, BotStateName currentStateName) {
-        this.chatId = chatId;
+    public UserContext(String userId, BotStateName currentStateName) {
+        this.userId = userId;
         this.currentStateName = currentStateName;
         this.locale = new Locale("en");
-        this.subscriptionConfig = new SubscriptionConfig(chatId);
+        this.subscriptionConfig = new SubscriptionConfig(userId);
     }
 
     public UserContext(UserContext context) {
-        this.chatId = context.getChatId();
+        this.userId = context.getUserId();
         this.currentStateName = context.getCurrentStateName();
         this.locale = context.locale;
         this.subscriptionConfig = context.subscriptionConfig;
@@ -52,6 +52,6 @@ public class UserContext {
     }
 
     public void resetSubscriptionConfig() {
-        this.subscriptionConfig = new SubscriptionConfig(this.chatId);
+        this.subscriptionConfig = new SubscriptionConfig(this.userId);
     }
 }

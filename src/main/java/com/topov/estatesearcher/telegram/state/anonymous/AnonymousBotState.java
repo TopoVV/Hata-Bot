@@ -14,6 +14,7 @@ import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
+import com.topov.estatesearcher.telegram.state.subscription.MessageHelper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,10 +25,16 @@ import java.util.Optional;
     @AcceptedCommand(commandName = "/start")
 })
 public class AnonymousBotState extends AbstractBotState {
+    public AnonymousBotState() {
+        super(StateUtils.ANONYMOUS_PROPS);
+    }
 
-    @Autowired
-    public AnonymousBotState(MessageSourceAdapter messageSource) {
-        super(StateUtils.ANONYMOUS_PROPS, messageSource);
+    @Override
+    public CommandResult executeCommand(TelegramCommand command, UserContext context) {
+        if (command.isStart()) {
+            return this.getHandlers().get(command.getCommand()).act(command, context);
+        }
+        throw new RuntimeException("Anonymous interaction");
     }
 
     @Override
@@ -43,7 +50,7 @@ public class AnonymousBotState extends AbstractBotState {
     @CommandMapping(forCommand = "/start")
     public CommandResult onStart(TelegramCommand command, UserContext context) {
         context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
-        final String message = getMessage("anonymous.start.reply", context);
+        final String message = MessageHelper.getMessage("reply.start", context);
         return CommandResult.withMessage(message);
     }
 }

@@ -7,9 +7,9 @@ import lombok.Setter;
 import java.text.MessageFormat;
 import java.util.Optional;
 
-@Getter
 @Setter
 public class SubscriptionConfig {
+    @Getter
     private final String chatId;
     private Integer minPrice;
     private Integer maxPrice;
@@ -19,20 +19,23 @@ public class SubscriptionConfig {
         this.chatId = chatId;
     }
 
+    public SubscriptionConfig(SubscriptionConfig subscriptionConfig) {
+        this.chatId = subscriptionConfig.chatId;
+        this.maxPrice = subscriptionConfig.maxPrice;
+        this.minPrice = subscriptionConfig.minPrice;
+        this.city = subscriptionConfig.city;
+    }
+
     public boolean isConfigured() {
         return this.minPrice != null ||
             this.maxPrice != null ||
             this.city != null;
     }
 
-    public String toString(MessageFormat messageFormat) {
-        final String minPrice = this.minPrice == null ? "-" : this.minPrice.toString();
-        final String maxPrice = this.maxPrice == null ? "-" : this.maxPrice.toString();
-        final String cityName = this.city == null ? "-" : this.city.getCityName();
-        return messageFormat.format(new Object[] { minPrice, maxPrice, cityName });
-    }
 
     public  Optional<City> getCity() {
-        return Optional.of(this.city);
+        return Optional.ofNullable(this.city);
     }
+    public  Optional<Integer> getMinPrice() { return Optional.ofNullable(this.minPrice); }
+    public  Optional<Integer> getMaxPrice() { return Optional.ofNullable(this.maxPrice); }
 }

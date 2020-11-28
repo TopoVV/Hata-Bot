@@ -7,10 +7,8 @@ import java.util.Optional;
 
 public interface SubscriptionDao {
     void saveSubscription(Subscription subscription);
-    List<Subscription> getAllUserSubscriptions(String chatId);
-
+    List<Subscription> getAllUserSubscriptions(String userId);
     List<Subscription> getAllSubscriptions();
-
-    Optional<Subscription> findSubscription(long subscriptionId, String chatId);
+    Optional<Subscription> findSubscription(long subscriptionId, String userId);
     void deleteSubscription(Long subscriptionId);
 }

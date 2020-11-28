@@ -1,17 +1,21 @@
 package com.topov.estatesearcher.dao.jdbc;
 
 import com.topov.estatesearcher.dao.SubscriptionDao;
+import com.topov.estatesearcher.model.City;
 import com.topov.estatesearcher.model.Subscription;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,14 +27,14 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
         "SELECT * FROM subscriptions";
 
     private static final String SELECT_ALL_USER_SUBSCRIPTIONS =
-        "SELECT * FROM subscriptions WHERE chat_id = :chatId";
+        "SELECT * FROM subscriptions WHERE user_id = :userId";
 
     private static final String SELECT_SUBSCRIPTION_BY_ID_AND_CHAT_ID =
-        "SELECT * FROM subscriptions WHERE subscription_id = :subscriptionId AND chat_id = :chatId";
+        "SELECT * FROM subscriptions WHERE subscription_id = :subscriptionId AND user_id = :userId";
 
     private static final String INSERT_SUBSCRIPTION =
-        "INSERT INTO subscriptions (chat_id, min_price, max_price, city_id, city_name) " +
-            "VALUES (:chatId, :minPrice, :maxPrice, :cityId, :cityName)";
+        "INSERT INTO subscriptions (user_id, min_price, max_price, city_id, city_name) " +
+            "VALUES (:userId, :minPrice, :maxPrice, :cityId, :cityName)";
 
     private static final String DELETE_SUBSCRIPTION =
         "DELETE FROM subscriptions WHERE subscription_id = :subscriptionId";
@@ -50,56 +54,38 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
     @Override
     public void saveSubscription(Subscription subscription) {
         final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("chatId", subscription.getChatId());
+        params.addValue("userId", subscription.getUserId());
         params.addValue("minPrice", subscription.getMinPrice());
         params.addValue("maxPrice", subscription.getMaxPrice());
-        params.addValue("cityId", subscription.getCityId());
-        params.addValue("cityName", subscription.getCityName());
+        params.addValue("cityId", subscription.getCity().map(City::getCityId).orElse(null));
+        params.addValue("cityName", subscription.getCity().map(City::getCityName).orElse(null));
 
         this.jdbcTemplate.update(INSERT_SUBSCRIPTION, params);
     }
 
     @Override
-    public List<Subscription> getAllUserSubscriptions(String chatId) {
+    public List<Subscription> getAllUserSubscriptions(String userId) {
         final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("chatId", chatId);
+        params.addValue("userId", userId);
 
-        return this.jdbcTemplate.query(SELECT_ALL_USER_SUBSCRIPTIONS, params, (rs, rowNum) -> {
-                final Subscription obj = new Subscription();
-                obj.setSubscriptionId(rs.getLong("subscription_id"));
-                obj.setChatId(rs.getString("chat_id"));
-                obj.setCityId(rs.getInt("city_id"));
-                obj.setMinPrice(rs.getInt("min_price"));
-                obj.setMaxPrice(rs.getInt("max_price"));
-                obj.setCityName(rs.getString("city_name"));
-                return obj;
-            });
+        return this.jdbcTemplate.query(SELECT_ALL_USER_SUBSCRIPTIONS, params, new SubscriptionRowMapper());
     }
 
     @Override
     public List<Subscription> getAllSubscriptions() {
-        return this.jdbcTemplate.query(SELECT_ALL_SUBSCRIPTIONS, (rs, rowNum) -> {
-            final Subscription obj = new Subscription();
-            obj.setSubscriptionId(rs.getLong("subscription_id"));
-            obj.setChatId(rs.getString("chat_id"));
-            obj.setCityId(rs.getInt("city_id"));
-            obj.setMinPrice(rs.getInt("min_price"));
-            obj.setMaxPrice(rs.getInt("max_price"));
-            obj.setCityName(rs.getString("city_name"));
-            return obj;
-        });
+        return this.jdbcTemplate.query(SELECT_ALL_SUBSCRIPTIONS, new SubscriptionRowMapper());
     }
 
     @Override
-    public Optional<Subscription> findSubscription(long subscriptionId, String chatId) {
+    public Optional<Subscription> findSubscription(long subscriptionId, String userId) {
         final MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("subscriptionId", subscriptionId);
-        params.addValue("chatId", chatId);
+        params.addValue("userId", userId);
 
         try {
             return this.jdbcTemplate.queryForObject(SELECT_SUBSCRIPTION_BY_ID_AND_CHAT_ID, params, (rs, rowNum) -> {
                 final Subscription subscription = new Subscription();
-                subscription.setChatId(rs.getString("chat_id"));
+                subscription.setUserId(rs.getString("user_id"));
                 subscription.setSubscriptionId(rs.getLong("subscription_id"));
                 return Optional.of(subscription);
             });
@@ -115,5 +101,27 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
         params.addValue("subscriptionId", subscriptionId);
 
         this.jdbcTemplate.update(DELETE_SUBSCRIPTION, params);
+    }
+
+    private static class SubscriptionRowMapper implements RowMapper<Subscription> {
+
+        @Override
+        public Subscription mapRow(ResultSet rs, int rowNum) throws SQLException {
+            final Subscription obj = new Subscription();
+            final int cityId = rs.getInt("city_id");
+            final String cityName = rs.getString("city_name");
+            if (cityId != 0 && cityName != null) {
+                final City city = new City(cityId, cityName);
+                obj.setCity(city);
+            } else {
+                obj.setCity(null);
+            }
+
+            obj.setSubscriptionId(rs.getLong("subscription_id"));
+            obj.setUserId(rs.getString("user_id"));
+            obj.setMinPrice(rs.getInt("min_price"));
+            obj.setMaxPrice(rs.getInt("max_price"));
+            return obj;
+        }
     }
 }

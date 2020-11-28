@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -26,25 +25,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<Subscription> getAllSubscriptionsForUser(String chatId) {
-        return this.subscriptionDao.getAllUserSubscriptions(chatId);
+    public SubscriptionList getUserSubscriptions(String userId) {
+        final List<Subscription> subscriptions = this.subscriptionDao.getAllUserSubscriptions(userId);
+        return new SubscriptionList(subscriptions);
     }
 
     @Override
-    public Optional<Subscription> findSubscription(long subscriptionId, String chatId) {
-        return this.subscriptionDao.findSubscription(subscriptionId, chatId);
+    public Optional<Subscription> findSubscription(long subscriptionId, String userId) {
+        return this.subscriptionDao.findSubscription(subscriptionId, userId);
     }
 
     @Override
     public void removeSubscription(Long subscriptionId) {
         this.subscriptionDao.deleteSubscription(subscriptionId);
     }
-
-    @Override
-    public String getUserSubscriptionsInfo(String chatId) {
-        return this.subscriptionDao.getAllUserSubscriptions(chatId).stream()
-            .map(Subscription::toString)
-            .collect(Collectors.joining("\n----------\n"));
-    }
-
 }

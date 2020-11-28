@@ -15,6 +15,8 @@ public class UpdateWrapper {
         this.update = update;
     }
 
+    public String getUserId() { return this.update.getMessage().getFrom().getId().toString(); }
+
     public String getChatId() {
         return this.update.getMessage().getChatId().toString();
     }

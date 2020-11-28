@@ -12,6 +12,7 @@ import com.topov.estatesearcher.telegram.state.StateUtils;
 import com.topov.estatesearcher.telegram.state.annotation.AcceptedCommand;
 import com.topov.estatesearcher.telegram.state.annotation.CommandMapping;
 import com.topov.estatesearcher.telegram.state.annotation.TelegramBotState;
+import com.topov.estatesearcher.telegram.state.subscription.MessageHelper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,17 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
     @KeyboardRow(buttons = { "/later" })
 })
 public class DonateBotState extends AbstractBotState {
-
-    @Autowired
-    public DonateBotState(MessageSourceAdapter messageSource) {
-        super(StateUtils.DONATE_PROPS, messageSource);
+    public DonateBotState() {
+        super(StateUtils.DONATE_PROPS);
     }
 
     @CommandMapping(forCommand = "/later")
     public CommandResult onLater(TelegramCommand command, UserContext context) {
-        log.info("Executing /later command for user: {}", context.getChatId());
+        log.info("Executing /later command for user: {}", context.getUserId());
         context.setCurrentStateName(BotStateName.MAIN);
-        final String message = getMessage("donate.later.reply", context);
+        final String message = MessageHelper.getMessage("reply.donate.later", context);
         return CommandResult.withMessage(message);
     }
 }

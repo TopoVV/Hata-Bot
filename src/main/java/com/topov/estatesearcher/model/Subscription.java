@@ -5,45 +5,40 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.text.MessageFormat;
+import java.util.Optional;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class Subscription {
     private Long subscriptionId;
-    private String  chatId;
+    private String userId;
     private Integer minPrice;
     private Integer maxPrice;
-    private Integer cityId;
-    private String cityName;
+    private City city;
 
-    public Subscription(String chatId) {
-        this.chatId = chatId;
+    public Subscription(String userId) {
+        this.userId = userId;
     }
 
     public Subscription(Subscription subscription) {
         this.subscriptionId = subscription.subscriptionId;
-        this.chatId = subscription.chatId;
+        this.userId = subscription.userId;
         this.minPrice = subscription.minPrice;
         this.maxPrice = subscription.maxPrice;
-        this.cityId = subscription.cityId;
-        this.cityName = subscription.cityName;
+        this.city = subscription.city;
     }
 
     public Subscription(SubscriptionConfig config) {
-        this.chatId = config.getChatId();
-        this.minPrice = config.getMinPrice();
-        this.maxPrice = config.getMaxPrice();
-        this.cityName = config.getCity().map(City::getCityName).orElse(null);
-        this.cityId = config.getCity().map(City::getCityId).orElse(null);
+        this.userId = config.getChatId();
+        this.minPrice = config.getMinPrice().orElse(0);
+        this.maxPrice = config.getMaxPrice().orElse(Integer.MAX_VALUE);
+        this.city = config.getCity().orElse(null);
     }
 
-    @Override
-    public String toString() {
-        final String minPrice = this.minPrice == null ? "Not specified" : this.minPrice.toString();
-        final String maxPrice = this.maxPrice == null ? "Not specified" : this.maxPrice.toString();
-        final String cityName = this.cityName == null ? "Not specified" : this.cityName;
-        final String id = this.subscriptionId == null ? "" : String.format("id = %d", this.subscriptionId);
-        final String template = "%s\nmin price = %s\nmax price = %s\ncity = %s";
-        return String.format(template, id, minPrice, maxPrice, cityName);
+    public Optional<City> getCity() {
+        return Optional.ofNullable(city);
     }
+
 }

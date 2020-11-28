@@ -15,16 +15,11 @@ public class UserContextServiceImpl implements UserContextService {
 
     @Override
     public void setContext(UserContext userContext) {
-        this.userContexts.put(userContext.getChatId(), userContext);
+        this.userContexts.put(userContext.getUserId(), userContext);
     }
 
     @Override
-    public UserContext getContextForUser(String chatId) {
-        return this.userContexts.getOrDefault(chatId, new UserContext(chatId, BotStateName.ANONYMOUS));
-    }
-
-    @Override
-    public void createContext(String chatId) {
-        this.userContexts.put(chatId, new UserContext(chatId, BotStateName.MAIN));
+    public UserContext getContextForUser(String userId) {
+        return this.userContexts.getOrDefault(userId, new UserContext(userId, BotStateName.ANONYMOUS));
     }
 }

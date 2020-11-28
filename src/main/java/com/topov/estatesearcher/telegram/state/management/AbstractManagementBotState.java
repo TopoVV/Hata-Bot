@@ -2,11 +2,13 @@ package com.topov.estatesearcher.telegram.state.management;
 
 import com.topov.estatesearcher.adapter.MessageSourceAdapter;
 import com.topov.estatesearcher.service.SubscriptionService;
+import com.topov.estatesearcher.service.SubscriptionList;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.StateProperties;
+import com.topov.estatesearcher.telegram.state.subscription.MessageHelper;
 import lombok.extern.log4j.Log4j2;
 
 import java.text.MessageFormat;
@@ -15,25 +17,15 @@ import java.text.MessageFormat;
 public class AbstractManagementBotState extends AbstractBotState {
     protected final SubscriptionService subscriptionService;
 
-    protected AbstractManagementBotState(StateProperties props, MessageSourceAdapter messageSource, SubscriptionService subscriptionService) {
-        super(props, messageSource);
+    protected AbstractManagementBotState(StateProperties props, SubscriptionService subscriptionService) {
+        super(props);
         this.subscriptionService = subscriptionService;
     }
 
-    public static class DefaultMyExecutor implements DefaultExecutor {
-        private final MessageSourceAdapter messageSource;
-        private final SubscriptionService subscriptionService;
-
-        DefaultMyExecutor(MessageSourceAdapter messageSource, SubscriptionService subscriptionService) {
-            this.messageSource = messageSource;
-            this.subscriptionService = subscriptionService;
-        }
-
-        @Override
-        public CommandResult execute(TelegramCommand command, UserContext context) {
-            final String chatId = context.getChatId();
-            final String subscriptions = this.subscriptionService.getUserSubscriptionsInfo(chatId);
-            final String message = this.messageSource.getMessage("management.my.reply", context, subscriptions);
+    public static class DefaultMyExecutor {
+        public CommandResult execute(TelegramCommand command, UserContext context, SubscriptionList subscriptionList) {
+            final String subscriptions = subscriptionList.toString(context);
+            final String message = MessageHelper.getMessage("reply.my", context, subscriptions);
             return CommandResult.withMessage(message);
         }
     }
