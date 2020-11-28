@@ -3,7 +3,6 @@ package com.topov.estatesearcher.telegram.state.subscription;
 import com.topov.estatesearcher.adapter.MessageSourceAdapter;
 import com.topov.estatesearcher.model.City;
 import com.topov.estatesearcher.model.Subscription;
-import com.topov.estatesearcher.service.SubscriptionList;
 import com.topov.estatesearcher.telegram.context.SubscriptionConfig;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;

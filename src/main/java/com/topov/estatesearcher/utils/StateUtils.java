@@ -1,4 +1,7 @@
-package com.topov.estatesearcher.telegram.state;
+package com.topov.estatesearcher.telegram.utils;
+
+import com.topov.estatesearcher.telegram.state.BotStateName;
+import com.topov.estatesearcher.telegram.state.StateProperties;
 
 public class StateUtils {
     public static final StateProperties MAIN_PROPS =

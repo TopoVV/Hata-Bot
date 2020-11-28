@@ -1,12 +1,8 @@
-package com.topov.estatesearcher.service;
+package com.topov.estatesearcher.telegram.context;
 
-import com.topov.estatesearcher.model.City;
 import com.topov.estatesearcher.model.Subscription;
-import com.topov.estatesearcher.telegram.context.UserContext;
-import com.topov.estatesearcher.telegram.result.CommandResult;
-import com.topov.estatesearcher.telegram.state.subscription.MessageHelper;
+import com.topov.estatesearcher.utils.MessageHelper;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
