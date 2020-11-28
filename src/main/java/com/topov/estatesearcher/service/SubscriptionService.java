@@ -1,6 +1,7 @@
 package com.topov.estatesearcher.service;
 
 import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.model.SubscriptionList;
 
 import java.util.Optional;
 

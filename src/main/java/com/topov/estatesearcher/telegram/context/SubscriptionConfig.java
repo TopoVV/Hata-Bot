@@ -4,7 +4,6 @@ import com.topov.estatesearcher.model.City;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.text.MessageFormat;
 import java.util.Optional;
 
 @Setter

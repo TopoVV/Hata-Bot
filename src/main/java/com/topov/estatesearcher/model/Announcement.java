@@ -1,6 +1,7 @@
 package com.topov.estatesearcher.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.util.Objects;
 
 @Setter
 @Getter
+@NoArgsConstructor
 public class Announcement {
     private Long announcementId;
     private String url;

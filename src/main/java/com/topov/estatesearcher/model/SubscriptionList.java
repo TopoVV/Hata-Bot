@@ -1,6 +1,6 @@
-package com.topov.estatesearcher.telegram.context;
+package com.topov.estatesearcher.model;
 
-import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.utils.MessageHelper;
 
 import java.util.List;

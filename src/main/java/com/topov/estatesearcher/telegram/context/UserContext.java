@@ -1,10 +1,10 @@
 package com.topov.estatesearcher.telegram.context;
 
-import com.topov.estatesearcher.telegram.EntranceMessage;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.request.TelegramUpdate;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.result.EntranceMessage;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.BotState;
 import com.topov.estatesearcher.telegram.state.BotStateName;

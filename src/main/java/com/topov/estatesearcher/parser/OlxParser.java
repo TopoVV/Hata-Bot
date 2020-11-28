@@ -10,18 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OlxParser implements Parser {
-
-    @Override
-    public int parsePagesQuantity(Document document) {
-        String pagesAmount = document.select(".pager")
-            .select(".item")
-            .last()
-            .select("a")
-            .text();
-
-        return Integer.parseInt(pagesAmount);
-    }
-
     @Override
     public List<Announcement> parseAnnouncements(Document document) {
         Elements offers = document.select("#offers_table").select(".offer");

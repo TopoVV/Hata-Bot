@@ -6,6 +6,5 @@ import org.jsoup.nodes.Document;
 import java.util.List;
 
 public interface Parser {
-    int parsePagesQuantity(Document document);
     List<Announcement> parseAnnouncements(Document document);
 }

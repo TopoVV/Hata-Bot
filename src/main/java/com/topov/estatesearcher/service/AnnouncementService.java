@@ -5,5 +5,6 @@ import com.topov.estatesearcher.model.Announcement;
 import java.util.List;
 
 public interface AnnouncementService {
-    void saveAnnouncementsAndNotifySubscribers(List<Announcement> announcements);
+    List<Announcement> filterNewAnnouncements(List<Announcement> announcements);
+    void saveAnnouncements(List<Announcement> announcements);
 }

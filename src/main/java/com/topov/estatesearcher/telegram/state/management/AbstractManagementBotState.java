@@ -1,17 +1,14 @@
 package com.topov.estatesearcher.telegram.state.management;
 
-import com.topov.estatesearcher.adapter.MessageSourceAdapter;
+import com.topov.estatesearcher.model.SubscriptionList;
 import com.topov.estatesearcher.service.SubscriptionService;
-import com.topov.estatesearcher.service.SubscriptionList;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.result.CommandResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.StateProperties;
-import com.topov.estatesearcher.telegram.state.subscription.MessageHelper;
+import com.topov.estatesearcher.utils.MessageHelper;
 import lombok.extern.log4j.Log4j2;
-
-import java.text.MessageFormat;
 
 @Log4j2
 public class AbstractManagementBotState extends AbstractBotState {

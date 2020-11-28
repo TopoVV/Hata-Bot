@@ -24,11 +24,4 @@ public class JdbcAnnouncementDaoTest extends DaoTests {
             new Announcement("11233", 3, LocalDateTime.now(), "desc3", "city3")
         ));
     }
-
-    @Test
-    void saveDuplicate() {
-        final Announcement announcement = new Announcement("11231", 1, LocalDateTime.now(), "desc1", "city1");
-        this.jdbcAnnouncementDao.saveAnnouncement(announcement);
-    }
-
 }

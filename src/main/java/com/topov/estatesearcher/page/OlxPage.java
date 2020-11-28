@@ -14,11 +14,6 @@ public class OlxPage implements Page {
     }
 
     @Override
-    public int parsePagesQuantity(Parser parser) {
-        return parser.parsePagesQuantity(this.document);
-    }
-
-    @Override
     public Stream<Announcement> parseAnnouncements(Parser parser) {
         return parser.parseAnnouncements(this.document).stream();
     }

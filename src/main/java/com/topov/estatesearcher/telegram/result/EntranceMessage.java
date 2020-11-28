@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram;
+package com.topov.estatesearcher.telegram.result;
 
 import com.topov.estatesearcher.telegram.keyboard.Keyboard;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

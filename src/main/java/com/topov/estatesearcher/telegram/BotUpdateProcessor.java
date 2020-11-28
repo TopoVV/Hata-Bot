@@ -2,6 +2,7 @@ package com.topov.estatesearcher.telegram;
 
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.response.BotResponse;
+import com.topov.estatesearcher.telegram.result.EntranceMessage;
 
 import java.util.Optional;
 

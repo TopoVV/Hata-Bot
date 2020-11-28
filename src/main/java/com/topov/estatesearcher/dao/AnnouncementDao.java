@@ -7,5 +7,4 @@ import java.util.List;
 public interface AnnouncementDao {
     void saveAnnouncements(List<Announcement> announcements);
     List<Announcement> getAnnouncements();
-    void saveAnnouncement(Announcement announcement);
 }

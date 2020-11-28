@@ -6,6 +6,7 @@ import com.topov.estatesearcher.model.Subscription;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,8 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,15 +65,23 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
 
     @Override
     public List<Subscription> getAllUserSubscriptions(String userId) {
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("userId", userId);
+        try {
+            final MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("userId", userId);
 
-        return this.jdbcTemplate.query(SELECT_ALL_USER_SUBSCRIPTIONS, params, new SubscriptionRowMapper());
+            return this.jdbcTemplate.query(SELECT_ALL_USER_SUBSCRIPTIONS, params, subscriptionRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
     public List<Subscription> getAllSubscriptions() {
-        return this.jdbcTemplate.query(SELECT_ALL_SUBSCRIPTIONS, new SubscriptionRowMapper());
+        try {
+            return this.jdbcTemplate.query(SELECT_ALL_SUBSCRIPTIONS, subscriptionRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -90,38 +98,36 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
                 return Optional.of(subscription);
             });
         } catch (EmptyResultDataAccessException e) {
-            log.error("Empty result set");
             return Optional.empty();
         }
     }
 
     @Override
     public void deleteSubscription(Long subscriptionId) {
-        final MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("subscriptionId", subscriptionId);
-
-        this.jdbcTemplate.update(DELETE_SUBSCRIPTION, params);
-    }
-
-    private static class SubscriptionRowMapper implements RowMapper<Subscription> {
-
-        @Override
-        public Subscription mapRow(ResultSet rs, int rowNum) throws SQLException {
-            final Subscription obj = new Subscription();
-            final int cityId = rs.getInt("city_id");
-            final String cityName = rs.getString("city_name");
-            if (cityId != 0 && cityName != null) {
-                final City city = new City(cityId, cityName);
-                obj.setCity(city);
-            } else {
-                obj.setCity(null);
-            }
-
-            obj.setSubscriptionId(rs.getLong("subscription_id"));
-            obj.setUserId(rs.getString("user_id"));
-            obj.setMinPrice(rs.getInt("min_price"));
-            obj.setMaxPrice(rs.getInt("max_price"));
-            return obj;
+        try {
+            final MapSqlParameterSource params = new MapSqlParameterSource();
+            params.addValue("subscriptionId", subscriptionId);
+            this.jdbcTemplate.update(DELETE_SUBSCRIPTION, params);
+        } catch (DataAccessException e) {
+            log.error("Subscription delete failed");
         }
     }
+
+    private static final RowMapper<Subscription> subscriptionRowMapper =  (rs, rowNum) -> {
+        final Subscription obj = new Subscription();
+        final int cityId = rs.getInt("city_id");
+        final String cityName = rs.getString("city_name");
+        if (cityId != 0 && cityName != null) {
+            final City city = new City(cityId, cityName);
+            obj.setCity(city);
+        } else {
+            obj.setCity(null);
+        }
+
+        obj.setSubscriptionId(rs.getLong("subscription_id"));
+        obj.setUserId(rs.getString("user_id"));
+        obj.setMinPrice(rs.getInt("min_price"));
+        obj.setMaxPrice(rs.getInt("max_price"));
+        return obj;
+    };
 }

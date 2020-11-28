@@ -6,33 +6,31 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
 public class AnnouncementServiceImpl implements AnnouncementService {
     private final AnnouncementDao announcementDao;
-    private final NotificationService notificationService;
 
     @Autowired
-    public AnnouncementServiceImpl(AnnouncementDao announcementDao, NotificationService notificationService) {
+    public AnnouncementServiceImpl(AnnouncementDao announcementDao) {
         this.announcementDao = announcementDao;
-        this.notificationService = notificationService;
     }
 
     @Override
-    public void saveAnnouncementsAndNotifySubscribers(List<Announcement> announcements) {
+    public List<Announcement> filterNewAnnouncements(List<Announcement> announcements) {
         final List<Announcement> storedAnnouncements = this.announcementDao.getAnnouncements();
-        if (storedAnnouncements.isEmpty()) {
-            this.announcementDao.saveAnnouncements(announcements);
-        } else {
-            log.info("{} new announcements detected", announcements.size());
-            announcements.stream()
-                .filter(announcement -> !storedAnnouncements.contains(announcement))
-                .forEach(announcement -> {
-                    this.announcementDao.saveAnnouncement(announcement);
-                    this.notificationService.notifySubscribers(announcement);
-                });
-        }
+        log.info("{} new announcements detected", announcements.size());
+        return announcements.stream()
+            .filter(announcement -> !storedAnnouncements.contains(announcement))
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @Override
+    public void saveAnnouncements(List<Announcement> announcements) {
+        this.announcementDao.saveAnnouncements(announcements);
     }
 }

@@ -5,6 +5,7 @@ import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.response.BotResponse;
 import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.result.EntranceMessage;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
 import com.topov.estatesearcher.telegram.state.AbstractBotState;
 import com.topov.estatesearcher.telegram.state.BotState;

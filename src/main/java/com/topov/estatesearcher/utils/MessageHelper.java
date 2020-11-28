@@ -1,4 +1,4 @@
-package com.topov.estatesearcher.telegram.state.subscription;
+package com.topov.estatesearcher.utils;
 
 import com.topov.estatesearcher.adapter.MessageSourceAdapter;
 import com.topov.estatesearcher.model.City;
@@ -38,7 +38,8 @@ public class MessageHelper extends ResourceBundleMessageSource {
 
         final String id = subscription.getSubscriptionId().toString();
         final String minPrice = subscription.getMinPrice().toString();
-        final String maxPrice = subscription.getMaxPrice().toString();
+        final Integer maxPriceValue = subscription.getMaxPrice();
+        final String maxPrice = maxPriceValue.equals(Integer.MAX_VALUE) ? "MAX" : maxPriceValue.toString();
         final String cityName = subscription.getCity().map(City::getCityName).orElse(anyCity);
 
         return MessageFormat.format(template, id, minPrice, maxPrice, cityName, empty);

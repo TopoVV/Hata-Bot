@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +23,14 @@ import java.util.stream.Collectors;
 @Service
 @Profile(value = "dev")
 public class JdbcCityDao implements CityDao {
-    private static final String SELECT_ALL_CITIES = "SELECT DISTINCT * FROM cities";
-    private static final String SELECT_CITY_BY_ID = "SELECT * FROM cities WHERE city_id = :cityId";
-    private static final String SELECT_CITY_BY_NAME = "SELECT * FROM cities WHERE UPPER(city_name) = UPPER(:cityName)";
+    private static final String SELECT_ALL_CITIES =
+        "SELECT DISTINCT * FROM cities";
+
+    private static final String SELECT_CITY_BY_ID =
+        "SELECT * FROM cities WHERE city_id = :cityId";
+
+    private static final String SELECT_CITY_BY_NAME =
+        "SELECT * FROM cities WHERE UPPER(city_name) = UPPER(:cityName)";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -40,9 +46,13 @@ public class JdbcCityDao implements CityDao {
 
     @Override
     public List<City> getCities() {
-        return jdbcTemplate.query(SELECT_ALL_CITIES, cityRowMapper).stream()
-            .sorted(Comparator.comparingInt(City::getCityId))
-            .collect(Collectors.toList());
+        try {
+            return jdbcTemplate.query(SELECT_ALL_CITIES, cityRowMapper).stream()
+                .sorted(Comparator.comparingInt(City::getCityId))
+                .collect(Collectors.toList());
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -53,7 +63,6 @@ public class JdbcCityDao implements CityDao {
             final City city = this.jdbcTemplate.queryForObject(SELECT_CITY_BY_NAME, params, cityRowMapper);
             return Optional.ofNullable(city);
         } catch (EmptyResultDataAccessException e) {
-            log.error("Empty result set");
             return Optional.empty();
         }
     }
@@ -66,7 +75,6 @@ public class JdbcCityDao implements CityDao {
             final City city = this.jdbcTemplate.queryForObject(SELECT_CITY_BY_ID, params, cityRowMapper);
             return Optional.ofNullable(city);
         } catch (EmptyResultDataAccessException e) {
-            log.error("Empty result set");
             return Optional.empty();
         }
     }

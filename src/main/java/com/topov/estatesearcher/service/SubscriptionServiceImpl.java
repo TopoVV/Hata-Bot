@@ -2,6 +2,7 @@ package com.topov.estatesearcher.service;
 
 import com.topov.estatesearcher.dao.SubscriptionDao;
 import com.topov.estatesearcher.model.Subscription;
+import com.topov.estatesearcher.model.SubscriptionList;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

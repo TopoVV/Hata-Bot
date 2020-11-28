@@ -32,9 +32,4 @@ public class InMemoryAnnouncementDao implements AnnouncementDao {
         return this.storedAnnouncements;
     }
 
-    @Override
-    public void saveAnnouncement(Announcement announcement) {
-        log.info("Storing announcement: \n{}", announcement);
-        this.storedAnnouncements.add(announcement);
-    }
 }

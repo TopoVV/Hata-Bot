@@ -1,20 +1,21 @@
 package com.topov.estatesearcher.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AnnouncementResolver {
-    private final OlxServiceImpl olxService;
+public class AnnouncementChecker {
+    private final SourceService olxService;
 
     @Autowired
-    public AnnouncementResolver(OlxServiceImpl olxService) {
+    public AnnouncementChecker(@Qualifier("olxService") SourceService olxService) {
         this.olxService = olxService;
     }
 
     @Scheduled(fixedDelay = 60000, initialDelay = 1000)
-    public void receiveAnnouncements() {
-        this.olxService.receiveAnnouncements();
+    public void checkOlx() {
+        this.olxService.checkAnnouncements();
     }
 }

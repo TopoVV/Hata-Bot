@@ -5,9 +5,10 @@ import com.topov.estatesearcher.model.Announcement;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -23,6 +25,9 @@ import java.util.List;
 public class JdbcAnnouncementDao implements AnnouncementDao {
     private static final String INSERT_ANNOUNCEMENT_SQL =
         "INSERT INTO announcements (url, price, extraction_date_time, description, city_name) VALUES (?, ?, ?, ?, ?)";
+
+    private static final String SELECT_ALL_ANNOUNCEMENTS =
+        "SELECT * FROM announcements";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -38,44 +43,49 @@ public class JdbcAnnouncementDao implements AnnouncementDao {
 
     @Override
     public void saveAnnouncements(List<Announcement> announcements) {
-        int batchSize = 100;
+        try {
+            int batchSize = 10;
 
-        for (int j = 0; j < announcements.size(); j+= batchSize) {
-            final List<Announcement> batch = announcements.subList(j, Math.min(j + batchSize, announcements.size()));
+            for (int j = 0; j < announcements.size(); j += batchSize) {
+                final List<Announcement> batch = announcements.subList(j, Math.min(j + batchSize, announcements.size()));
 
-            this.jdbcTemplate.batchUpdate(INSERT_ANNOUNCEMENT_SQL, new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    ps.setString(1, batch.get(i).getUrl());
-                    ps.setInt(2, batch.get(i).getPrice());
-                    ps.setTimestamp(3, Timestamp.valueOf(batch.get(i).getExtractionDateTime()));
-                    ps.setString(4, batch.get(i).getDescription());
-                    ps.setString(5, batch.get(i).getCityName());
-                }
+                this.jdbcTemplate.batchUpdate(INSERT_ANNOUNCEMENT_SQL, new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setString(1, batch.get(i).getUrl());
+                        ps.setInt(2, batch.get(i).getPrice());
+                        ps.setTimestamp(3, Timestamp.valueOf(batch.get(i).getExtractionDateTime()));
+                        ps.setString(4, batch.get(i).getDescription());
+                        ps.setString(5, batch.get(i).getCityName());
+                    }
 
-                @Override
-                public int getBatchSize() {
-                    return batch.size();
-                }
-            });
+                    @Override
+                    public int getBatchSize() {
+                        return batch.size();
+                    }
+                });
+            }
+        } catch (DataAccessException e) {
+            log.error("Announcement batch saving failed");
         }
     }
 
     @Override
     public List<Announcement> getAnnouncements() {
-        throw new RuntimeException("Not implemented yet");
-    }
-
-    @Override
-    public void saveAnnouncement(Announcement announcement) {
-        this.jdbcTemplate.execute(INSERT_ANNOUNCEMENT_SQL, (PreparedStatementCallback<Boolean>) ps -> {
-            ps.setString(1, announcement.getUrl());
-            ps.setInt(2, announcement.getPrice());
-            ps.setTimestamp(3, Timestamp.valueOf(announcement.getExtractionDateTime()));
-            ps.setString(4, announcement.getDescription());
-            ps.setString(5, announcement.getCityName());
-
-            return ps.execute();
-        });
+        try {
+            return this.jdbcTemplate.query(SELECT_ALL_ANNOUNCEMENTS, (Object[]) null, (rs, rowNum) -> {
+                final Announcement announcement = new Announcement();
+                announcement.setAnnouncementId(rs.getLong("announcement_id"));
+                announcement.setUrl(rs.getString("url"));
+                announcement.setPrice(rs.getInt("price"));
+                announcement.setDescription(rs.getString("description"));
+                final Timestamp extractionTimestamp = new Timestamp(rs.getDate("extraction_date_time").getTime());
+                announcement.setExtractionDateTime(extractionTimestamp.toLocalDateTime());
+                announcement.setCityName(rs.getString("city_name"));
+                return announcement;
+            });
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 }

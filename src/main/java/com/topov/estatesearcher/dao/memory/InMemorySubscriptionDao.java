@@ -35,8 +35,8 @@ public class InMemorySubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public List<Subscription> getAllUserSubscriptions(String chatId) {
-        final List<Subscription> subscriptions = this.subscriptions.get(chatId);
+    public List<Subscription> getAllUserSubscriptions(String userId) {
+        final List<Subscription> subscriptions = this.subscriptions.get(userId);
         return Collections.unmodifiableList(subscriptions);
     }
 
@@ -51,8 +51,8 @@ public class InMemorySubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public Optional<Subscription> findSubscription(long subscriptionId, String chatId) {
-        return this.subscriptions.get(chatId)
+    public Optional<Subscription> findSubscription(long subscriptionId, String userId) {
+        return this.subscriptions.get(userId)
             .stream()
             .filter(s -> s.getSubscriptionId().equals(subscriptionId))
             .findFirst();

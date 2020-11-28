@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface NotificationService {
     void notifySubscribers(List<Announcement> announcements);
-    void notifySubscribers(Announcement announcement);
 }

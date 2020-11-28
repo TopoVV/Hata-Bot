@@ -1,17 +1,16 @@
 package com.topov.estatesearcher.telegram.state;
 
-import com.topov.estatesearcher.adapter.MessageSourceAdapter;
-import com.topov.estatesearcher.telegram.EntranceMessage;
+import com.topov.estatesearcher.telegram.command.CommandHandler;
+import com.topov.estatesearcher.telegram.command.CommandInfo;
 import com.topov.estatesearcher.telegram.context.UserContext;
 import com.topov.estatesearcher.telegram.keyboard.Keyboard;
 import com.topov.estatesearcher.telegram.request.TelegramCommand;
 import com.topov.estatesearcher.telegram.request.TelegramUpdate;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.result.EntranceMessage;
 import com.topov.estatesearcher.telegram.result.UpdateResult;
-import com.topov.estatesearcher.telegram.state.command.handler.CommandHandler;
-import com.topov.estatesearcher.telegram.state.command.handler.CommandInfo;
-import com.topov.estatesearcher.telegram.state.subscription.MessageHelper;
+import com.topov.estatesearcher.utils.MessageHelper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
