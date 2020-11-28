@@ -9,6 +9,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
-@Service
+@Repository
 @Profile(value = "dev")
 public class JdbcCityDao implements CityDao {
     private static final String SELECT_ALL_CITIES =
@@ -47,7 +48,7 @@ public class JdbcCityDao implements CityDao {
     @Override
     public List<City> getCities() {
         try {
-            return jdbcTemplate.query(SELECT_ALL_CITIES, cityRowMapper).stream()
+            return this.jdbcTemplate.query(SELECT_ALL_CITIES, cityRowMapper).stream()
                 .sorted(Comparator.comparingInt(City::getCityId))
                 .collect(Collectors.toList());
         } catch (EmptyResultDataAccessException e) {

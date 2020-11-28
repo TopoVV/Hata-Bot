@@ -27,11 +27,6 @@ public class Announcement {
     }
 
     @Override
-    public String toString() {
-        return String.format("City: %s\nURL: %s\nPrice: %d\n\nDescription: %s", cityName, url, price, description);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

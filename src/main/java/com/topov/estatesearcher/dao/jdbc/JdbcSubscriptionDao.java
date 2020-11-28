@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Log4j2
-@Service
+@Repository
 @Profile(value = "dev")
 public class JdbcSubscriptionDao implements SubscriptionDao {
     private static final String SELECT_ALL_SUBSCRIPTIONS =

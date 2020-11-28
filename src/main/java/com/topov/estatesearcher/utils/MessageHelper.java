@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 
+/**
+ * Helper class needed to retrieve proper message and templates from ResourceBundle depending on locale from any place
+ * inside the application.
+ */
 @Component
 public class MessageHelper extends ResourceBundleMessageSource {
     private static MessageSourceAdapter messageSource;

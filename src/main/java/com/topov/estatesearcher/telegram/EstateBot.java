@@ -47,17 +47,6 @@ public class EstateBot extends TelegramLongPollingBot {
         log.debug("Receiving update: {}", update);
         final UpdateWrapper updateWrapper = new UpdateWrapper(update);
 
-        final SendInvoice sendInvoice = new SendInvoice(Integer.valueOf(
-            update.getMessage().getChatId().toString()),
-            "Invoice",
-            "Invoice",
-            "Payload",
-            "1234",
-            "321",
-            "UAH",
-            Lists.newArrayList(new LabeledPrice("lll", 30))
-        );
-        executeApiAction(sendInvoice);
         this.updateProcessor.processUpdate(updateWrapper).ifPresent(response -> {
             executeApiAction(response.createTelegramMessage());
         });

@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @Log4j2
 @Profile(value = "dev")
-@Service
+@Repository
 public class JdbcAnnouncementDao implements AnnouncementDao {
     private static final String INSERT_ANNOUNCEMENT_SQL =
         "INSERT INTO announcements (url, price, extraction_date_time, description, city_name) VALUES (?, ?, ?, ?, ?)";

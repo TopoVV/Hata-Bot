@@ -3,6 +3,9 @@ package com.topov.estatesearcher.utils;
 import com.topov.estatesearcher.telegram.state.BotStateName;
 import com.topov.estatesearcher.telegram.state.StateProperties;
 
+/**
+ * This class stores properties for each {@link com.topov.estatesearcher.telegram.state.BotState}.
+ */
 public class StateUtils {
     public static final StateProperties MAIN_PROPS =
         new StateProperties(BotStateName.MAIN, "main.header", "main.commands");
