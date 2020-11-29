@@ -3,12 +3,14 @@ package com.topov.estatesearcher.dao.jdbc;
 import com.topov.estatesearcher.dao.AnnouncementDao;
 import com.topov.estatesearcher.model.Announcement;
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.common.returnsreceiver.qual.This;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +19,8 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Profile(value = "dev")
@@ -29,6 +31,9 @@ public class JdbcAnnouncementDao implements AnnouncementDao {
 
     private static final String SELECT_ALL_ANNOUNCEMENTS =
         "SELECT * FROM announcements";
+
+    private static final String REMOVE_EXPIRED_ANNOUNCEMENTS =
+        "DELETE FROM announcements WHERE (EXTRACT(day FROM now()) - EXTRACT(day FROM extraction_date_time)) >= 3";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -72,9 +77,9 @@ public class JdbcAnnouncementDao implements AnnouncementDao {
     }
 
     @Override
-    public List<Announcement> getAnnouncements() {
+    public Set<Announcement> getAnnouncements() {
         try {
-            return this.jdbcTemplate.query(SELECT_ALL_ANNOUNCEMENTS, (Object[]) null, (rs, rowNum) -> {
+            return new HashSet<>(this.jdbcTemplate.query(SELECT_ALL_ANNOUNCEMENTS, (Object[]) null, (rs, rowNum) -> {
                 final Announcement announcement = new Announcement();
                 announcement.setAnnouncementId(rs.getLong("announcement_id"));
                 announcement.setUrl(rs.getString("url"));
@@ -84,9 +89,20 @@ public class JdbcAnnouncementDao implements AnnouncementDao {
                 announcement.setExtractionDateTime(extractionTimestamp.toLocalDateTime());
                 announcement.setCityName(rs.getString("city_name"));
                 return announcement;
-            });
+            }));
         } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
+            return Collections.emptySet();
+        }
+    }
+
+    @Async
+    @Override
+    public void removeExpired() {
+        try {
+            log.info("Deleting old announcements");
+            this.jdbcTemplate.execute(REMOVE_EXPIRED_ANNOUNCEMENTS);
+        } catch (DataAccessException e) {
+            log.error("Error during expired announcements removal", e);
         }
     }
 }

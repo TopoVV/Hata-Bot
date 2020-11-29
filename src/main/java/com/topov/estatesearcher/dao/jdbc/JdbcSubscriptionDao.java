@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +73,7 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
 
             return this.jdbcTemplate.query(SELECT_ALL_USER_SUBSCRIPTIONS, params, subscriptionRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 
@@ -81,7 +82,7 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
         try {
             return this.jdbcTemplate.query(SELECT_ALL_SUBSCRIPTIONS, subscriptionRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 

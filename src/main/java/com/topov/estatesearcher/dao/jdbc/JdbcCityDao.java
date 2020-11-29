@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -52,7 +49,7 @@ public class JdbcCityDao implements CityDao {
                 .sorted(Comparator.comparingInt(City::getCityId))
                 .collect(Collectors.toList());
         } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 
