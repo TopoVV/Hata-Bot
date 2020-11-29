@@ -14,7 +14,7 @@ public class AnnouncementChecker {
         this.olxService = olxService;
     }
 
-//    @Scheduled(fixedDelay = 1000*60, initialDelay = 1000)
+    @Scheduled(fixedDelay = 1000*60, initialDelay = 1000)
     public void checkOlx() {
         this.olxService.checkAnnouncements();
     }

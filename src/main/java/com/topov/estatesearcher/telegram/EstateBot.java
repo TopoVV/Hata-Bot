@@ -1,6 +1,5 @@
 package com.topov.estatesearcher.telegram;
 
-import com.google.common.collect.Lists;
 import com.topov.estatesearcher.telegram.notification.Notification;
 import com.topov.estatesearcher.telegram.request.UpdateWrapper;
 import lombok.extern.log4j.Log4j2;
@@ -10,10 +9,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendInvoice;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Log4j2

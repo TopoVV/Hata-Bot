@@ -2,8 +2,8 @@ package com.topov.estatesearcher.factory;
 
 import com.topov.estatesearcher.model.Announcement;
 import com.topov.estatesearcher.service.UserContextService;
-import com.topov.estatesearcher.telegram.notification.Notification;
 import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.notification.Notification;
 import com.topov.estatesearcher.utils.MessageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
