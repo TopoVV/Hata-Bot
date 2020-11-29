@@ -6,11 +6,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.topov</groupId>
-  <artifactId>EstateSearchBot</artifactId>
+  <artifactId>hatabot</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>EstateSearchBot Maven</name>
+  <name>HataBot Maven</name>
 
   <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -137,13 +137,24 @@
               <configuration>
                   <archive>
                       <manifest>
-                          <mainClass>com.topov.estatesearcher.EstateSearcher</mainClass>
+                          <mainClass>com.topov.hatabot.HataBotApp</mainClass>
                       </manifest>
                   </archive>
                   <descriptorRefs>
                       <descriptorRef>jar-with-dependencies</descriptorRef>
                   </descriptorRefs>
                   <appendAssemblyId>false</appendAssemblyId>
+              </configuration>
+          </plugin>
+          <plugin>
+              <groupId>com.heroku.sdk</groupId>
+              <artifactId>heroku-maven-plugin</artifactId>
+              <version>3.0.3</version>
+              <configuration>
+                  <appName>hata-bot-1a</appName>
+                  <processTypes>
+                      <web>java $JAVA_OPTS -cp target/classes:target/dependency/com.topov.hatabot.HataBotApp</web>
+                  </processTypes>
               </configuration>
           </plugin>
       </plugins>
