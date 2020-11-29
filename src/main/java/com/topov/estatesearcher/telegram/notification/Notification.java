@@ -1,7 +1,6 @@
 package com.topov.estatesearcher.telegram.notification;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class Notification {
