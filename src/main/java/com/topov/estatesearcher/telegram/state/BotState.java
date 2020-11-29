@@ -1,17 +1,19 @@
 package com.topov.estatesearcher.telegram.state;
 
-import com.topov.estatesearcher.telegram.reply.Hint;
-import com.topov.estatesearcher.telegram.reply.Keyboard;
-import com.topov.estatesearcher.telegram.reply.UpdateResult;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import com.topov.estatesearcher.telegram.context.UserContext;
+import com.topov.estatesearcher.telegram.keyboard.Keyboard;
+import com.topov.estatesearcher.telegram.request.TelegramCommand;
+import com.topov.estatesearcher.telegram.request.TelegramUpdate;
+import com.topov.estatesearcher.telegram.request.UpdateWrapper;
+import com.topov.estatesearcher.telegram.result.CommandResult;
+import com.topov.estatesearcher.telegram.result.EntranceMessage;
+import com.topov.estatesearcher.telegram.result.UpdateResult;
+
+import java.util.Optional;
 
 public interface BotState {
-    UpdateResult handleUpdate(Update update);
-    Hint getHint(Update update);
-    Keyboard createKeyboard(Update update);
-
-    enum StateName {
-        INITIAL,
-        SUBSCRIPTION
-    }
+    UpdateResult handleUpdate(TelegramUpdate update, UserContext context);
+    CommandResult executeCommand(TelegramCommand command, UserContext context);
+    Optional<EntranceMessage> getEntranceMessage(UpdateWrapper update, UserContext context);
+    Keyboard getKeyboard();
 }
