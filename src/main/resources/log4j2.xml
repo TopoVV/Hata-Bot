@@ -10,7 +10,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.topov.estatesearcher" level="debug" />
+        <Logger name="com.topov.hatabot" level="debug" />
         <Root level="info">
             <AppenderRef ref="STDOUT" />
         </Root>
