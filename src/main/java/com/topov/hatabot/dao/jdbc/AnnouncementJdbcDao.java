@@ -25,7 +25,7 @@ import java.util.Set;
 @Log4j2
 @Profile(value = "dev")
 @Repository
-public class JdbcAnnouncementDao implements AnnouncementDao {
+public class AnnouncementJdbcDao implements AnnouncementDao {
     private static final String INSERT_ANNOUNCEMENT_SQL =
         "INSERT INTO announcements (url, price, extraction_date_time, description, city_name) VALUES (?, ?, ?, ?, ?)";
 
@@ -38,7 +38,7 @@ public class JdbcAnnouncementDao implements AnnouncementDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public JdbcAnnouncementDao(DataSource dataSource) {
+    public AnnouncementJdbcDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 

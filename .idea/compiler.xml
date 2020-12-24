@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Hata-Bot" />
+        <module name="hatabot" />
         <module name="EstateSearchBot" />
       </profile>
     </annotationProcessing>

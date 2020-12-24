@@ -22,7 +22,7 @@ import java.util.Optional;
 @Log4j2
 @Repository
 @Profile(value = "dev")
-public class JdbcSubscriptionDao implements SubscriptionDao {
+public class SubscriptionJdbcDao implements SubscriptionDao {
     private static final String SELECT_ALL_SUBSCRIPTIONS =
         "SELECT * FROM subscriptions";
 
@@ -42,7 +42,7 @@ public class JdbcSubscriptionDao implements SubscriptionDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public JdbcSubscriptionDao(DataSource dataSource) {
+    public SubscriptionJdbcDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 

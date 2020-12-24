@@ -23,12 +23,15 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public List<Announcement> filterNewAnnouncements(List<Announcement> announcements) {
+    public List<Announcement> filterNewAnnouncements(List<Announcement> extractedAnnouncements) {
         final Set<Announcement> storedAnnouncements = this.announcementDao.getAnnouncements();
-        log.info("{} new announcements detected", announcements.size());
-        return announcements.stream()
+        final List<Announcement> newAnnouncements = extractedAnnouncements.stream()
             .filter(announcement -> !storedAnnouncements.contains(announcement))
             .collect(Collectors.toCollection(ArrayList::new));
+
+        log.info("{} new announcements detected", newAnnouncements.size());
+
+        return newAnnouncements;
 
     }
     @Override
@@ -36,7 +39,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         this.announcementDao.saveAnnouncements(announcements);
     }
 
-    @Scheduled(fixedDelay = 1000*60*60*24*3)
+    @Scheduled(fixedDelay = 1000*60*60*24)
     public void removeExpiredAnnouncements() {
         this.announcementDao.removeExpired();
     }

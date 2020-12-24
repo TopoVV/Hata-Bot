@@ -15,6 +15,7 @@ import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
 import com.topov.hatabot.utils.MessageHelper;
 import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -23,6 +24,8 @@ import java.util.Optional;
     @AcceptedCommand(commandName = "/start")
 })
 public class AnonymousBotState extends AbstractBotState {
+
+    @Autowired
     public AnonymousBotState() {
         super(StateUtils.ANONYMOUS_PROPS);
     }

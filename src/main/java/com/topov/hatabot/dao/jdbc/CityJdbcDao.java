@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Log4j2
 @Repository
 @Profile(value = "dev")
-public class JdbcCityDao implements CityDao {
+public class CityJdbcDao implements CityDao {
     private static final String SELECT_ALL_CITIES =
         "SELECT DISTINCT * FROM cities";
 
@@ -35,7 +35,7 @@ public class JdbcCityDao implements CityDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    public JdbcCityDao(DataSource dataSource) {
+    public CityJdbcDao(DataSource dataSource) {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
