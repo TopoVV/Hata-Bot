@@ -85,25 +85,23 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
     }
 
     @CommandMapping(forCommand = "/cities")
-    public CommandResult onCities(TelegramCommand command, UserContext context) {
+    public String onCities(TelegramCommand command, UserContext context) {
         log.info("Executing /city command for user {}", context.getUserId());
         final String cities = this.cityService.getCities().stream()
             .map(City::toString)
             .collect(Collectors.joining("\n"));
 
-        final String message = MessageHelper.getMessage("reply.cities", context, cities);
-        return CommandResult.withMessage(message);
+        return MessageHelper.getMessage("reply.cities", context, cities);
     }
 
     @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, UserContext context) {
+    public void onBack(TelegramCommand command, UserContext context) {
         log.info("Executing /back command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command, UserContext context) {
+    public String onCurrent(TelegramCommand command, UserContext context) {
         log.info("Executing /current command for user {}", context.getUserId());
         final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);

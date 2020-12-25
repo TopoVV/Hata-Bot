@@ -30,28 +30,26 @@ public class MainBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/subscribe")
-    public CommandResult onSubscribe(TelegramCommand command, UserContext context) {
+    public void onSubscribe(TelegramCommand command, UserContext context) {
         log.info("Executing /subscribe command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/management" )
-    public CommandResult onSubscriptions(TelegramCommand command, UserContext context) {
+    public void onSubscriptions(TelegramCommand command, UserContext context) {
         log.info("Executing /management command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.MANAGEMENT);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/language" )
-    public CommandResult onLanguage(TelegramCommand command, UserContext context) {
+    public void onLanguage(TelegramCommand command, UserContext context) {
         log.info("Executing /language command for user {}", context.getUserId());
         final DefaultLanguageExecutor executor = new DefaultLanguageExecutor();
-        return executor.execute(command, context);
+        executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
-    public CommandResult onDonate(TelegramCommand command, UserContext context) {
+    public String onDonate(TelegramCommand command, UserContext context) {
         log.info("Executing /donate command for user: {}", context.getUserId());
         final DefaultDonateExecutor executor = new DefaultDonateExecutor();
         return executor.execute(command, context);

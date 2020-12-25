@@ -44,28 +44,25 @@ public class SubscribeBotState extends AbstractSubscribeBotState {
     }
 
     @CommandMapping(forCommand = "/minPrice")
-    public CommandResult onMinPrice(TelegramCommand command, UserContext context) {
+    public void  onMinPrice(TelegramCommand command, UserContext context) {
         log.info("Executing /minPrice command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIPTION_MIN_PRICE);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/maxPrice")
-    public CommandResult onMaxPrice(TelegramCommand command, UserContext context) {
+    public void onMaxPrice(TelegramCommand command, UserContext context) {
         log.info("Executing /maxPrice command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIPTION_MAX_PRICE);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/city")
-    public CommandResult onCity(TelegramCommand command, UserContext context) {
+    public void onCity(TelegramCommand command, UserContext context) {
         log.info("Executing /city command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIPTION_CITY);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/save")
-    public CommandResult onSave(TelegramCommand command, UserContext context) {
+    public CommandResult<String> onSave(TelegramCommand command, UserContext context) {
     log.info("Executing /save command for user {}", context.getUserId());
         final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
         if (subscriptionConfig.isConfigured()) {
@@ -80,7 +77,7 @@ public class SubscribeBotState extends AbstractSubscribeBotState {
     }
 
     @CommandMapping(forCommand = "/cancel")
-    public CommandResult onCancel(TelegramCommand command, UserContext context) {
+    public CommandResult<String> onCancel(TelegramCommand command, UserContext context) {
         log.info("Executing /cancel command for user {}", context.getUserId());
         context.resetSubscriptionConfig();
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
@@ -89,29 +86,29 @@ public class SubscribeBotState extends AbstractSubscribeBotState {
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command, UserContext context) {
+    public String onCurrent(TelegramCommand command, UserContext context) {
         log.info("Executing /current command for user {}", context.getUserId());
         final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, UserContext context) {
+    public void onMain(TelegramCommand command, UserContext context) {
         log.info("Executing /main command for user {}", context.getUserId());
         final DefaultMainExecutor executor = new DefaultMainExecutor();
-        return executor.execute(command, context);
+        executor.execute(command, context);
     }
 
 
     @CommandMapping(forCommand = "/language" )
-    public CommandResult onLanguage(TelegramCommand command, UserContext context) {
+    public void onLanguage(TelegramCommand command, UserContext context) {
         log.info("Executing /language command for user {}", context.getUserId());
         final DefaultLanguageExecutor executor = new DefaultLanguageExecutor();
-        return executor.execute(command, context);
+        executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
-    public CommandResult onDonate(TelegramCommand command, UserContext context) {
+    public String onDonate(TelegramCommand command, UserContext context) {
         log.info("Executing /donate command for user: {}", context.getUserId());
         final DefaultDonateExecutor executor = new DefaultDonateExecutor();
         return executor.execute(command, context);

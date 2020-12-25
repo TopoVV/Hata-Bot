@@ -1,5 +1,6 @@
 package com.topov.hatabot.telegram.command;
 
+import com.topov.hatabot.postprocessor.CommandMappingAnnotationBPP;
 import com.topov.hatabot.telegram.context.UserContext;
 import com.topov.hatabot.telegram.request.TelegramCommand;
 import com.topov.hatabot.telegram.result.CommandResult;
@@ -12,12 +13,13 @@ import java.lang.reflect.Method;
 
 /**
  * Spring MVC - like wrapper for all command handling methods. Created by
- * {@link com.topov.hatabot.postprocessor.CommandMappingAnnotationBeanPostProcessor} for each method annotated
+ * {@link CommandMappingAnnotationBPP} for each method annotated
  * with {@link com.topov.hatabot.telegram.state.annotation.CommandMapping} and stored inside the map for each
  * {@link BotState} implementation.
  */
+
 @Log4j2
-public class CommandHandler {
+public class CommandHandler<R> {
     private final Object bean;
     private final Method method;
 
@@ -30,10 +32,12 @@ public class CommandHandler {
         this.commandPath = commandPath;
     }
 
-    public CommandResult act(TelegramCommand command, UserContext context)
+    @SuppressWarnings("unchecked cast")
+    public CommandResult<R> act(TelegramCommand command, UserContext context)
     {
         try {
-            return (CommandResult) this.method.invoke(this.bean, command, context);
+            final Object result =  this.method.invoke(bean, command, context);
+            return (result == null) ? new CommandResult<>() : new CommandResult<R>((R) result);
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Error handler method invocation", e);
             throw new RuntimeException("Cannot execute", e);

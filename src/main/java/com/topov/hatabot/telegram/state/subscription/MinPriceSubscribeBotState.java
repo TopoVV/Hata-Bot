@@ -54,14 +54,13 @@ public class MinPriceSubscribeBotState extends AbstractSubscribeBotState {
     }
 
     @CommandMapping(forCommand = "/back")
-    public CommandResult onBack(TelegramCommand command, UserContext context) {
+    public void onBack(TelegramCommand command, UserContext context) {
         log.info("Executing /back command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/current")
-    public CommandResult onCurrent(TelegramCommand command, UserContext context) {
+    public String onCurrent(TelegramCommand command, UserContext context) {
         log.info("Executing /current command for user {}", context.getUserId());
         final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);

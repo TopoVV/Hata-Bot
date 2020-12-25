@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProcessor {
+public class CommandMappingAnnotationBPP implements BeanPostProcessor {
     private final Map<String, Class<?>> states = new HashMap<>();
 
     @Override
@@ -53,7 +53,11 @@ public class CommandMappingAnnotationBeanPostProcessor implements BeanPostProces
 
                     if (found.isPresent()) {
                         final CommandInfo commandInfo = found.get();
-                        injectorMethod.invoke(bean, new CommandHandler(bean, method, commandInfo.getCommandName()), commandInfo);
+                        if (method.getReturnType().equals(Void.TYPE)) {
+                            injectorMethod.invoke(bean, new CommandHandler<Void>(bean, method, commandInfo.getCommandName()), commandInfo);
+                        } else {
+                            injectorMethod.invoke(bean, new CommandHandler<String>(bean, method, commandInfo.getCommandName()), commandInfo);
+                        }
                     }
                 }
             }

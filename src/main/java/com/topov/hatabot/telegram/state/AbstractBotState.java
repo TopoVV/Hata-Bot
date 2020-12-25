@@ -44,7 +44,7 @@ public abstract class AbstractBotState implements BotState {
     }
 
     @Override
-    public CommandResult executeCommand(TelegramCommand command, UserContext context) {
+    public CommandResult<?> executeCommand(TelegramCommand command, UserContext context) {
         if (this.handlers.containsKey(command.getCommand())) {
             return this.handlers.get(command.getCommand()).act(command, context);
         } else {
@@ -69,27 +69,24 @@ public abstract class AbstractBotState implements BotState {
     }
 
     public static class DefaultMainExecutor {
-        public CommandResult execute(TelegramCommand command, UserContext context) {
+        public void execute(TelegramCommand command, UserContext context) {
             context.resetSubscriptionConfig();
             context.setCurrentStateName(BotStateName.MAIN);
-            return CommandResult.empty();
         }
     }
 
     public static class DefaultLanguageExecutor {
-        public CommandResult execute(TelegramCommand command, UserContext context) {
+        public void execute(TelegramCommand command, UserContext context) {
             context.resetSubscriptionConfig();
             context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
-            return CommandResult.empty();
         }
     }
 
     public static class DefaultDonateExecutor {
-        public CommandResult execute(TelegramCommand command, UserContext context) {
+        public String execute(TelegramCommand command, UserContext context) {
             context.resetSubscriptionConfig();
             context.setCurrentStateName(BotStateName.DONATE);
-            final String message = MessageHelper.getMessage("reply.donate", context);
-            return CommandResult.withMessage(message);
+            return MessageHelper.getMessage("reply.donate", context);
         }
     }
 }

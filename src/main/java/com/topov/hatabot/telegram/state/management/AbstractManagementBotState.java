@@ -20,10 +20,9 @@ public class AbstractManagementBotState extends AbstractBotState {
     }
 
     public static class DefaultMyExecutor {
-        public CommandResult execute(TelegramCommand command, UserContext context, SubscriptionList subscriptionList) {
+        public String execute(TelegramCommand command, UserContext context, SubscriptionList subscriptionList) {
             final String subscriptions = subscriptionList.toString(context);
-            final String message = MessageHelper.getMessage("reply.my", context, subscriptions);
-            return CommandResult.withMessage(message);
+            return MessageHelper.getMessage("reply.my", context, subscriptions);
         }
     }
 }

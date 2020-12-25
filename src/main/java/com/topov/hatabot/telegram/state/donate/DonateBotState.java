@@ -27,10 +27,9 @@ public class DonateBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/later")
-    public CommandResult onLater(TelegramCommand command, UserContext context) {
+    public String onLater(TelegramCommand command, UserContext context) {
         log.info("Executing /later command for user: {}", context.getUserId());
         context.setCurrentStateName(BotStateName.MAIN);
-        final String message = MessageHelper.getMessage("reply.donate.later", context);
-        return CommandResult.withMessage(message);
+        return MessageHelper.getMessage("reply.donate.later", context);
     }
 }

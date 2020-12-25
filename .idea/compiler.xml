@@ -8,9 +8,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Hata-Bot" />
-        <module name="hatabot" />
         <module name="EstateSearchBot" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="hatabot" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

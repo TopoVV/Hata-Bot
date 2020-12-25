@@ -1,7 +1,7 @@
 package com.topov.hatabot.config;
 
-import com.topov.hatabot.postprocessor.CommandMappingAnnotationBeanPostProcessor;
-import com.topov.hatabot.postprocessor.KeyboardDescriptionAnnotationPostProcessor;
+import com.topov.hatabot.postprocessor.CommandMappingAnnotationBPP;
+import com.topov.hatabot.postprocessor.KeyboardDescriptionAnnotationBPP;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PostProcessorConfig {
     @Bean
-    CommandMappingAnnotationBeanPostProcessor telegramBotStateAnnotationBeanPostProcessor() {
+    CommandMappingAnnotationBPP telegramBotStateAnnotationBeanPostProcessor() {
         log.info("Instantiating the CommandMappingAnnotationBeanPostProcessor");
-        return new CommandMappingAnnotationBeanPostProcessor();
+        return new CommandMappingAnnotationBPP();
     }
 
     @Bean
-    KeyboardDescriptionAnnotationPostProcessor keyboardDescriptionAnnotationPostProcessor() {
+    KeyboardDescriptionAnnotationBPP keyboardDescriptionAnnotationPostProcessor() {
         log.info("Instantiating the KeyboardDescriptionAnnotationPostProcessor");
-        return new KeyboardDescriptionAnnotationPostProcessor();
+        return new KeyboardDescriptionAnnotationBPP();
     }
 }

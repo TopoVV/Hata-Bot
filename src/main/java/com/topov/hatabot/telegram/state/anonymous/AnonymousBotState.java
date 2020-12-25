@@ -31,7 +31,7 @@ public class AnonymousBotState extends AbstractBotState {
     }
 
     @Override
-    public CommandResult executeCommand(TelegramCommand command, UserContext context) {
+    public CommandResult<?> executeCommand(TelegramCommand command, UserContext context) {
         if (command.isStart()) {
             return this.getHandlers().get(command.getCommand()).act(command, context);
         }
@@ -49,9 +49,8 @@ public class AnonymousBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/start")
-    public CommandResult onStart(TelegramCommand command, UserContext context) {
+    public String onStart(TelegramCommand command, UserContext context) {
         context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
-        final String message = MessageHelper.getMessage("reply.start", context);
-        return CommandResult.withMessage(message);
+        return MessageHelper.getMessage("reply.start", context);
     }
 }

@@ -30,28 +30,26 @@ public class ChooseLanguageBotState extends AbstractBotState {
     public ChooseLanguageBotState() { super(StateUtils.LANGUAGE_PROPS); }
 
     @CommandMapping(forCommand = "/en")
-    public CommandResult onEn(TelegramCommand command, UserContext context) {
+    public String onEn(TelegramCommand command, UserContext context) {
         log.info("Executing /ru command for user: {}", context.getUserId());
         context.setLocale(new Locale("en"));
         context.setCurrentStateName(BotStateName.MAIN);
-        final String message = MessageHelper.getMessage("reply.en", context);
-        return CommandResult.withMessage(message);
+        return MessageHelper.getMessage("reply.en", context);
     }
 
     @CommandMapping(forCommand = "/ru")
-    public CommandResult onRu(TelegramCommand command, UserContext context) {
+    public String onRu(TelegramCommand command, UserContext context) {
         log.info("Executing /ru command for user: {}", context.getUserId());
         context.setLocale(new Locale("ru"));
         context.setCurrentStateName(BotStateName.MAIN);
-        final String message = MessageHelper.getMessage("reply.ru", context);
-        return CommandResult.withMessage(message);
+        return MessageHelper.getMessage("reply.ru", context);
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, UserContext context) {
+    public void onMain(TelegramCommand command, UserContext context) {
         log.info("Executing /main command for user {}", context.getUserId());
         final DefaultMainExecutor executor = new DefaultMainExecutor();
-        return executor.execute(command, context);
+        executor.execute(command, context);
     }
 
 }

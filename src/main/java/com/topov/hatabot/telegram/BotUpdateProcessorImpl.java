@@ -47,9 +47,13 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
         final BotState currentState = this.states.get(context.getCurrentStateName());
 
         if (update.isCommand()) {
-            final CommandResult commandResult = context.executeCommand(update.unwrapCommand(), currentState);
+            final CommandResult<?> commandResult = context.executeCommand(update.unwrapCommand(), currentState);
             this.contextService.setContext(context);
-            return commandResult.createResponse(chatId);
+            if (commandResult.hasContent()) {
+                final String content = (String) commandResult.getContent();
+                return Optional.of(new BotResponse(chatId, content));
+            }
+            return Optional.empty();
         } else {
             final UpdateResult updateResult = context.handleUpdate(update.unwrapUpdate(), currentState);
             this.contextService.setContext(context);

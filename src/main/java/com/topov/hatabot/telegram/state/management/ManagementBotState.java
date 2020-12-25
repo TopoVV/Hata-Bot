@@ -36,28 +36,27 @@ public class ManagementBotState extends AbstractManagementBotState {
     }
 
     @CommandMapping(forCommand = "/unsubscribe")
-    public CommandResult onUnsubscribe(TelegramCommand command, UserContext context) {
+    public void onUnsubscribe(TelegramCommand command, UserContext context) {
         log.info("Executing /unsubscribe command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.UNSUBSCRIBE);
-        return CommandResult.empty();
     }
 
     @CommandMapping(forCommand = "/main")
-    public CommandResult onMain(TelegramCommand command, UserContext context) {
+    public void onMain(TelegramCommand command, UserContext context) {
         log.info("Executing /main command for user {}", context.getUserId());
         final DefaultMainExecutor executor = new DefaultMainExecutor();
-        return executor.execute(command, context);
+        executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/language" )
-    public CommandResult onLanguage(TelegramCommand command, UserContext context) {
+    public void onLanguage(TelegramCommand command, UserContext context) {
         log.info("Executing /language command for user {}", context.getUserId());
         final DefaultLanguageExecutor executor = new DefaultLanguageExecutor();
-        return executor.execute(command, context);
+        executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/my")
-    public CommandResult onMy(TelegramCommand command, UserContext context) {
+    public String onMy(TelegramCommand command, UserContext context) {
         log.info("Executing /my command for user {}", context.getUserId());
         final SubscriptionList subscriptions = this.subscriptionService.getUserSubscriptions(context.getUserId());
         final DefaultMyExecutor executor = new DefaultMyExecutor();
@@ -65,7 +64,7 @@ public class ManagementBotState extends AbstractManagementBotState {
     }
 
     @CommandMapping(forCommand = "/donate")
-    public CommandResult onDonate(TelegramCommand command, UserContext context) {
+    public String onDonate(TelegramCommand command, UserContext context) {
         log.info("Executing /donate command for user: {}", context.getUserId());
         final DefaultDonateExecutor executor = new DefaultDonateExecutor();
         return executor.execute(command, context);

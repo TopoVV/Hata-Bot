@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class KeyboardDescriptionAnnotationPostProcessor implements BeanPostProcessor {
+public class KeyboardDescriptionAnnotationBPP implements BeanPostProcessor {
     private final Map<String, Class<?>> statesWithKeyboard = new HashMap<>();
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
