@@ -44,12 +44,11 @@ public abstract class AbstractBotState implements BotState {
     }
 
     @Override
-    public CommandResult<?> executeCommand(TelegramCommand command, UserContext context) {
+    public CommandResult executeCommand(TelegramCommand command, UserContext context) {
         if (this.handlers.containsKey(command.getCommand())) {
-            return this.handlers.get(command.getCommand()).act(command, context);
+            return this.handlers.get(command.getCommand()).handle(command, context);
         } else {
-            final String message = MessageHelper.getMessage("command.not.supported", context);
-            return CommandResult.withMessage(message);
+            return new CommandResult("command.not.supported");
         }
     }
 
@@ -60,8 +59,7 @@ public abstract class AbstractBotState implements BotState {
         final String header = MessageHelper.getMessage(headerKey, context);
         final String commands = MessageHelper.getMessage(commandsKey, context);
         final String entranceText = MessageHelper.getMessage("entrance.template", context, header, commands);
-        final EntranceMessage entranceMessage = new EntranceMessage(context.getUserId(), entranceText, this.keyboard);
-        return Optional.of(entranceMessage);
+        return Optional.of(new EntranceMessage(context.getUserId(), entranceText, this.keyboard));
     }
 
     public final BotStateName getStateName() {
@@ -83,10 +81,10 @@ public abstract class AbstractBotState implements BotState {
     }
 
     public static class DefaultDonateExecutor {
-        public String execute(TelegramCommand command, UserContext context) {
+        public CommandResult execute(TelegramCommand command, UserContext context) {
             context.resetSubscriptionConfig();
             context.setCurrentStateName(BotStateName.DONATE);
-            return MessageHelper.getMessage("reply.donate", context);
+            return new CommandResult("reply.donate");
         }
     }
 }

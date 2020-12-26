@@ -1,5 +1,6 @@
-package com.topov.hatabot.dao.jdbc;
+package dao;
 
+import com.topov.hatabot.dao.jdbc.AnnouncementJdbcDao;
 import com.topov.hatabot.model.Announcement;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class JdbcAnnouncementDaoTest extends DaoTests {
-    private final JdbcAnnouncementDao jdbcAnnouncementDao;
+    private final AnnouncementJdbcDao jdbcAnnouncementDao;
 
     @Autowired
     public JdbcAnnouncementDaoTest(DataSource dataSource) {
-        this.jdbcAnnouncementDao = new JdbcAnnouncementDao(dataSource);
+        this.jdbcAnnouncementDao = new AnnouncementJdbcDao(dataSource);
     }
 
     @Test

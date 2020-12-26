@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  */
 
 @Log4j2
-public class CommandHandler<R> {
+public class CommandHandler {
     private final Object bean;
     private final Method method;
 
@@ -32,12 +32,11 @@ public class CommandHandler<R> {
         this.commandPath = commandPath;
     }
 
-    @SuppressWarnings("unchecked cast")
-    public CommandResult<R> act(TelegramCommand command, UserContext context)
+    public CommandResult handle(TelegramCommand command, UserContext context)
     {
         try {
             final Object result =  this.method.invoke(bean, command, context);
-            return (result == null) ? new CommandResult<>() : new CommandResult<R>((R) result);
+            return (result == null) ? new CommandResult() : (CommandResult) result;
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Error handler method invocation", e);
             throw new RuntimeException("Cannot execute", e);

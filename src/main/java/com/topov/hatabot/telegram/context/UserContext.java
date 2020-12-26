@@ -39,6 +39,14 @@ public class UserContext {
         this.subscriptionConfig = context.subscriptionConfig;
     }
 
+    public UserContext(UserContext context, BotStateName nextState) {
+        this.userId = context.getUserId();
+        this.currentStateName = nextState;
+        this.locale = context.locale;
+        this.subscriptionConfig = context.subscriptionConfig;
+    }
+
+
     public CommandResult executeCommand(TelegramCommand command, BotState state) {
         return state.executeCommand(command, this);
     }

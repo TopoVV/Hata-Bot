@@ -10,7 +10,6 @@ import com.topov.hatabot.telegram.state.BotStateName;
 import com.topov.hatabot.telegram.state.annotation.AcceptedCommand;
 import com.topov.hatabot.telegram.state.annotation.CommandMapping;
 import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
-import com.topov.hatabot.utils.MessageHelper;
 import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,9 +26,8 @@ public class DonateBotState extends AbstractBotState {
     }
 
     @CommandMapping(forCommand = "/later")
-    public String onLater(TelegramCommand command, UserContext context) {
-        log.info("Executing /later command for user: {}", context.getUserId());
+    public CommandResult onLater(TelegramCommand command, UserContext context) {
         context.setCurrentStateName(BotStateName.MAIN);
-        return MessageHelper.getMessage("reply.donate.later", context);
+        return new CommandResult("reply.donate.later");
     }
 }

@@ -42,8 +42,7 @@ public class MinPriceSubscribeBotState extends AbstractSubscribeBotState {
             context.setSubscriptionConfig(new SubscriptionConfig(subscriptionConfig));
             context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
-            final String current = MessageHelper.subscriptionConfigToMessage(subscriptionConfig, context);
-            final String message = MessageHelper.getMessage("reply.min.price", context, current, minPrice);
+            final String message = MessageHelper.getMessage("reply.min.price", context, minPrice);
 
             return UpdateResult.withMessage(message);
         } catch (NumberFormatException e) {
@@ -55,13 +54,11 @@ public class MinPriceSubscribeBotState extends AbstractSubscribeBotState {
 
     @CommandMapping(forCommand = "/back")
     public void onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
     }
 
     @CommandMapping(forCommand = "/current")
-    public String onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /current command for user {}", context.getUserId());
+    public CommandResult onCurrent(TelegramCommand command, UserContext context) {
         final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);
     }

@@ -53,11 +53,7 @@ public class CommandMappingAnnotationBPP implements BeanPostProcessor {
 
                     if (found.isPresent()) {
                         final CommandInfo commandInfo = found.get();
-                        if (method.getReturnType().equals(Void.TYPE)) {
-                            injectorMethod.invoke(bean, new CommandHandler<Void>(bean, method, commandInfo.getCommandName()), commandInfo);
-                        } else {
-                            injectorMethod.invoke(bean, new CommandHandler<String>(bean, method, commandInfo.getCommandName()), commandInfo);
-                        }
+                        injectorMethod.invoke(bean, new CommandHandler(bean, method, commandInfo.getCommandName()), commandInfo);
                     }
                 }
             }

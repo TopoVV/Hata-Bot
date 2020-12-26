@@ -1,5 +1,6 @@
 package com.topov.hatabot.telegram.state.subscription;
 
+import com.topov.hatabot.ListItemContent;
 import com.topov.hatabot.model.City;
 import com.topov.hatabot.service.CityService;
 import com.topov.hatabot.telegram.context.SubscriptionConfig;
@@ -19,10 +20,10 @@ import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Log4j2
 @TelegramBotState(commands = {
@@ -62,8 +63,7 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
             context.setSubscriptionConfig(new SubscriptionConfig(subscriptionConfig));
             context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
-            final String current = MessageHelper.subscriptionConfigToMessage(subscriptionConfig, context);
-            final String message = MessageHelper.getMessage("reply.city", context, current, city.getCityName());
+            final String message = MessageHelper.getMessage("reply.city", context, city.getCityName());
             return UpdateResult.withMessage(message);
         } catch (NumberFormatException e) {
             log.error("Invalid id {}", text, e);
@@ -84,25 +84,19 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
         }
     }
 
-    @CommandMapping(forCommand = "/cities")
-    public String onCities(TelegramCommand command, UserContext context) {
-        log.info("Executing /city command for user {}", context.getUserId());
-        final String cities = this.cityService.getCities().stream()
-            .map(City::toString)
-            .collect(Collectors.joining("\n"));
-
-        return MessageHelper.getMessage("reply.cities", context, cities);
-    }
-
     @CommandMapping(forCommand = "/back")
     public void onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
     }
 
+    @CommandMapping(forCommand = "/cities")
+    public CommandResult onCities(TelegramCommand command, UserContext context) {
+        final List<City> cities = this.cityService.getCities();
+        return new CommandResult("reply.cities", new ListItemContent<>(cities));
+    }
+
     @CommandMapping(forCommand = "/current")
-    public String onCurrent(TelegramCommand command, UserContext context) {
-        log.info("Executing /current command for user {}", context.getUserId());
+    public CommandResult onCurrent(TelegramCommand command, UserContext context) {
         final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
         return executor.execute(command, context);
     }

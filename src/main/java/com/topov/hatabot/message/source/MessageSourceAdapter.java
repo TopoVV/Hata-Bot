@@ -1,4 +1,4 @@
-package com.topov.hatabot.adapter;
+package com.topov.hatabot.message.source;
 
 import com.topov.hatabot.telegram.context.UserContext;
 

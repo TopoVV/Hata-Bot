@@ -1,24 +1,30 @@
 package com.topov.hatabot.telegram.result;
 
+import com.topov.hatabot.Content;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Getter
 @NoArgsConstructor
-public class CommandResult<T> {
-    private T content;
-    private boolean isEmpty = true;
+public class CommandResult {
+    private String messageKey;
+    private Content content;
 
-    public static CommandResult<String> withMessage(String message) {
-        return new CommandResult<>(message);
+    public CommandResult(String messageKey) {
+        this.messageKey = messageKey;
     }
-
-    public CommandResult(T content) {
+    public CommandResult(String messageKey, Content content) {
+        this.messageKey = messageKey;
         this.content = content;
-        this.isEmpty = false;
     }
 
-    public boolean hasContent() {
-        return !isEmpty;
+    public Optional<String> getMessageKey() {
+        return Optional.ofNullable(this.messageKey);
+    }
+
+    public Optional<Content> getContent() {
+        return Optional.ofNullable(content);
     }
 }

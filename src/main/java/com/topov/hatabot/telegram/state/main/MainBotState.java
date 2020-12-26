@@ -31,26 +31,22 @@ public class MainBotState extends AbstractBotState {
 
     @CommandMapping(forCommand = "/subscribe")
     public void onSubscribe(TelegramCommand command, UserContext context) {
-        log.info("Executing /subscribe command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
     }
 
     @CommandMapping(forCommand = "/management" )
     public void onSubscriptions(TelegramCommand command, UserContext context) {
-        log.info("Executing /management command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.MANAGEMENT);
     }
 
     @CommandMapping(forCommand = "/language" )
     public void onLanguage(TelegramCommand command, UserContext context) {
-        log.info("Executing /language command for user {}", context.getUserId());
         final DefaultLanguageExecutor executor = new DefaultLanguageExecutor();
         executor.execute(command, context);
     }
 
     @CommandMapping(forCommand = "/donate")
-    public String onDonate(TelegramCommand command, UserContext context) {
-        log.info("Executing /donate command for user: {}", context.getUserId());
+    public CommandResult onDonate(TelegramCommand command, UserContext context) {
         final DefaultDonateExecutor executor = new DefaultDonateExecutor();
         return executor.execute(command, context);
     }

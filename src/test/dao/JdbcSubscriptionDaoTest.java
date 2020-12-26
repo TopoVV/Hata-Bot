@@ -1,17 +1,18 @@
-package com.topov.hatabot.dao.jdbc;
+package dao;
 
 import com.topov.hatabot.model.Subscription;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.topov.hatabot.dao.jdbc.SubscriptionJdbcDao;
 
 import javax.sql.DataSource;
 
 public class JdbcSubscriptionDaoTest extends DaoTests {
-    private final JdbcSubscriptionDao jdbcSubscriptionDao;
+    private final SubscriptionJdbcDao jdbcSubscriptionDao;
 
     @Autowired
     public JdbcSubscriptionDaoTest(DataSource dataSource) {
-        this.jdbcSubscriptionDao = new JdbcSubscriptionDao(dataSource);
+        this.jdbcSubscriptionDao = new SubscriptionJdbcDao(dataSource);
     }
 
     @Test

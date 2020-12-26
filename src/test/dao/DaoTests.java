@@ -1,4 +1,4 @@
-package com.topov.hatabot.dao.jdbc;
+package dao;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.annotation.Bean;

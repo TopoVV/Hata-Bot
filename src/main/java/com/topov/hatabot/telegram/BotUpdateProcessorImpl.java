@@ -1,5 +1,7 @@
 package com.topov.hatabot.telegram;
 
+import com.topov.hatabot.message.converter.ContentConverter;
+import com.topov.hatabot.message.source.MessageSourceAdapter;
 import com.topov.hatabot.service.UserContextService;
 import com.topov.hatabot.telegram.context.UserContext;
 import com.topov.hatabot.telegram.request.UpdateWrapper;
@@ -14,7 +16,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,18 +27,18 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class BotUpdateProcessorImpl implements BotUpdateProcessor {
     private final UserContextService contextService;
+    private final MessageSourceAdapter messageSourceAdapter;
+    private final ContentConverter converter;
     private final Map<BotStateName, BotState> states;
 
     @Autowired
-    public BotUpdateProcessorImpl(UserContextService contextService, List<AbstractBotState> states) {
+    public BotUpdateProcessorImpl(UserContextService contextService,
+                                  MessageSourceAdapter messageSourceAdapter,
+                                  ContentConverter converter, List<AbstractBotState> states) {
         this.contextService = contextService;
-        final Map<BotStateName, BotState> map = states.stream()
-            .collect(toMap(
-                AbstractBotState::getStateName,
-                Function.identity()
-            ));
-        this.states = new HashMap<>(map);
-
+        this.messageSourceAdapter = messageSourceAdapter;
+        this.converter = converter;
+        this.states = states.stream().collect(toMap(AbstractBotState::getStateName, Function.identity()));
     }
 
     @Override
@@ -47,13 +48,17 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
         final BotState currentState = this.states.get(context.getCurrentStateName());
 
         if (update.isCommand()) {
-            final CommandResult<?> commandResult = context.executeCommand(update.unwrapCommand(), currentState);
+            final CommandResult commandResult = context.executeCommand(update.unwrapCommand(), currentState);
             this.contextService.setContext(context);
-            if (commandResult.hasContent()) {
-                final String content = (String) commandResult.getContent();
-                return Optional.of(new BotResponse(chatId, content));
-            }
-            return Optional.empty();
+            final String contentString = commandResult.getContent()
+                .map(content -> content.stringify(context, converter))
+                .orElse("");
+
+            return commandResult.getMessageKey()
+                .map(key -> messageSourceAdapter.getMessage(key, context))
+                .map(message -> message.concat(contentString))
+                .map(message ->  new BotResponse(chatId, message));
+
         } else {
             final UpdateResult updateResult = context.handleUpdate(update.unwrapUpdate(), currentState);
             this.contextService.setContext(context);

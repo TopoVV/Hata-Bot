@@ -1,7 +1,6 @@
 package com.topov.hatabot.telegram.state.management;
 
 import com.topov.hatabot.model.Subscription;
-import com.topov.hatabot.model.SubscriptionList;
 import com.topov.hatabot.service.SubscriptionService;
 import com.topov.hatabot.telegram.context.UserContext;
 import com.topov.hatabot.telegram.keyboard.KeyboardDescription;
@@ -19,6 +18,7 @@ import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -63,16 +63,14 @@ public class UnsubscribeBotState extends AbstractManagementBotState {
     }
 
     @CommandMapping(forCommand = "/my")
-    public String onMy(TelegramCommand command, UserContext context) {
-        log.info("Executing /my command for user {}", context.getUserId());
-        final SubscriptionList subscriptions = this.subscriptionService.getUserSubscriptions(context.getUserId());
+    public CommandResult onMy(TelegramCommand command, UserContext context) {
+        final List<Subscription> subscriptions = this.subscriptionService.getUserSubscriptions(context.getUserId());
         final DefaultMyExecutor executor = new DefaultMyExecutor();
         return executor.execute(command, context, subscriptions);
     }
 
     @CommandMapping(forCommand = "/back")
     public void onBack(TelegramCommand command, UserContext context) {
-        log.info("Executing /back command for user {}", context.getUserId());
         context.setCurrentStateName(BotStateName.MANAGEMENT);
     }
 

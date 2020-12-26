@@ -2,6 +2,7 @@ package com.topov.hatabot.telegram;
 
 import com.topov.hatabot.telegram.notification.Notification;
 import com.topov.hatabot.telegram.request.UpdateWrapper;
+import com.topov.hatabot.telegram.result.EntranceMessage;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,10 +49,9 @@ public class HataBot extends TelegramLongPollingBot {
             executeApiAction(response.createTelegramMessage());
         });
 
-        this.updateProcessor.getEntranceMessage(updateWrapper).ifPresent(entranceMessage -> {
-            executeApiAction(entranceMessage.createTelegramMessage());
-        });
-
+        this.updateProcessor.getEntranceMessage(updateWrapper)
+            .map(EntranceMessage::createTelegramMessage)
+            .ifPresent(this::executeApiAction);
     }
 
     private void executeApiAction(BotApiMethod<?> action) {

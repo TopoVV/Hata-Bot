@@ -2,7 +2,6 @@ package com.topov.hatabot.service;
 
 import com.topov.hatabot.dao.SubscriptionDao;
 import com.topov.hatabot.model.Subscription;
-import com.topov.hatabot.model.SubscriptionList;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +25,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public SubscriptionList getUserSubscriptions(String userId) {
-        final List<Subscription> subscriptions = this.subscriptionDao.getAllUserSubscriptions(userId);
-        return new SubscriptionList(subscriptions);
+    public List<Subscription> getUserSubscriptions(String userId) {
+        return this.subscriptionDao.getAllUserSubscriptions(userId);
     }
 
     @Override

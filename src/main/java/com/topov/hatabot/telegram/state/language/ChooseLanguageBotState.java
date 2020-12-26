@@ -10,7 +10,6 @@ import com.topov.hatabot.telegram.state.BotStateName;
 import com.topov.hatabot.telegram.state.annotation.AcceptedCommand;
 import com.topov.hatabot.telegram.state.annotation.CommandMapping;
 import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
-import com.topov.hatabot.utils.MessageHelper;
 import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 
@@ -30,19 +29,17 @@ public class ChooseLanguageBotState extends AbstractBotState {
     public ChooseLanguageBotState() { super(StateUtils.LANGUAGE_PROPS); }
 
     @CommandMapping(forCommand = "/en")
-    public String onEn(TelegramCommand command, UserContext context) {
-        log.info("Executing /ru command for user: {}", context.getUserId());
+    public CommandResult onEn(TelegramCommand command, UserContext context) {
         context.setLocale(new Locale("en"));
         context.setCurrentStateName(BotStateName.MAIN);
-        return MessageHelper.getMessage("reply.en", context);
+        return new CommandResult("reply.en");
     }
 
     @CommandMapping(forCommand = "/ru")
-    public String onRu(TelegramCommand command, UserContext context) {
-        log.info("Executing /ru command for user: {}", context.getUserId());
+    public CommandResult onRu(TelegramCommand command, UserContext context) {
         context.setLocale(new Locale("ru"));
         context.setCurrentStateName(BotStateName.MAIN);
-        return MessageHelper.getMessage("reply.ru", context);
+        return new CommandResult("reply.ru");
     }
 
     @CommandMapping(forCommand = "/main")
