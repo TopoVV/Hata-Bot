@@ -9,7 +9,6 @@ import com.topov.hatabot.telegram.result.EntranceMessage;
 import com.topov.hatabot.telegram.result.UpdateResult;
 import com.topov.hatabot.telegram.state.AbstractBotState;
 import com.topov.hatabot.telegram.state.BotStateName;
-import com.topov.hatabot.telegram.state.annotation.AcceptedCommand;
 import com.topov.hatabot.telegram.state.annotation.CommandMapping;
 import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
 import com.topov.hatabot.utils.StateUtils;
@@ -19,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 
 @Log4j2
-@TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/start")
-})
+@TelegramBotState
 public class AnonymousBotState extends AbstractBotState {
 
     @Autowired

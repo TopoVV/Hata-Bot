@@ -11,5 +11,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Component
 public @interface TelegramBotState {
-    AcceptedCommand[] commands();
 }

@@ -7,16 +7,13 @@ import com.topov.hatabot.telegram.request.TelegramCommand;
 import com.topov.hatabot.telegram.result.CommandResult;
 import com.topov.hatabot.telegram.state.AbstractBotState;
 import com.topov.hatabot.telegram.state.BotStateName;
-import com.topov.hatabot.telegram.state.annotation.AcceptedCommand;
 import com.topov.hatabot.telegram.state.annotation.CommandMapping;
 import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
 import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/later")
-})
+@TelegramBotState
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/later" })
 })

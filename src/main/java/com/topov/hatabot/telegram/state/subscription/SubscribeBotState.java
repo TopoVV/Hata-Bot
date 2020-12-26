@@ -9,7 +9,6 @@ import com.topov.hatabot.telegram.keyboard.KeyboardRow;
 import com.topov.hatabot.telegram.request.TelegramCommand;
 import com.topov.hatabot.telegram.result.CommandResult;
 import com.topov.hatabot.telegram.state.BotStateName;
-import com.topov.hatabot.telegram.state.annotation.AcceptedCommand;
 import com.topov.hatabot.telegram.state.annotation.CommandMapping;
 import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
 import com.topov.hatabot.utils.StateUtils;
@@ -17,17 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Log4j2
-@TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/main"),
-    @AcceptedCommand(commandName = "/cancel"),
-    @AcceptedCommand(commandName = "/save"),
-    @AcceptedCommand(commandName = "/minPrice"),
-    @AcceptedCommand(commandName = "/maxPrice"),
-    @AcceptedCommand(commandName = "/city"),
-    @AcceptedCommand(commandName = "/current"),
-    @AcceptedCommand(commandName = "/language"),
-    @AcceptedCommand(commandName = "/donate")
-})
+@TelegramBotState
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/minPrice", "/maxPrice", "/city" }),
     @KeyboardRow(buttons = { "/current", "/cancel", "/save" }),

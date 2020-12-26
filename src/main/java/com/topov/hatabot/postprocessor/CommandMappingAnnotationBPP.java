@@ -37,24 +37,15 @@ public class CommandMappingAnnotationBPP implements BeanPostProcessor {
 
         final Class<?> aClass = this.states.get(beanName);
         final TelegramBotState stateDefinition = aClass.getAnnotation(TelegramBotState.class);
-        final Set<CommandInfo> acceptedCommands = Stream.of(stateDefinition.commands())
-            .map(command -> new CommandInfo(command.commandName()))
-            .collect(Collectors.toSet());
 
         try {
             final Method injectorMethod = getInjectorMethod(aClass);
             for (Method method : aClass.getMethods()) {
-                if (method.isAnnotationPresent(CommandMapping.class) && !method.isAnnotationPresent(Lookup.class)) {
-                    CommandMapping annotation = method.getAnnotation(CommandMapping.class);
-
-                    final Optional<CommandInfo> found = acceptedCommands.stream().
-                        filter(info -> info.getCommandName().equals(annotation.forCommand()))
-                        .findFirst();
-
-                    if (found.isPresent()) {
-                        final CommandInfo commandInfo = found.get();
-                        injectorMethod.invoke(bean, new CommandHandler(bean, method, commandInfo.getCommandName()), commandInfo);
-                    }
+                if (method.isAnnotationPresent(CommandMapping.class)) {
+                    CommandMapping mapping = method.getAnnotation(CommandMapping.class);
+                    final String commandName = mapping.forCommand();
+                    final CommandInfo commandInfo = new CommandInfo(commandName);
+                    injectorMethod.invoke(bean, new CommandHandler(bean, method, commandName), commandInfo);
                 }
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {

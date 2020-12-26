@@ -7,7 +7,6 @@ import com.topov.hatabot.telegram.request.TelegramCommand;
 import com.topov.hatabot.telegram.result.CommandResult;
 import com.topov.hatabot.telegram.state.AbstractBotState;
 import com.topov.hatabot.telegram.state.BotStateName;
-import com.topov.hatabot.telegram.state.annotation.AcceptedCommand;
 import com.topov.hatabot.telegram.state.annotation.CommandMapping;
 import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
 import com.topov.hatabot.utils.StateUtils;
@@ -16,11 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.Locale;
 
 @Log4j2
-@TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/en"),
-    @AcceptedCommand(commandName = "/ru"),
-    @AcceptedCommand(commandName = "/main"),
-})
+@TelegramBotState
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/en", "/ru" }),
     @KeyboardRow(buttons = { "/main" })

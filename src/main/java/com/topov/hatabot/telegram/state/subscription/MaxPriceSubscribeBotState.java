@@ -9,7 +9,6 @@ import com.topov.hatabot.telegram.request.TelegramUpdate;
 import com.topov.hatabot.telegram.result.CommandResult;
 import com.topov.hatabot.telegram.result.UpdateResult;
 import com.topov.hatabot.telegram.state.BotStateName;
-import com.topov.hatabot.telegram.state.annotation.AcceptedCommand;
 import com.topov.hatabot.telegram.state.annotation.CommandMapping;
 import com.topov.hatabot.telegram.state.annotation.TelegramBotState;
 import com.topov.hatabot.utils.MessageHelper;
@@ -17,10 +16,7 @@ import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@TelegramBotState(commands = {
-    @AcceptedCommand(commandName = "/back"),
-    @AcceptedCommand(commandName = "/current")
-})
+@TelegramBotState
 @KeyboardDescription(rows = {
     @KeyboardRow(buttons = { "/back" }),
     @KeyboardRow(buttons = { "/current" }),
