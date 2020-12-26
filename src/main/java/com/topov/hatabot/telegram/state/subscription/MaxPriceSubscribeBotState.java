@@ -52,9 +52,9 @@ public class MaxPriceSubscribeBotState extends AbstractSubscribeBotState {
         context.setCurrentStateName(BotStateName.SUBSCRIBE);
     }
 
+    @Override
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
-        return executor.execute(command, context);
+        return super.onCurrent(command, context);
     }
 }

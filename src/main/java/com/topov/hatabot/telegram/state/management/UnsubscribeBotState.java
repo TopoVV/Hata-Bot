@@ -61,8 +61,7 @@ public class UnsubscribeBotState extends AbstractManagementBotState {
     @CommandMapping(forCommand = "/my")
     public CommandResult onMy(TelegramCommand command, UserContext context) {
         final List<Subscription> subscriptions = this.subscriptionService.getUserSubscriptions(context.getUserId());
-        final DefaultMyExecutor executor = new DefaultMyExecutor();
-        return executor.execute(command, context, subscriptions);
+        return super.onMy(command, context, subscriptions);
     }
 
     @CommandMapping(forCommand = "/back")

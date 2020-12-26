@@ -33,15 +33,15 @@ public class MainBotState extends AbstractBotState {
         context.setCurrentStateName(BotStateName.MANAGEMENT);
     }
 
+    @Override
     @CommandMapping(forCommand = "/language" )
     public void onLanguage(TelegramCommand command, UserContext context) {
-        final DefaultLanguageExecutor executor = new DefaultLanguageExecutor();
-        executor.execute(command, context);
+        super.onLanguage(command, context);
     }
 
+    @Override
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        final DefaultDonateExecutor executor = new DefaultDonateExecutor();
-        return executor.execute(command, context);
+        return super.onDonate(command, context);
     }
 }

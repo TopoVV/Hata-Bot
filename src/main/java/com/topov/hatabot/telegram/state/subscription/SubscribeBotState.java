@@ -85,9 +85,9 @@ public class SubscribeBotState extends AbstractSubscribeBotState {
         return new CommandResult("reply.cancel");
     }
 
+    @Override
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
-        return executor.execute(command, context);
+        return super.onCurrent(command, context);
     }
 }

@@ -37,27 +37,24 @@ public class ManagementBotState extends AbstractManagementBotState {
 
     @CommandMapping(forCommand = "/main")
     public void onMain(TelegramCommand command, UserContext context) {
-        final DefaultMainExecutor executor = new DefaultMainExecutor();
-        executor.execute(command, context);
+        super.onMain(command, context);
     }
 
     @CommandMapping(forCommand = "/language" )
     public void onLanguage(TelegramCommand command, UserContext context) {
-        final DefaultLanguageExecutor executor = new DefaultLanguageExecutor();
-        executor.execute(command, context);
+        super.onLanguage(command, context);
     }
 
     @CommandMapping(forCommand = "/my")
     public CommandResult onMy(TelegramCommand command, UserContext context) {
         final List<Subscription> subscriptions = this.subscriptionService.getUserSubscriptions(context.getUserId());
-        final DefaultMyExecutor executor = new DefaultMyExecutor();
-        return executor.execute(command, context, subscriptions);
+        return super.onMy(command, context, subscriptions);
     }
 
+    @Override
     @CommandMapping(forCommand = "/donate")
     public CommandResult onDonate(TelegramCommand command, UserContext context) {
-        final DefaultDonateExecutor executor = new DefaultDonateExecutor();
-        return executor.execute(command, context);
+       return super.onDonate(command, context);
     }
 
 }

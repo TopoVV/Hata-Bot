@@ -16,10 +16,8 @@ public class AbstractSubscribeBotState extends AbstractBotState {
         super(props);
     }
 
-    public static class DefaultCurrentExecutor {
-        public CommandResult execute(TelegramCommand command, UserContext context) {
-            final SubscriptionConfig current = context.getSubscriptionConfig();
-            return new CommandResult("reply.current", new SingleItemContent<>(current));
-        }
+    protected CommandResult onCurrent(TelegramCommand command, UserContext context) {
+        final SubscriptionConfig current = context.getSubscriptionConfig();
+        return new CommandResult("reply.current", new SingleItemContent<>(current));
     }
 }

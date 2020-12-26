@@ -1,8 +1,10 @@
 package com.topov.hatabot.telegram.state.management;
 
 import com.topov.hatabot.ListItemContent;
+import com.topov.hatabot.SingleItemContent;
 import com.topov.hatabot.model.Subscription;
 import com.topov.hatabot.service.SubscriptionService;
+import com.topov.hatabot.telegram.context.SubscriptionConfig;
 import com.topov.hatabot.telegram.context.UserContext;
 import com.topov.hatabot.telegram.request.TelegramCommand;
 import com.topov.hatabot.telegram.result.CommandResult;
@@ -21,9 +23,7 @@ public class AbstractManagementBotState extends AbstractBotState {
         this.subscriptionService = subscriptionService;
     }
 
-    public static class DefaultMyExecutor {
-        public CommandResult execute(TelegramCommand command, UserContext context, List<Subscription> subscriptions) {
-            return new CommandResult("reply.my", new ListItemContent<>(subscriptions));
-        }
+    protected CommandResult onMy(TelegramCommand command, UserContext context, List<Subscription> subscriptions) {
+        return new CommandResult("reply.my", new ListItemContent<>(subscriptions));
     }
 }

@@ -66,25 +66,19 @@ public abstract class AbstractBotState implements BotState {
         return this.props.getStateName();
     }
 
-    public static class DefaultMainExecutor {
-        public void execute(TelegramCommand command, UserContext context) {
-            context.resetSubscriptionConfig();
-            context.setCurrentStateName(BotStateName.MAIN);
-        }
+    protected void onMain(TelegramCommand command, UserContext context) {
+        context.resetSubscriptionConfig();
+        context.setCurrentStateName(BotStateName.MAIN);
     }
 
-    public static class DefaultLanguageExecutor {
-        public void execute(TelegramCommand command, UserContext context) {
-            context.resetSubscriptionConfig();
-            context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
-        }
+    protected void onLanguage(TelegramCommand command, UserContext context) {
+        context.resetSubscriptionConfig();
+        context.setCurrentStateName(BotStateName.CHOOSE_LANGUAGE);
     }
 
-    public static class DefaultDonateExecutor {
-        public CommandResult execute(TelegramCommand command, UserContext context) {
-            context.resetSubscriptionConfig();
-            context.setCurrentStateName(BotStateName.DONATE);
-            return new CommandResult("reply.donate");
-        }
+    protected CommandResult onDonate(TelegramCommand command, UserContext context) {
+        context.resetSubscriptionConfig();
+        context.setCurrentStateName(BotStateName.DONATE);
+        return new CommandResult("reply.donate");
     }
 }

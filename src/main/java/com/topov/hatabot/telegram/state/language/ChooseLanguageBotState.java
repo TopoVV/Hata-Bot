@@ -37,11 +37,10 @@ public class ChooseLanguageBotState extends AbstractBotState {
         return new CommandResult("reply.ru");
     }
 
+    @Override
     @CommandMapping(forCommand = "/main")
     public void onMain(TelegramCommand command, UserContext context) {
-        log.info("Executing /main command for user {}", context.getUserId());
-        final DefaultMainExecutor executor = new DefaultMainExecutor();
-        executor.execute(command, context);
+        super.onMain(command, context);
     }
 
 }

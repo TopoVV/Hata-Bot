@@ -90,9 +90,9 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
         return new CommandResult("reply.cities", new ListItemContent<>(cities));
     }
 
+    @Override
     @CommandMapping(forCommand = "/current")
     public CommandResult onCurrent(TelegramCommand command, UserContext context) {
-        final DefaultCurrentExecutor executor = new DefaultCurrentExecutor();
-        return executor.execute(command, context);
+        return super.onCurrent(command, context);
     }
 }
