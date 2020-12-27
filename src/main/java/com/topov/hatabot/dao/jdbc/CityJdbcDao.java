@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Repository
-@Profile(value = "dev")
+@Profile(value = "prod")
 public class CityJdbcDao implements CityDao {
     private static final String SELECT_ALL_CITIES =
         "SELECT DISTINCT * FROM cities";

@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Log4j2
 @Repository
-@Profile(value = "dev")
+@Profile(value = "prod")
 public class SubscriptionJdbcDao implements SubscriptionDao {
     private static final String SELECT_ALL_SUBSCRIPTIONS =
         "SELECT * FROM subscriptions";

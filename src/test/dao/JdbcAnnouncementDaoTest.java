@@ -2,6 +2,7 @@ package dao;
 
 import com.topov.hatabot.dao.jdbc.AnnouncementJdbcDao;
 import com.topov.hatabot.model.Announcement;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,10 +20,12 @@ public class JdbcAnnouncementDaoTest extends DaoTests {
 
     @Test
     void savesBatch() {
-        jdbcAnnouncementDao.saveAnnouncements(Arrays.asList(
-            new Announcement("11231", 1, LocalDateTime.now(), "desc1", "city1"),
-            new Announcement("11232", 2, LocalDateTime.now(), "desc2", "city2"),
-            new Announcement("11233", 3, LocalDateTime.now(), "desc3", "city3")
-        ));
+        Assertions.assertDoesNotThrow(() ->
+            jdbcAnnouncementDao.saveAnnouncements(Arrays.asList(
+                new Announcement("11231", 1, LocalDateTime.now(), "desc1", "city1"),
+                new Announcement("11232", 2, LocalDateTime.now(), "desc2", "city2"),
+                new Announcement("11233", 3, LocalDateTime.now(), "desc3", "city3")
+            ))
+        );
     }
 }

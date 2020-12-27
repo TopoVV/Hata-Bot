@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 @Log4j2
-@Profile(value = "dev")
 @Repository
+@Profile(value = "prod")
 public class AnnouncementJdbcDao implements AnnouncementDao {
     private static final String INSERT_ANNOUNCEMENT_SQL =
         "INSERT INTO announcements (url, price, extraction_date_time, description, city_name) VALUES (?, ?, ?, ?, ?)";

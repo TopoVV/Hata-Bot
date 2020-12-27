@@ -18,16 +18,16 @@ import static java.util.stream.Collectors.*;
 @Getter
 public class UpdateResult {
     private final String messageKey;
-    private final List<Object> messageArgs;
+    private final Object[] messageArgs;
 
     public UpdateResult(String messageKey) {
         this.messageKey = messageKey;
-        this.messageArgs = Collections.emptyList();
+        this.messageArgs = new Object[] {};
     }
 
     public UpdateResult(String messageKey, Object... messageArgs) {
         this.messageKey = messageKey;
-        this.messageArgs = Stream.of(messageArgs).collect(toList());
+        this.messageArgs = messageArgs;
     }
 
     public String stringify(MessageSourceAdapter messageSource, UserContext context) {

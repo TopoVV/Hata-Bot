@@ -19,7 +19,7 @@ public class DaoTests {
         @Bean
         DataSource dataSource() {
             DriverManagerDataSource dataSource = new DriverManagerDataSource();
-            dataSource.setUrl("jdbc:postgresql://localhost:5432/estate_searcher_test_db");
+            dataSource.setUrl("jdbc:postgresql://localhost:5432/hatabot-dev-test-db");
             dataSource.setUsername("topovv");
             dataSource.setPassword("admin");
             dataSource.setDriverClassName("org.postgresql.Driver");

@@ -22,9 +22,9 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class HataBotApp {
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.getEnvironment().setActiveProfiles("prod");
         context.register(HataBotApp.class);
         context.refresh();
-
         HataBot hataBot = context.getBean(HataBot.class);
         try {
             log.info("Registering telegram bot");

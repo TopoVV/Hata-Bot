@@ -153,7 +153,7 @@
               <configuration>
                   <appName>hata-bot-1a</appName>
                   <processTypes>
-                      <web>java $JAVA_OPTS -cp target/classes:target/dependency/com.topov.hatabot.HataBotApp</web>
+                      <web>java $JAVA_OPTS -cp target/classes:target/dependency/com.topov.hatabot.HataBotApp -jar ./target/EstateSearchBot.jar</web>
                   </processTypes>
               </configuration>
           </plugin>

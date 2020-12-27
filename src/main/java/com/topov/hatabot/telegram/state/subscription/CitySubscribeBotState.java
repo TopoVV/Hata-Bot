@@ -61,7 +61,7 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
             return new UpdateResult("reply.city", city.getCityName());
         } catch (NumberFormatException e) {
             log.error("Invalid id {}", text, e);
-            return new UpdateResult("reply.city.invalid .input", text);
+            return new UpdateResult("reply.city.invalid.input", text);
         }
     }
 

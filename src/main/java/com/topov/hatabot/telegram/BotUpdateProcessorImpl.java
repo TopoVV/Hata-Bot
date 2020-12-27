@@ -50,15 +50,13 @@ public class BotUpdateProcessorImpl implements BotUpdateProcessor {
         if (update.isCommand()) {
             final CommandResult commandResult = context.executeCommand(update.unwrapCommand(), currentState);
             this.contextService.setContext(context);
-            commandResult.stringify(messageSourceAdapter, converter, context)
+            return commandResult.stringify(messageSourceAdapter, converter, context)
                 .map(reply -> new BotResponse(chatId, reply));
         } else {
             final UpdateResult updateResult = context.handleUpdate(update.unwrapUpdate(), currentState);
             this.contextService.setContext(context);
             return Optional.of(new BotResponse(chatId, updateResult.stringify(messageSourceAdapter, context)));
         }
-
-        throw new IllegalArgumentException("Unacceptable input");
     }
 
     @Override
