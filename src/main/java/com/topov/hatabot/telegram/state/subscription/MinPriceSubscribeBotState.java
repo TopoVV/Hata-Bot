@@ -33,18 +33,18 @@ public class MinPriceSubscribeBotState extends AbstractSubscribeBotState {
 
         try {
             final Integer minPrice = Integer.parseInt(text);
+            if (minPrice < 0) {
+                return new UpdateResult("reply.price.invalid.input", text);
+            }
             final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
             subscriptionConfig.setMinPrice(minPrice);
             context.setSubscriptionConfig(new SubscriptionConfig(subscriptionConfig));
             context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
-            final String message = MessageHelper.getMessage("reply.min.price", context, minPrice);
-
-            return UpdateResult.withMessage(message);
+            return new UpdateResult("reply.min.price", minPrice);
         } catch (NumberFormatException e) {
             log.error("Invalid price: {}", text);
-            final String message = MessageHelper.getMessage("reply.price.invalid.input", context, text);
-            return UpdateResult.withMessage(message);
+            return new UpdateResult("reply.price.invalid.input", text);
         }
     }
 

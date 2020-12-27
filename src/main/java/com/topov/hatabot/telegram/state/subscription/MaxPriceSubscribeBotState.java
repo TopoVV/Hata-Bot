@@ -15,6 +15,8 @@ import com.topov.hatabot.utils.MessageHelper;
 import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.Collections;
+
 @Log4j2
 @TelegramBotState
 @KeyboardDescription(rows = {
@@ -33,17 +35,18 @@ public class MaxPriceSubscribeBotState extends AbstractSubscribeBotState {
 
         try {
             final Integer maxPrice = Integer.parseInt(text);
+            if (maxPrice < 0) {
+                return new UpdateResult("reply.price.invalid.input", text);
+            }
             final SubscriptionConfig subscriptionConfig = context.getSubscriptionConfig();
             subscriptionConfig.setMaxPrice(maxPrice);
             context.setSubscriptionConfig(new SubscriptionConfig(subscriptionConfig));
             context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
-            final String message = MessageHelper.getMessage("reply.max.price", context, maxPrice);
-            return UpdateResult.withMessage(message);
+            return new UpdateResult("reply.max.price", maxPrice);
         } catch (NumberFormatException e) {
             log.error("Invalid price: {}", text);
-            final String message = MessageHelper.getMessage("reply.price.invalid.input", context, text);
-            return UpdateResult.withMessage(message);
+            return new UpdateResult("reply.price.invalid.input", text);
         }
     }
 

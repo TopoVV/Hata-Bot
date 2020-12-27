@@ -41,20 +41,16 @@ public class UnsubscribeBotState extends AbstractManagementBotState {
         try {
             final long subscriptionId = Long.parseLong(text);
             final Optional<Subscription> subscription = this.subscriptionService.findSubscription(subscriptionId, userId);
-
             if (!subscription.isPresent()) {
-                final String message = MessageHelper.getMessage("reply.unsubscribe.not.found", context, subscriptionId);
-                return UpdateResult.withMessage(message);
+                return new UpdateResult("reply.unsubscribe.not.found", subscriptionId);
             }
+
             this.subscriptionService.removeSubscription(subscriptionId);
             context.setCurrentStateName(BotStateName.MANAGEMENT);
-            final String message = MessageHelper.getMessage("reply.unsubscribe.success", context, subscriptionId);
-            return UpdateResult.withMessage(message);
-
+            return new UpdateResult("reply.unsubscribe.success", subscriptionId);
         } catch (NumberFormatException e) {
             log.error("Subscription not found", e);
-            final String message = MessageHelper.getMessage("reply.unsubscribe.invalid.input", context, text);
-            return UpdateResult.withMessage(message);
+            return new UpdateResult("reply.unsubscribe.invalid.input", text);
         }
     }
 

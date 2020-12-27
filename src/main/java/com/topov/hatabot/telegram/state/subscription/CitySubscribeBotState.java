@@ -19,6 +19,7 @@ import com.topov.hatabot.utils.StateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -48,8 +49,7 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
         try {
             final Optional<City> optionalCity = findCity(text);
             if (!optionalCity.isPresent()) {
-                final String message = MessageHelper.getMessage("reply.city.not.found", context, text);
-                return UpdateResult.withMessage(message);
+                return new UpdateResult("reply.city.not.found", text);
             }
 
             final City city = optionalCity.get();
@@ -58,12 +58,10 @@ public class CitySubscribeBotState extends AbstractSubscribeBotState {
             context.setSubscriptionConfig(new SubscriptionConfig(subscriptionConfig));
             context.setCurrentStateName(BotStateName.SUBSCRIBE);
 
-            final String message = MessageHelper.getMessage("reply.city", context, city.getCityName());
-            return UpdateResult.withMessage(message);
+            return new UpdateResult("reply.city", city.getCityName());
         } catch (NumberFormatException e) {
             log.error("Invalid id {}", text, e);
-            final String message = MessageHelper.getMessage("reply.city.invalid.input", context, text);
-            return UpdateResult.withMessage(message);
+            return new UpdateResult("reply.city.invalid .input", text);
         }
     }
 

@@ -1,10 +1,8 @@
 package com.topov.hatabot.telegram.state.management;
 
 import com.topov.hatabot.ListItemContent;
-import com.topov.hatabot.SingleItemContent;
 import com.topov.hatabot.model.Subscription;
 import com.topov.hatabot.service.SubscriptionService;
-import com.topov.hatabot.telegram.context.SubscriptionConfig;
 import com.topov.hatabot.telegram.context.UserContext;
 import com.topov.hatabot.telegram.request.TelegramCommand;
 import com.topov.hatabot.telegram.result.CommandResult;

@@ -39,8 +39,7 @@ public abstract class AbstractBotState implements BotState {
 
     @Override
     public UpdateResult handleUpdate(TelegramUpdate update, UserContext context) {
-        final String message = MessageHelper.getMessage("update.not.supported", context);
-        return UpdateResult.withMessage(message);
+        return new UpdateResult("update.not.supported");
     }
 
     @Override
